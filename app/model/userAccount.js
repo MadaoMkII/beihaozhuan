@@ -1,23 +1,21 @@
+
 module.exports = app => {
     const mongoose = app.mongoose;
     mongoose.set('useCreateIndex', true);
+
     let userAccountSchema = new mongoose.Schema({
-        uuid: {type: String},
+        uuid: {
+            required: true,
+            type: String,
+            unique: true
+        },
         password: {
             required: true,
             type: String
         },
         role: String,
         userStatus: {
-            hasPaid: {type: Boolean, default: false},
-            isRealName: {type: Boolean, default: false},
-            isAuthenticated: {type: Boolean, default: false},
-            isCStoreOpened: {type: Boolean, default: false},
-            isFirstTimePaid: {type: Boolean, default: false},
-            isRefereed: {type: Boolean, default: false},
-            isFirstAlipayCharge: {type: Boolean, default: false},
-            isFirstWechatCharge: {type: Boolean, default: false},
-            isEmployee: {type: Boolean, default: false}
+            hasPaid: {type: Boolean, default: false}
         },
         tel_number: {
             required: true,
@@ -34,7 +32,7 @@ module.exports = app => {
         realIDNumber: String,
         //publishTime: Date,
         //whatHappenedToMe: [myEvent],
-        //Rcoins: {type: String, required: true, set: tool.encrypt, get: tool.decrypt},
+        Bcoins: {type: String, required: true, set: app.encrypt, get: app.decrypt},
         //returnCoins: {type: Number, default: 0},
         points: {type: Number, default: 0},
         //numberOfReferrers: {type: Number, default: 0},
@@ -70,5 +68,5 @@ module.exports = app => {
     });
 
 
-    return mongoose.model('userAccount', userAccountSchema);
+    return mongoose.model('UserAccount', userAccountSchema,'userAccount');
 };

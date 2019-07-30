@@ -108,6 +108,7 @@ module.exports = appInfo => {
         username:'sendmail@yubaopay.com.tw',
         password: 'Yubao888888',
     };
+
     return {
         ...config,
         ...userConfig,

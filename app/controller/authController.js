@@ -40,13 +40,14 @@ class authController extends Controller {
 
     async register(ctx) {
         try {
-            const {captchaTxt, password, tel_number, username} = ctx.request.body;
+            const {smsVerifyCode, password, tel_number, username} = ctx.request.body;
             const rule = ctx.rules.loginRule;
-            const errors = ctx.checkValidite(rule, ctx);
+            const errorsFlag = ctx.checkValidite(rule, ctx);
+            if (errorsFlag) return;
 
-            let verifyFlag = String(ctx.session.captchaTxt).toLowerCase() ===
-                String(captchaTxt).toLowerCase();
-            if (ctx.helper.isEmpty(ctx.session.captchaTxt) || !verifyFlag) {
+            let verifyFlag = String(ctx.session.smsVerifyCode).toLowerCase() ===
+                String(smsVerifyCode).toLowerCase();
+            if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !verifyFlag) {
                 this.failure(`CaptchaText verify failed`, 400);
             }
             let mainland_reg = /^1[3|4|5|7|8][0-9]{9}$/;
@@ -56,11 +57,17 @@ class authController extends Controller {
 
             const enPassword = ctx.helper.passwordEncrypt(password);
             let uuid = require('cuid')();
-            const newUser = {username: username, password: enPassword, uuid: uuid, role: 'User', tel_number: tel_number};
-            //await ctx.service.user.addUser(newUser);
+            const newUser = {
+                username: username,
+                password: enPassword,
+                uuid: uuid,
+                role: 'User',
+                tel_number: tel_number
+            };
+            await ctx.service.userService.addUser(newUser);
 
             this.success(newUser);
-        }catch (e) {
+        } catch (e) {
             this.failure(e.message, 400);
         }
 

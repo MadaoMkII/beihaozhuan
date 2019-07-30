@@ -16,6 +16,15 @@ class HomeController extends Controller {
     };
 
     async main() {
+
+        let x = this.app.encrypt(String(1234));
+
+        console.log(x)
+        let aa= this.app.decrypt(x)
+        console.log(aa)
+
+
+
         this.ctx.body = `<!DOCTYPE html>
 <html lang="en">
 <head>

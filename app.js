@@ -2,6 +2,7 @@
 const LocalStrategy = require('passport-local').Strategy;
 module.exports = app => {
     // 挂载 strategy
+
     app.passport.use(new LocalStrategy({
         usernameField: 'username',
         passwordField: 'password',
@@ -15,7 +16,7 @@ module.exports = app => {
         };
         console.log('%s %s get user: %j', req.method, req.url, user);
         app.passport.doVerify(req, user, done);
-        console.log(12123123213123123)
+
     }));
     app.passport.verify(async (ctx, user) => {
 
@@ -41,4 +42,5 @@ module.exports = app => {
         user = await ctx.model.User.findOne({username: user}, {__v: 0, _id: 0});
         return user;
     });
+
 };

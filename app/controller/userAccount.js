@@ -4,8 +4,10 @@ const baseController = require(`../controller/baseController`);
 class userAccount extends baseController {
 
     async getUserInfo(ctx) {
-        this.success(ctx.user);
+        const user = await this.ctx.service.userService.tryUser();
+        this.success(user);
     };
+
 
 }
 
