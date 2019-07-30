@@ -5,19 +5,20 @@ const Controller = require('./baseController');
 class authController extends Controller {
 
     async login(ctx) {
-
+        if (ctx.user) {
+            ctx.logout();
+        }
         let body = ctx.request.body;
         let encryptedPassword = ctx.helper.passwordEncrypt(body.password);
-        let userResult = await ctx.service.user.findOneUser({username: body.username, password: encryptedPassword});
+        let userResult = await ctx.service.userService.getUser({
+            tel_number: body.tel_number,
+            password: encryptedPassword
+        });
 
         if (userResult) {
-            ctx.login({
-                username: body.username,
-                password: encryptedPassword, //  password: ctx.helper.passwordEncrypt,
-            });
+            ctx.login(userResult);
 
             ctx.rotateCsrfSecret();
-
             this.success();
 
         } else {
@@ -40,7 +41,7 @@ class authController extends Controller {
 
     async register(ctx) {
         try {
-            const {smsVerifyCode, password, tel_number, username} = ctx.request.body;
+            const {smsVerifyCode, password, tel_number} = ctx.request.body;
             const rule = ctx.rules.loginRule;
             const errorsFlag = ctx.checkValidite(rule, ctx);
             if (errorsFlag) return;
@@ -58,11 +59,11 @@ class authController extends Controller {
             const enPassword = ctx.helper.passwordEncrypt(password);
             let uuid = require('cuid')();
             const newUser = {
-                username: username,
                 password: enPassword,
                 uuid: uuid,
                 role: 'User',
-                tel_number: tel_number
+                tel_number: tel_number,
+                Bcoins: 1021
             };
             await ctx.service.userService.addUser(newUser);
 

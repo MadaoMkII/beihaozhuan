@@ -68,11 +68,11 @@ class HomeController extends Controller {
         this.ctx.body = 'hi, egg3';
     };
 
-    async getUserInfo() {
-        console.log(this.ctx.isAuthenticated())
-        return this.ctx.body = this.ctx.session.abcv;
-
-    };
+    // async getUserInfo() {
+    //     console.log(this.ctx.isAuthenticated())
+    //     return this.ctx.body = this.ctx.session.abcv;
+    //
+    // };
 
     async getImg(ctx) {
 

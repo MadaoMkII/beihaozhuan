@@ -8,14 +8,17 @@ class UserService extends Service {
         const userNew = this.ctx.model.UserAccount(
             {username: uuid+'a', password: uuid+`b`,uuid:uuid,tel_number:uuid+'f',Bcoins:123}
         );
-        //console.log(userNew.Bcoins)
         return userNew;
     };
     async addUser(user) {
-        const userNew = this.ctx.model.userAccount(
-            {username: user.username, password: user.password}
+        const userNew = this.ctx.model.UserAccount(
+            user
         );
         userNew.save();
+    };
+    async getUser(user) {
+        const userNew = await this.ctx.model.UserAccount.findOne(user);
+        return userNew;
     }
 }
 module.exports = UserService;

@@ -16,7 +16,6 @@ module.exports = {
     },
 
     decrypt: function (cipher_text) {
-        console.log(this)
         const key = Buffer.from(setting.key, 'utf8');
         const iv = Buffer.from(setting.iv, 'utf8');
         let src = '';

@@ -55,7 +55,7 @@ module.exports = app => {
             delete ret._id;
             delete ret.id;
             delete ret.password;
-            // ret.Rcoins = doc.Rcoins;
+            ret.Bcoins = doc.Bcoins;
             // ret.VIPLevel = vipCoculart(doc.growthPoints);
             // if (doc.created_at && doc.updated_at) {
             //     ret.created_at = new Date(doc.created_at).getTime();
@@ -66,7 +66,24 @@ module.exports = app => {
             // }
         }
     });
-
+    userAccountSchema.set('toJSON', {
+        virtuals: true,
+        transform: (doc, ret) => {
+            delete ret.__v;
+            delete ret._id;
+            delete ret.id;
+            delete ret.password;
+            ret.Bcoins = doc.Bcoins;
+            // ret.VIPLevel = vipCoculart(doc.growthPoints);
+            // if (doc.created_at && doc.updated_at) {
+            //     ret.created_at = new Date(doc.created_at).getTime();
+            //     ret.updated_at = new Date(doc.updated_at).getTime();
+            // }
+            // if (doc.last_login_time) {
+            //     ret.last_login_time = new Date(doc.last_login_time).getTime();
+            // }
+        }
+    });
 
     return mongoose.model('UserAccount', userAccountSchema,'userAccount');
 };
