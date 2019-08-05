@@ -11,9 +11,10 @@ class UserService extends Service {
         return userNew;
     };
 
-    async updateUser(user) {
-        const userNew = this.ctx.model.UserAccount.findOneAndUpdate({uuid: user.uuid}, {$set: user}, {new: true});
-        return userNew;
+    async updateUser(user_uuid, userObj) {
+
+        return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {$set: userObj}, {new: true});
+
     };
 
     async addUser(user) {

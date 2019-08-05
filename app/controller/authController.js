@@ -9,12 +9,12 @@ class authController extends Controller {
         let url=`${server}/email/valid?act=forget&email=xxx&token=aa`;
         console.log(url)
         let {password, tel_number, smsVerifyCode} = ctx.request.body;
-        const validateResult = await ctx.validate('loginRule', { tel_number, password });
-        if(!validateResult) return;
-        if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
-            String(smsVerifyCode).toLowerCase())) {
-            ctx.throw(400, `smsVerifyCode verify failed`);
-        }
+        //const validateResult = await ctx.validate('loginRule', { tel_number, password });
+        //if(!validateResult) return;
+        // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
+        //     String(smsVerifyCode).toLowerCase())) {
+        //     ctx.throw(400, `smsVerifyCode verify failed`);
+        // }
         if (ctx.user) {
             ctx.logout();
         }

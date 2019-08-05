@@ -1,7 +1,7 @@
 module.exports = app => {
     const mongoose = app.mongoose;
-    mongoose.set('useCreateIndex', true);
-
+    // mongoose.set('useCreateIndex', true);
+    // mongoose.set('useFindAndModify', false);
     let userAccountSchema = new mongoose.Schema({
         uuid: {
             required: true,
@@ -27,7 +27,7 @@ module.exports = app => {
         // },
         //referrer: {type: referer},
         nickName: {type: String, default: '无名氏'},
-        avatar: String,
+        avatar: {type: String, default: 'https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/none.gif'},
         gender: {type: String, required: true, default: `male`},
         //publishTime: Date,
         //whatHappenedToMe: [myEvent],

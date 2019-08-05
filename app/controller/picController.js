@@ -28,9 +28,9 @@ class picController extends Controller {
 
     async uploadImgs(ctx) {
         try {
-            const {ctx} = this;
-            const files = ctx.request.files;
 
+            const files = ctx.request.files;
+console.log(files)
             //const stream = await ctx.getFileStream();
             let ossurl;
             files.forEach((file) =>{

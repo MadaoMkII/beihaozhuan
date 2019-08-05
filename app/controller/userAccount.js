@@ -11,9 +11,19 @@ class userAccount extends baseController {
     async updateUserInfo(ctx) {
         const {nickName, avatar, gender, birthday, location, job, educationLevel} = ctx.request.body;
         const newUser = {nickName, avatar, gender, birthday, location, job, educationLevel};
-        //const user = await this.ctx.service.userService.updateUser(newUser);
+        const validateResult = await ctx.validate('updateUser', {gender});
+        if (!validateResult) {
+            return;
+        }
+        const file = ctx.request.files[0];
+        let ossUrl;
+        if (file) {
+            ossUrl =await ctx.service.picService.putImgs(file);
+            newUser.avatar = ossUrl;
+        }
+        const newUser_result = await this.ctx.service.userService.updateUser(ctx.user.uuid, newUser);
         //ctx.user = user;
-        this.success(newUser);
+        this.success(newUser_result);
     };
 
     async getAll(ctx) {

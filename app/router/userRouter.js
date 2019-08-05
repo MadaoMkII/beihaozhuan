@@ -1,6 +1,6 @@
 module.exports = app => {
     const {router, controller} = app;
-    router.post('/user/updateInfo', controller[`userAccount`].updateUserInfo);
+    router.post('/user/updateInfo', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].updateUserInfo);
     router.post('/user/register', controller[`authController`].register);
     router.post('/user/login', controller[`authController`].login);
     router.get('/user/logout', controller[`authController`].logout);
