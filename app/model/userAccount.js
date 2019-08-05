@@ -1,4 +1,3 @@
-
 module.exports = app => {
     const mongoose = app.mongoose;
     mongoose.set('useCreateIndex', true);
@@ -28,13 +27,19 @@ module.exports = app => {
         // },
         //referrer: {type: referer},
         nickName: {type: String, default: '无名氏'},
-        realName: String,
-        realIDNumber: String,
+        avatar: String,
+        gender: {type: String, required: true, default: `male`},
         //publishTime: Date,
         //whatHappenedToMe: [myEvent],
         Bcoins: {type: String, required: true, set: app.encrypt, get: app.decrypt},
         //returnCoins: {type: Number, default: 0},
-        points: {type: Number, default: 0},
+        birthday: {
+            type: Date, default: `1990-01-01`, min: '1940-01-01',
+            max: Date.now
+        },
+        location: {type: String},
+        job: String,
+        educationLevel: String,
         //numberOfReferrers: {type: Number, default: 0},
         // aliPayAccounts: [aliPayAccount],
         // bankAccounts: [bankAccount],
@@ -72,7 +77,7 @@ module.exports = app => {
             delete ret.__v;
             delete ret._id;
             delete ret.id;
-            delete ret.password;
+            //delete ret.password;
             ret.Bcoins = doc.Bcoins;
             // ret.VIPLevel = vipCoculart(doc.growthPoints);
             // if (doc.created_at && doc.updated_at) {
@@ -85,5 +90,5 @@ module.exports = app => {
         }
     });
 
-    return mongoose.model('UserAccount', userAccountSchema,'userAccount');
+    return mongoose.model('UserAccount', userAccountSchema, 'userAccount');
 };
