@@ -40,6 +40,7 @@ module.exports = app => {
         location: {type: String},
         job: String,
         educationLevel: String,
+        loginTimes: {type: Number},
         //numberOfReferrers: {type: Number, default: 0},
         // aliPayAccounts: [aliPayAccount],
         // bankAccounts: [bankAccount],

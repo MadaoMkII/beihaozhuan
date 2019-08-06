@@ -18,11 +18,11 @@ class userAccount extends baseController {
         const file = ctx.request.files[0];
         let ossUrl;
         if (file) {
-            ossUrl =await ctx.service.picService.putImgs(file);
+            ossUrl = await ctx.service.picService.putImgs(file);
             newUser.avatar = ossUrl;
         }
         const newUser_result = await this.ctx.service.userService.updateUser(ctx.user.uuid, newUser);
-        //ctx.user = user;
+        ctx.user = newUser_result;
         this.success(newUser_result);
     };
 

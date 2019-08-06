@@ -13,10 +13,10 @@ class picController extends Controller {
     async deleteImg(ctx) {
         try {
             let {imageUrl} = ctx.request.query;
-            console.log(ctx.request.query)
-            console.log(imageUrl)
+
+
             let result = await ctx.service.picService.deleteImg(imageUrl);
-            console.log(result)
+
             if (ctx.helper.isEmpty(result) || 200 != result.res.status) {
                 return this.failure(`find not`, 404);
             }
@@ -30,7 +30,7 @@ class picController extends Controller {
         try {
 
             const files = ctx.request.files;
-console.log(files)
+
             //const stream = await ctx.getFileStream();
             let ossurl;
             files.forEach((file) =>{
@@ -39,7 +39,7 @@ console.log(files)
 
             this.success();
         } catch (e) {
-            console.log(e)
+
             this.failure();
         }
         //console.log('got %d files', ctx.request.files.length);

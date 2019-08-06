@@ -30,7 +30,7 @@ const rule = {
                     callback(); // 验证通过
                     return;
                 }
-                callback({message: '密码最少包含一个大小写字母并且为8-16位'}); // 验证不通过
+                callback({message: '密码最少包含一个大小写字母并且为6-16位'}); // 验证不通过
             },
         },
     ],

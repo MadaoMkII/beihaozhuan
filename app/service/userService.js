@@ -1,5 +1,5 @@
 'use strict';
-
+const moment = require('moment');
 const Service = require('egg').Service;
 
 class UserService extends Service {
@@ -13,8 +13,16 @@ class UserService extends Service {
 
     async updateUser(user_uuid, userObj) {
 
-        return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {$set: userObj}, {new: true});
+        return await this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {$set: userObj}, {new: true});
 
+    };
+
+    async updateUser_login(user_uuid) {
+
+        return await this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {
+            $set: {last_login_time: moment()},
+            $inc: {loginTimes: 1}
+        }, {new: true});
     };
 
     async addUser(user) {

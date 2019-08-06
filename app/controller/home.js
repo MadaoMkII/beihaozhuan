@@ -19,9 +19,9 @@ class HomeController extends Controller {
 
         let x = this.app.encrypt(String(1234));
 
-        console.log(x)
+
         let aa= this.app.decrypt(x)
-        console.log(aa)
+
 
 
 

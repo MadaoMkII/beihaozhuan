@@ -47,5 +47,5 @@
 // const src=deSign('bd7266a9dee6a98a78096d84b2a21c07', key, iv);
 // console.log(src); // hello world
 
-console.log(setting())
+console.log((Math.random() * Date.now() * 1).toFixed(0).slice(-6))
 

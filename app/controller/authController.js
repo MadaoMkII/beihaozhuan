@@ -1,14 +1,14 @@
 'use strict';
-
+let ms = require('ms');
+let moment = require('moment');
 const Controller = require('./baseController');
 
 class authController extends Controller {
 
     async login(ctx) {
-        let server=ctx.protocol+'://'+ctx.host;
-        let url=`${server}/email/valid?act=forget&email=xxx&token=aa`;
-        console.log(url)
-        let {password, tel_number, smsVerifyCode} = ctx.request.body;
+        let server = ctx.protocol + '://' + ctx.host;
+        let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
+        let {password, tel_number, smsVerifyCode, rememberMe} = ctx.request.body;
         //const validateResult = await ctx.validate('loginRule', { tel_number, password });
         //if(!validateResult) return;
         // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
@@ -26,8 +26,17 @@ class authController extends Controller {
         });
 
         if (userResult) {
+            await ctx.service.userService.updateUser_login(userResult.uuid);
+
+            if (rememberMe) {
+                ctx.session.maxAge = ms('7d');
+            }
+            else {
+                ctx.session.maxAge = ms('2h');
+            }
             ctx.login(userResult);
-            ctx.rotateCsrfSecret();
+            //ctx.rotateCsrfSecret();
+
             this.success();
 
         } else {
@@ -50,10 +59,9 @@ class authController extends Controller {
     async register(ctx) {
         try {
             const {smsVerifyCode, password, tel_number} = ctx.request.body;
-            const rule = ctx.rules.loginRule;
-            ctx.checkValidite(rule, ctx);
 
-
+            const validateResult = await ctx.validate('loginRule', {tel_number, password});
+            if (!validateResult) return;
             if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
                 String(smsVerifyCode).toLowerCase())) {
                 ctx.throw(400, `VerifyCode verify failed`);
