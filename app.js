@@ -1,5 +1,5 @@
 'use strict';
-const LocalStrategy = require('passport-local').Strategy;
+//const LocalStrategy = require('passport-local').Strategy;
 module.exports = app => {
     // 挂载 strategy
 
