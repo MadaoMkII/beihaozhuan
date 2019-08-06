@@ -38,10 +38,7 @@ module.exports = app => {
     });
     app.passport.deserializeUser(async (ctx, user) => {
         console.log('deserializeUser', user);
-        let x = await ctx.model.UserAccount.findOne(user);
-        console.log(x)
-        return x;
-
+        return await ctx.model.UserAccount.findOne(user);
     });
 
 };
