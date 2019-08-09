@@ -4,7 +4,7 @@ const {Service} = require('egg');
 class captchaService extends Service {
     async getcaptcha() {
 
-         return require(`svg-captcha`).createMathExpr({size:6,noise:4,color:true,background:'#cc9966' });
+         return require(`svg-captcha`).createMathExpr({mathMin:1,mathMax:9,noise:19,color:true,background:'#C88172',mathOperator:`+-` });
     }
 
 

@@ -13,7 +13,14 @@ module.exports = appInfo => {
     const config = exports = {};
     config.mongoose = {
         client: {
-            url: 'mongodb://@127.0.0.1/eggcms', options: {},
+            url: '\t\n' +
+            'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173', options: {
+                poolSize: 6,
+                keepAlive: true,
+                dbName: `beihaozhuan`,
+                useCreateIndex: true,
+                useFindAndModify: false,
+            },
         },
     };
     // use for cookie sign key, should change to your own and keep security
@@ -49,7 +56,7 @@ module.exports = appInfo => {
     config.smsConfig = {
         APPID: '38798',
         APPKEY: 'e665567672d5da9ea6b238bc4051916c',
-        modelCode:'6BQ3F'
+        modelCode: '6BQ3F'
     };
     config.saltword = "RX78";
     config.secretKey = "GP02A";
@@ -63,7 +70,7 @@ module.exports = appInfo => {
     // };
 
     config.validate = {
-        convert: true,
+        //convert: true,
         widelyUndefined: true
     };
     exports.oss = {
@@ -104,9 +111,22 @@ module.exports = appInfo => {
     };
 
     exports.email = {
-        user:"sendmail@yubaopay.com.tw",
-        username:'sendmail@yubaopay.com.tw',
+        user: "sendmail@yubaopay.com.tw",
+        username: 'sendmail@yubaopay.com.tw',
         password: 'Yubao888888',
+    };
+    config.validatePlus = {
+        resolveError(ctx, errors) {
+            if (errors.length) {
+                ctx.type = 'json';
+                ctx.status = 400;
+                ctx.body = {
+                    code: 400,
+                    error: errors,
+                    message: '参数错误',
+                };
+            }
+        }
     };
     return {
         ...config,

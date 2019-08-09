@@ -25,10 +25,6 @@ exports.controller = {
     enable: true,
     package: 'egg-controller',
 };
-exports.validate = {
-    enable: true,
-    package: 'egg-validate',
-};
 exports.oss = {
     enable: true,
     package: 'egg-oss',
@@ -37,4 +33,8 @@ exports.oss = {
 exports.ejs = {
     enable: true,
     package: 'egg-view-ejs',
+};
+exports.validatePlus = {
+    enable: true,
+    package: 'egg-validate-plus',
 };

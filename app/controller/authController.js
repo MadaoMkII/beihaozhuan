@@ -1,27 +1,45 @@
 'use strict';
-
+let ms = require('ms');
+let moment = require('moment');
 const Controller = require('./baseController');
 
 class authController extends Controller {
 
     async login(ctx) {
+        let server = ctx.protocol + '://' + ctx.host;
+        let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
+        let {password, tel_number, smsVerifyCode, rememberMe} = ctx.request.body;
+        //const validateResult = await ctx.validate('loginRule', { tel_number, password });
+        //if(!validateResult) return;
+        // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
+        //     String(smsVerifyCode).toLowerCase())) {
+        //     ctx.throw(400, `smsVerifyCode verify failed`);
+        // }
+        if (ctx.user) {
+            ctx.logout();
+        }
 
-        let body = ctx.request.body;
-        let encryptedPassword = ctx.helper.passwordEncrypt(body.password);
-        let userResult = await ctx.service.user.findOneUser({username: body.username, password: encryptedPassword});
+        let encryptedPassword = ctx.helper.passwordEncrypt(password);
+        let userResult = await ctx.service.userService.getUser({
+            tel_number: tel_number,
+            password: encryptedPassword
+        });
 
         if (userResult) {
-            ctx.login({
-                username: body.username,
-                password: encryptedPassword, //  password: ctx.helper.passwordEncrypt,
-            });
+            await ctx.service.userService.updateUser_login(userResult.uuid);
 
-            ctx.rotateCsrfSecret();
+            if (rememberMe) {
+                ctx.session.maxAge = ms('7d');
+            }
+            else {
+                ctx.session.maxAge = ms('2h');
+            }
+            ctx.login(userResult);
+            //ctx.rotateCsrfSecret();
 
             this.success();
 
         } else {
-
             this.failure(`login failed`, 400);
         }
     };
@@ -40,27 +58,39 @@ class authController extends Controller {
 
     async register(ctx) {
         try {
-            const {captchaTxt, password, tel_number, username} = ctx.request.body;
-            const rule = ctx.rules.loginRule;
-            const errors = ctx.checkValidite(rule, ctx);
+            const {smsVerifyCode, password, tel_number} = ctx.request.body;
 
-            let verifyFlag = String(ctx.session.captchaTxt).toLowerCase() ===
-                String(captchaTxt).toLowerCase();
-            if (ctx.helper.isEmpty(ctx.session.captchaTxt) || !verifyFlag) {
-                this.failure(`CaptchaText verify failed`, 400);
+            const validateResult = await ctx.validate('loginRule', {tel_number, password});
+            if (!validateResult) return;
+            if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
+                String(smsVerifyCode).toLowerCase())) {
+                ctx.throw(400, `VerifyCode verify failed`);
+            }
+            if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
+                String(tel_number).toLowerCase())) {
+                ctx.throw(400, `tel_number doesn't exist`);
             }
             let mainland_reg = /^1[3|4|5|7|8][0-9]{9}$/;
             if (!mainland_reg.test(tel_number)) {
-                this.failure(`tel_number`, 400);
+
+                ctx.throw(400, `tel_number verify failed`);
             }
+            ctx.session.tel_number = null;
+            ctx.session.smsVerifyCode = null;
 
             const enPassword = ctx.helper.passwordEncrypt(password);
             let uuid = require('cuid')();
-            const newUser = {username: username, password: enPassword, uuid: uuid, role: 'User', tel_number: tel_number};
-            //await ctx.service.user.addUser(newUser);
+            const newUser = {
+                password: enPassword,
+                uuid: uuid,
+                role: 'User',
+                tel_number: tel_number,
+                Bcoins: 1000
+            };
+            await ctx.service.userService.addUser(newUser);
 
             this.success(newUser);
-        }catch (e) {
+        } catch (e) {
             this.failure(e.message, 400);
         }
 

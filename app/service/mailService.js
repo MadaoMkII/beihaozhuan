@@ -37,7 +37,7 @@ class mailService extends Service {
             html: obj.html
 
         });
-        console.log(info)
+
         smtpTransport_done.close();
     };
 

@@ -5,9 +5,10 @@ const Controller = require('./baseController');
 class captchaController extends Controller {
 
     async verifyCaptchaText(ctx) {
-        console.log(ctx.session.captchaTxt)
+
         let flag = String(ctx.session.captchaTxt).toLowerCase() === String(ctx.request.body.captchaTxt).toLowerCase();
         if (flag) {
+            ctx.session.smsVerifyCode=null;
             this.success();
         } else {
             this.failure(`CaptchaText verify failed`, 400);

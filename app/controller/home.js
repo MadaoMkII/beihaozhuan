@@ -16,6 +16,15 @@ class HomeController extends Controller {
     };
 
     async main() {
+
+        let x = this.app.encrypt(String(1234));
+
+
+        let aa= this.app.decrypt(x)
+
+
+
+
         this.ctx.body = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,11 +68,11 @@ class HomeController extends Controller {
         this.ctx.body = 'hi, egg3';
     };
 
-    async getUserInfo() {
-        console.log(this.ctx.isAuthenticated())
-        return this.ctx.body = this.ctx.session.abcv;
-
-    };
+    // async getUserInfo() {
+    //     console.log(this.ctx.isAuthenticated())
+    //     return this.ctx.body = this.ctx.session.abcv;
+    //
+    // };
 
     async getImg(ctx) {
 
@@ -75,24 +84,8 @@ class HomeController extends Controller {
         ctx.body = captcha.data;
     };
 
-    async getMail(ctx) {
-
-
-        if (Math.floor((new Date().getTime() - ctx.session.smsSendTime) / (60000)) <= 1) {
-
-            this.failure(`短x`);
-        }
-
-
-        // var dateEnd = new Date();//获取当前时间
-        //let smsSendResult = await this.service.smsService.sendSmsMessage(`15620304097`, new Date());
-
-        if (1 == true) {
-            ctx.session.smsSendTime = new Date().getTime();
-            this.success();
-        } else {
-            this.failure(`短信发送失败`);
-        }
+    async getA(ctx) {
+        ctx.app.emit('error', err, ctx);
     }
 
 
