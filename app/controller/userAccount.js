@@ -8,6 +8,21 @@ class userAccount extends baseController {
         this.success(ctx.user);
     };
 
+    async updateUserPassword(ctx) {
+
+        if (ctx.helper.isEmpty(ctx.session.fdbsmsVerified) || ctx.session.fdbsmsVerified === false) {
+            return this.failure(`need successfully verify first`, 400)
+        }
+        const tel_number = ctx.session.tel_number;
+        const {password} = ctx.request.body;
+        const validateResult = await ctx.validate('loginRule', {tel_number, password});
+        if (!validateResult) return;
+        let encryptedPassword = ctx.helper.passwordEncrypt(password);
+        await ctx.service.userService.updateUserPassword(tel_number, encryptedPassword);
+        ctx.session.tel_number = null;
+        this.success();
+    };
+
     async updateUserInfo(ctx) {
         const {nickName, avatar, gender, birthday, location, job, educationLevel} = ctx.request.body;
         const newUser = {nickName, avatar, gender, birthday, location, job, educationLevel};
@@ -26,10 +41,10 @@ class userAccount extends baseController {
         this.success(newUser_result);
     };
 
-    async getAll(ctx) {
-        const user = await ctx.service.userService.getAllUser();
-        this.success(user);
-    };
+    // async getAll(ctx) {
+    //     const user = await ctx.service.userService.getAllUser();
+    //     this.success(user);
+    // };
 
 }
 

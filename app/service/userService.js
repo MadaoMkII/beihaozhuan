@@ -17,6 +17,13 @@ class UserService extends Service {
 
     };
 
+    async updateUserPassword(tel_number, newPassword) {
+
+        return await this.ctx.model.UserAccount.findOneAndUpdate({tel_number: tel_number},
+            {$set: {password: newPassword}}, {new: true});
+
+    };
+
     async updateUser_login(user_uuid) {
 
         return await this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {

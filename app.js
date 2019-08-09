@@ -37,7 +37,7 @@ module.exports = app => {
         return {uuid: user.uuid, password: user.password};
     });
     app.passport.deserializeUser(async (ctx, user) => {
-        console.log('deserializeUser', user);
+        //console.log('deserializeUser', user);
         return await ctx.model.UserAccount.findOne(user);
     });
 
