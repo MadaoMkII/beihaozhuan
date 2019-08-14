@@ -84,9 +84,6 @@ class HomeController extends Controller {
         ctx.body = captcha.data;
     };
 
-    async getA(ctx) {
-        ctx.app.emit('error', err, ctx);
-    }
 
 
 }
