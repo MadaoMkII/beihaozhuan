@@ -1,30 +1,16 @@
 module.exports = app => {
     const mongoose = app.mongoose;
-    let goodSchema = new mongoose.Schema({
-        uuid: {
-            required: true,
-            type: String,
-            unique: true
-        },
-        category: {type: String, required: true},
-        slideShowPicUrlArray: {
-            type: Array,
-            default: [`https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/001.jpg`,
-                `https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/002.jpg`,
-                `https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/003.jpg`]
-        },
-        price: {
-            type: Number,
-            min: [0, 'Must bigger than 0 ']
-        },
-        description: String,
-        inventory: {
-            type: Number,
-            min: [0, 'Must bigger than 0 '],
-            max: 1000
-        },
-        mainlyShowPicUrl: String,
-        last_login_time: Date
+    let orderTracker = new mongoose.Schema({
+        customer_ID: {type: mongoose.Schema.Types.ObjectId, required: true},
+        goodUUid: {type: String, required: true},
+
+        additionalInformation: {type: mongoose.Schema.Types.Mixed},
+        goodCategory: {type: String, required: true},
+        goodPrice: {type: Number, required: true},
+        realName: String,
+        IDNumber: String,
+        address: String,
+        detailAddress: String
     }, {
         'timestamps': {
             'createdAt': 'created_at', 'updatedAt': 'updated_at', toObject: {virtuals: true},
@@ -50,7 +36,7 @@ module.exports = app => {
     //         // }
     //     }
     // });
-    goodSchema.set('toJSON', {
+    orderTracker.set('toJSON', {
         virtuals: true,
         transform: (doc, ret) => {
             delete ret.__v;
@@ -71,5 +57,5 @@ module.exports = app => {
         }
     });
 
-    return mongoose.model('Good', goodSchema, 'Good');
+    return mongoose.model('OrderTracker', orderTracker, 'OrderTracker');
 };

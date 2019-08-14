@@ -33,20 +33,20 @@ module.exports = {
        return require('crypto').createHash('md5').update(password + this.ctx.app.config.saltword).digest('hex');
     },
 
-    encrypt: function (plain_text) {
-        let cipher = crypto.createCipher('aes192', this.app.config.secretKey);
-        let enc = cipher.update(plain_text, 'utf8', 'hex');
-        enc += cipher.final('hex');
-
-        return enc;
-    },
-    decrypt: function (cipher_text) {
-        let decipher = crypto.createDecipher('aes192', this.app.config.secretKey);
-        let dec = decipher.update(cipher_text, 'hex', 'utf8');
-        dec += decipher.final('utf8');
-        return dec
-
-    },
+    // encrypt: function (plain_text) {
+    //     let cipher = crypto.createCipheriv('aes192', this.app.config.secretKey);
+    //     let enc = cipher.update(plain_text, 'utf8', 'hex');
+    //     enc += cipher.final('hex');
+    //
+    //     return enc;
+    // },
+    // decrypt: function (cipher_text) {
+    //     let decipher = crypto.createDecipheriv('aes192', this.app.config.secretKey);
+    //     let dec = decipher.update(cipher_text, 'hex', 'utf8');
+    //     dec += decipher.final('utf8');
+    //     return dec
+    //
+    // },
     errorCode: {
         200: '服务器成功返回请求的数据。',
         201: '新建或修改数据成功。',

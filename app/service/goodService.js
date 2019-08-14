@@ -9,6 +9,10 @@ class goodService extends Service {
         good.save();
     };
 
+    async getGood(uuid) {
+        return await this.ctx.model.Good.findOne({uuid: uuid});
+    };
+
     async getAll() {
         let result = await this.ctx.model.Good.find();
         return result;

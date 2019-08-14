@@ -30,8 +30,7 @@ class authController extends Controller {
 
             if (rememberMe) {
                 ctx.session.maxAge = ms('7d');
-            }
-            else {
+            } else {
                 ctx.session.maxAge = ms('2h');
             }
             ctx.login(userResult);
@@ -91,7 +90,12 @@ class authController extends Controller {
 
             this.success(newUser);
         } catch (e) {
-            this.failure(e.message, 400);
+            if (e.message.toString().includes(`E11000`)) {
+                return this.failure(`tel_number is duplicated `, 400);
+            } else {
+                this.failure(e.message, 400);
+            }
+
         }
 
     }

@@ -36,7 +36,7 @@ class UserService extends Service {
         const userNew = this.ctx.model.UserAccount(
             user
         );
-        userNew.save();
+        await userNew.save();
     };
 
     async getUser(user) {
@@ -44,9 +44,10 @@ class UserService extends Service {
         return userNew;
     };
 
-    async getAllUser() {
-        const userNew = await this.ctx.model.UserAccount.find();
-        return userNew;
+    async changeUserMoney(id, newBasin_unencrypted) {
+        console.log(newBasin_unencrypted)
+        return await this.ctx.model.UserAccount.findOneAndUpdate({_id: id},
+            {$set: {Bcoins: newBasin_unencrypted}}, {new: true});
     }
 }
 

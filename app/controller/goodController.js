@@ -9,13 +9,14 @@ class goodController extends baseController {
 
     async creatGood(ctx) {
         let newGood = {};
-
-        const {category, price, description, inventory} = ctx.request.body;
-        const validateResult = await ctx.validate('loginRule', {price, inventory});
+        newGood.slideShowPicUrlArray = [];
+        let {category, price, description, inventory} = ctx.request.body;
+        price = Number(price);
+        inventory = Number(inventory);
+        const validateResult = await ctx.validate('createGoodRule', {category, price, inventory});
         if (!validateResult) return;
 
         const files = ctx.request.files;
-        console.log(files)
         if (!ctx.helper.isEmpty(files)) {
             for (let fileObj of files) {
                 let ossUrl = await ctx.service.picService.putImgs(fileObj);
@@ -26,8 +27,7 @@ class goodController extends baseController {
                 }
             }
         }
-
-        newGood.uuid = require('cuid')();
+        newGood.uuid = `GD`+require('cuid')();
         newGood.category = category;
         newGood.price = price;
         newGood.description = description;
