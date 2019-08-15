@@ -4,11 +4,13 @@ const baseController = require(`../controller/baseController`);
 class orderTrackerController extends baseController {
     async createOrder(ctx) {
         try {
-
             let {
-                goodUUid, additionalInformation, goodCategory, goodPrice,
+                goodUUid, additionalInformation,
                 realName, IDNumber, address, detailAddress
             } = ctx.request.body;
+
+            const validateResult = await ctx.validate('createInsuranceRule', {IDNumber});
+            if (!validateResult) return;
 
             let orderTracker = {
                 customer_ID: ctx.user._id,

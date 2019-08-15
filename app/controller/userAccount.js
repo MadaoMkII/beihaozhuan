@@ -4,6 +4,8 @@ const baseController = require(`../controller/baseController`);
 class userAccount extends baseController {
 
     async getUserInfo(ctx) {
+        const eventEmitter = await this.ctx.service.missionEventManager.getEventEmitter();
+        eventEmitter.emit(`start`, ctx.user.uuid);
         //const user = await this.ctx.service.userService.tryUser();
         this.success(ctx.user);
     };

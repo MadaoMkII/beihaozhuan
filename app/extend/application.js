@@ -1,7 +1,6 @@
 const crypto = require('crypto');
-const setting  = require(process.cwd()+`/config/cryptoConfig`)();
+const setting = require(process.cwd() + `/config/cryptoConfig`)();
 module.exports = {
-
     encrypt: function (plain_text) {
         if (!isNaN(plain_text)) {
             plain_text = String(plain_text);

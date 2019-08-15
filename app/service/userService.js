@@ -40,14 +40,15 @@ class UserService extends Service {
     };
 
     async getUser(user) {
-        const userNew = await this.ctx.model.UserAccount.findOne(user);
-        return userNew;
+        return await this.ctx.model.UserAccount.findOne(user);
     };
 
-    async changeUserMoney(id, newBasin_unencrypted) {
-        console.log(newBasin_unencrypted)
+    async changeUserMoney(id, newBasin_unencrypted, missionEvent) {
+        if (!missionEvent) {
+            this.ctx.throw(400, `missionEvent missing!`);
+        }
         return await this.ctx.model.UserAccount.findOneAndUpdate({_id: id},
-            {$set: {Bcoins: newBasin_unencrypted}}, {new: true});
+            {$set: {Bcoins: newBasin_unencrypted}, $push: {missionTrackers: missionEvent}}, {new: true});
     }
 }
 

@@ -47,8 +47,9 @@
 // const src=deSign('bd7266a9dee6a98a78096d84b2a21c07', key, iv);
 // console.log(src); // hello world
 
-const EventEmitter = require('events');
-const myEE = new EventEmitter();
-myEE.on(`asd`, (a)=>{console.log(a)})
-myEE.emit(`asd`,{name:123});
-
+// const EventEmitter = require('events');
+// const myEE = new EventEmitter();
+// myEE.on(`asd`, (a)=>{console.log(a)})
+// myEE.emit(`asd`,{name:123});
+let x = require(`./model/userAccount`)();
+console.log(x);
