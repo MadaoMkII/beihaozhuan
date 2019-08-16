@@ -12,5 +12,5 @@ module.exports = app => {
     require('./router/emailRouter')(app);
     require('./router/imgRouter')(app);
     require('./router/userRouter')(app);
-
+    require('./router/advertisementRouter')(app);
 };

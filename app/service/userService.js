@@ -12,21 +12,18 @@ class UserService extends Service {
     // };
 
     async updateUser(user_uuid, userObj) {
-
-        return await this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {$set: userObj}, {new: true});
-
+        return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {$set: userObj}, {new: true});
     };
 
     async updateUserPassword(tel_number, newPassword) {
 
-        return await this.ctx.model.UserAccount.findOneAndUpdate({tel_number: tel_number},
+        return this.ctx.model.UserAccount.findOneAndUpdate({tel_number: tel_number},
             {$set: {password: newPassword}}, {new: true});
 
     };
 
     async updateUser_login(user_uuid) {
-
-        return await this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {
+        return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {
             $set: {last_login_time: moment()},
             $inc: {loginTimes: 1}
         }, {new: true});
@@ -40,14 +37,18 @@ class UserService extends Service {
     };
 
     async getUser(user) {
-        return await this.ctx.model.UserAccount.findOne(user);
+        return this.ctx.model.UserAccount.findOne(user);
+    };
+
+    async setUserMission(user, mission) {
+        this.ctx.model.UserAccount.findOne(user);
     };
 
     async changeUserMoney(id, newBasin_unencrypted, missionEvent) {
         if (!missionEvent) {
             this.ctx.throw(400, `missionEvent missing!`);
         }
-        return await this.ctx.model.UserAccount.findOneAndUpdate({_id: id},
+        return this.ctx.model.UserAccount.findOneAndUpdate({_id: id},
             {$set: {Bcoins: newBasin_unencrypted}, $push: {missionTrackers: missionEvent}}, {new: true});
     }
 }

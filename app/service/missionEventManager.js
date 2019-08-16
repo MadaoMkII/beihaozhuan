@@ -1,17 +1,23 @@
 'use strict';
 const EventEmitter = require('events');
-const {Service} = require('egg');
+const Service = require('egg').Service;
 
 class MissionEventManager extends Service {
-
     constructor(ctx) {
         super(ctx);
         this.eventEmitter = new EventEmitter();
-        this.eventEmitter.on(`start`, async (uuid) => {
-            const userNew = await this.ctx.model.UserAccount.findOne({uuid: uuid});
-            console.log(userNew)
-        });
+        this.eventEmitter.on(`checkAD`, this.checkAd);
     };
+
+    async checkAd(missionObj, ctx) {
+        const {title, user_id} = missionObj;
+        let res = await ctx.model.MissionTracker.findOneAndUpdate({user_id: user_id, title: title}, {
+                $inc: {recentAmount: 1}
+            },
+            {new: true});
+        //let res = await ctx.model.MissionTracker.findOne({user_id: user_id, title: title});
+
+    }
 
     async getEventEmitter() {
         return this.eventEmitter;
