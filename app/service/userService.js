@@ -40,16 +40,21 @@ class UserService extends Service {
         return this.ctx.model.UserAccount.findOne(user);
     };
 
-    async setUserMission(user, mission) {
-        this.ctx.model.UserAccount.findOne(user);
+    async changeBcoin(_id, newBasin_unencrypted,balanceRecord) {
+        await this.setUser(_id, {Bcoins: newBasin_unencrypted}, {balanceList: balanceRecord});
     };
 
-    async changeUserMoney(id, newBasin_unencrypted, missionEvent) {
-        if (!missionEvent) {
-            this.ctx.throw(400, `missionEvent missing!`);
-        }
+//{$set: {Bcoins: newBasin_unencrypted}, $push: {missionTrackers: missionEvent}}, {new: true});
+//     async changeUserMoney(_id, newBasin_unencrypted, missionEvent) {
+//         if (!missionEvent) {
+//             this.ctx.throw(400, `missionEvent missing!`);
+//         }
+//         this.setUser(_id, {Bcoins: newBasin_unencrypted}, {missionTrackers: missionEvent})
+//     }
+
+    async setUser(id, setObj, pushObj) {
         return this.ctx.model.UserAccount.findOneAndUpdate({_id: id},
-            {$set: {Bcoins: newBasin_unencrypted}, $push: {missionTrackers: missionEvent}}, {new: true});
+            {$set: setObj, $push: pushObj}, {new: true});
     }
 }
 

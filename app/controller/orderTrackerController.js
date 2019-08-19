@@ -4,6 +4,7 @@ const baseController = require(`../controller/baseController`);
 class orderTrackerController extends baseController {
     async createOrder(ctx) {
         try {
+
             let {
                 goodUUid, additionalInformation,
                 realName, IDNumber, address, detailAddress
@@ -16,7 +17,6 @@ class orderTrackerController extends baseController {
                 customer_ID: ctx.user._id,
                 goodUUid: goodUUid,
                 additionalInformation: additionalInformation,
-
                 realName: realName,
                 IDNumber: IDNumber,
                 address: address,

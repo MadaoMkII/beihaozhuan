@@ -5,6 +5,7 @@ class userAccount extends baseController {
 
     async getUserInfo(ctx) {
         const eventEmitter = await this.ctx.service.missionEventManager.getEventEmitter();
+
         //const user = await this.ctx.service.userService.tryUser();
         this.success(ctx.user);
     };

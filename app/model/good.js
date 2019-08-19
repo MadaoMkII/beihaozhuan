@@ -7,6 +7,8 @@ module.exports = app => {
             unique: true
         },
         category: {type: String, required: true},
+        redeemCode: String,
+        status: {type: String, required: true, default: "waiting"},
         slideShowPicUrlArray: {
             type: Array,
             default: [`https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/001.jpg`,

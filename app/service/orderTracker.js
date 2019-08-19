@@ -11,15 +11,14 @@ class orderTracker extends Service {
         if (good.price > this.ctx.user.Bcoins) {
             return this.ctx.throw(400, `user cannot offer this good`);
         }
-        const missionTracker = {
-            missionType: good.category,
-            amount: -good.price,
-            imgUrl: good.mainlyShowPicUrl,
-            good_id: good._id,
-            goodUUid: good.uuid
+        let balanceRecord = {
+            category: `shopping`,
+            income: false,
+            amount: good.price,
+            createTime: new Date()
         };
-        let newUser = await this.ctx.service.userService.changeUserMoney(this.ctx.user._id,
-            this.ctx.user.Bcoins - good.price, missionTracker);
+        let newUser = await this.ctx.service.userService.changeBcoin(this.ctx.user._id,
+            this.ctx.user.Bcoins - good.price, balanceRecord);
         order.goodCategory = good.category;
         order.goodPrice = good.price;
         let consumerTracker = new this.ctx.model.OrderTracker(order);

@@ -10,7 +10,7 @@ class goodService extends Service {
     };
 
     async getGood(uuid) {
-        return await this.ctx.model.Good.findOne({uuid: uuid});
+        return  this.ctx.model.Good.findOne({uuid: uuid});
     };
 
     async getAll() {

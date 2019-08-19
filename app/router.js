@@ -13,4 +13,5 @@ module.exports = app => {
     require('./router/imgRouter')(app);
     require('./router/userRouter')(app);
     require('./router/advertisementRouter')(app);
+    require('./router/missionRouter')(app);
 };

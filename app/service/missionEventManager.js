@@ -8,7 +8,7 @@ class MissionEventManager extends Service {
         this.eventEmitter = new EventEmitter();
         this.eventEmitter.on(`checkAD`, this.checkAd);
     };
-
+    async create(missionObj, ctx) {};
     async checkAd(missionObj, ctx) {
         const {title, user_id} = missionObj;
         let res = await ctx.model.MissionTracker.findOneAndUpdate({user_id: user_id, title: title}, {
@@ -16,8 +16,7 @@ class MissionEventManager extends Service {
             },
             {new: true});
         //let res = await ctx.model.MissionTracker.findOne({user_id: user_id, title: title});
-
-    }
+    };
 
     async getEventEmitter() {
         return this.eventEmitter;
