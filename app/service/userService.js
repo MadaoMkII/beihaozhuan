@@ -10,16 +10,32 @@ class UserService extends Service {
     //     );
     //     return userNew;
     // };
+    async initialLoginUser(user) {
+        // if(user.dailyMissionTrackers!==[]){
+        //     this.ctx.model.mission.findOne();
+        // }
+        let missionsArray = await this.ctx.model.Mission.find();
+        let missionBox = [];
+        for (const mission of missionsArray) {
+            let MissionProcessingTracker = await this.ctx.model.MissionProcessingTracker.findOneAndUpdate({
+                effectDay: moment().format('l'),
+                userID: user._id,
+                missionID: mission._id,
+                recentAmount: 0
+            }, {}, {upsert: true, new: true});
+            missionBox.push(MissionProcessingTracker._id)
+        }
+        return this.ctx.model.UserAccount.findOneAndUpdate({_id: user._id},
+            {$set: {dailyMissionTrackers: missionBox}}, {new: true});
+    };
 
     async updateUser(user_uuid, userObj) {
         return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {$set: userObj}, {new: true});
     };
 
     async updateUserPassword(tel_number, newPassword) {
-
         return this.ctx.model.UserAccount.findOneAndUpdate({tel_number: tel_number},
             {$set: {password: newPassword}}, {new: true});
-
     };
 
     async updateUser_login(user_uuid) {
@@ -40,7 +56,7 @@ class UserService extends Service {
         return this.ctx.model.UserAccount.findOne(user);
     };
 
-    async changeBcoin(_id, newBasin_unencrypted,balanceRecord) {
+    async changeBcoin(_id, newBasin_unencrypted, balanceRecord) {
         await this.setUser(_id, {Bcoins: newBasin_unencrypted}, {balanceList: balanceRecord});
     };
 

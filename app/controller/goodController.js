@@ -27,7 +27,7 @@ class goodController extends baseController {
                 }
             }
         }
-        newGood.uuid = `GD`+require('cuid')();
+        newGood.uuid = `GD` + require('cuid')();
         newGood.category = category;
         newGood.price = price;
         newGood.description = description;

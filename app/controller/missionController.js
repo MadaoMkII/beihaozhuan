@@ -5,8 +5,14 @@ const Controller = require('./baseController');
 
 class missionController extends Controller {
     async createMission(ctx) {
-        const {missionType, title, requireAmount, reward} = ctx.request.body;
-        const validateResult = await ctx.validate('missionRule', {missionType, title, requireAmount, reward});
+        const {missionType, title, requireAmount, reward, eventName} = ctx.request.body;
+        const validateResult = await ctx.validate('missionRule', {
+            missionType,
+            title,
+            requireAmount,
+            reward,
+            eventName
+        });
         if (!validateResult) return;
         let missionObj = {
             missionType: missionType,
@@ -20,7 +26,6 @@ class missionController extends Controller {
             const file = ctx.request.files[0];
             missionObj.avatar = await ctx.service.picService.putImgs(file);
         }
-        console.log(missionObj)
         let mission = await ctx.service.missionService.createMission(missionObj);
         return this.success(mission)
     }

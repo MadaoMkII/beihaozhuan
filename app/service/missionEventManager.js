@@ -11,7 +11,7 @@ class MissionEventManager extends Service {
     async create(missionObj, ctx) {};
     async checkAd(missionObj, ctx) {
         const {title, user_id} = missionObj;
-        let res = await ctx.model.MissionTracker.findOneAndUpdate({user_id: user_id, title: title}, {
+        let res = await ctx.model.MissionProcessingTracker.findOneAndUpdate({user_id: user_id, title: title}, {
                 $inc: {recentAmount: 1}
             },
             {new: true});
