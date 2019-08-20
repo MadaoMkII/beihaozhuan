@@ -51,8 +51,18 @@
 // const myEE = new EventEmitter();
 // myEE.on(`asd`, (a)=>{console.log(a)})
 // myEE.emit(`asd`,{name:123});
-const moment = require(`moment`);
-require(`moment-timezone`);
-let x =moment.tz(new Date(), "Asia/ShangHai").format(`YYYYMMDD`)
-let a =Number(x.toString());
-console.log(a-10)
+// const moment = require(`moment`);
+// require(`moment-timezone`);
+// let x =moment.tz(new Date(), "Asia/ShangHai").format(`YYYYMMDD`)
+// let a =Number(x.toString());
+// console.log(a-10)
+let cleanup = (obj) => {
+    let res = {};
+    Object.keys(obj).forEach((key) => {
+        res.key = obj[key]
+    });
+    return res;
+}
+
+let a = {status: 'activity', title: undefined};
+cleanup(a)

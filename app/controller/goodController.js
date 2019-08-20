@@ -2,8 +2,13 @@
 const baseController = require(`../controller/baseController`);
 
 class goodController extends baseController {
-    async getAll(ctx) {
-        let result = await ctx.service.goodService.getAll();
+    async getManyGoods(ctx) {
+        let {unit, page, status, title} = ctx.request.body;
+        const validateResult = await ctx.validate('pageAndUnitRule', {unit, page});
+        if (!validateResult) return;
+        const option = this.pageModel(page, unit);
+        const condition = {status, title};
+        let result = await ctx.service.goodService.getManyGood(condition, option);
         this.success(result);
     };
 

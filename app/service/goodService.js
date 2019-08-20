@@ -6,16 +6,19 @@ class goodService extends Service {
         let good = new this.ctx.model.Good(goodObj);
         good.save();
     };
+
     async delGood(uuid) {
-        return  this.ctx.model.Good.deleteOne({uuid: uuid});
-    };
-    async getGood(uuid) {
-        return  this.ctx.model.Good.findOne({uuid: uuid});
+        return this.ctx.model.Good.deleteOne({uuid: uuid});
     };
 
-    async getAll() {
-        let result = await this.ctx.model.Good.find();
-        return result;
+    async getGood(uuid) {
+
+        return this.ctx.model.Good.findOne({uuid: uuid});
+    };
+
+    async getManyGood(conditions, option) {
+        console.log(conditions)
+        return this.ctx.model.Good.find(conditions, {}, option);
     }
 }
 
