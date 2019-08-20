@@ -1,11 +1,13 @@
-const moment = require(`moment`);
+
 module.exports = app => {
+
     const mongoose = app.mongoose;
     let missionProcessingTracker = new mongoose.Schema({
         userID: {type: mongoose.Schema.Types.ObjectId, ref: 'UserAccount'},
         missionID: {type: mongoose.Schema.Types.ObjectId, ref: 'Mission'},
+        missionEventName: {type: String, required: true},
         recentAmount: {type: Number, default: 0},
-        effectDay: {type: Date, default: moment().format('l')}
+        effectDay: {type: String, default: app.getFormatDate()}
     }, {
         'timestamps': {
             'createdAt': 'created_at', 'updatedAt': 'updated_at'
@@ -17,8 +19,9 @@ module.exports = app => {
             delete show.__v;
             delete show._id;
             delete show.id;
-            delete show.created_at;
-            delete show.updated_at;
+            delete show.missionID;
+            delete show[`created_at`];
+            delete show[`updated_at`];
             delete show.userID;
             //delete ret.password;
             // ret.Bcoins = doc.Bcoins;

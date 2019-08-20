@@ -14,7 +14,8 @@ module.exports = appInfo => {
     config.mongoose = {
         client: {
             url: '\t\n' +
-            'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173', options: {
+                'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+            options: {
                 poolSize: 6,
                 keepAlive: true,
                 dbName: `beihaozhuan`,
@@ -61,7 +62,12 @@ module.exports = appInfo => {
     config.saltword = "RX78";
     config.secretKey = "GP02A";
 
+    exports.eventDictionary = function () {
+        let dictionaryMap = new Map();
+        dictionaryMap.set(``, ``);
 
+
+    };
     //config.middleware = ['authenticatedMiddleware'];
 
     // 配置 gzip 中间件的配置

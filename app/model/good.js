@@ -6,9 +6,10 @@ module.exports = app => {
             type: String,
             unique: true
         },
-        category: {type: String, required: true},
+        title: {type: String, required: true},
+        category: {type: String, required: true, default: '未分类'},
         redeemCode: String,
-        status: {type: String, required: true, default: "waiting"},
+        featuredFirst: {type: String, required: true, default: "mainPage"},
         slideShowPicUrlArray: {
             type: Array,
             default: [`https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/001.jpg`,
@@ -26,6 +27,15 @@ module.exports = app => {
             max: 1000
         },
         mainlyShowPicUrl: String,
+        status: {
+            type: String,
+            enum: ['activity', 'disable'], default: "disable"
+        },
+        insuranceLink: {type: String},
+        paymentMethod: {
+            type: String,
+            enum: ['Bcoin', 'Money'], default: "Money"
+        },
         last_login_time: Date
     }, {
         'timestamps': {

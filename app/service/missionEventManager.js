@@ -6,15 +6,19 @@ class MissionEventManager extends Service {
     constructor(ctx) {
         super(ctx);
         this.eventEmitter = new EventEmitter();
-        this.eventEmitter.on(`checkAD`, this.checkAd);
+        this.eventEmitter.on(`checkAD`, MissionEventManager.checkAd);
     };
-    async create(missionObj, ctx) {};
-    async checkAd(missionObj, ctx) {
-        const {title, user_id} = missionObj;
-        let res = await ctx.model.MissionProcessingTracker.findOneAndUpdate({user_id: user_id, title: title}, {
+
+    async create(missionObj, ctx) {
+
+    };
+
+    static async checkAd(missionObj, ctx) {
+        let res = await ctx.model.MissionProcessingTracker.findOneAndUpdate(missionObj, {
                 $inc: {recentAmount: 1}
             },
             {new: true});
+        if(!res){ctx.throw(400,`ADV`)}
         //let res = await ctx.model.MissionTracker.findOne({user_id: user_id, title: title});
     };
 

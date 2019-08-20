@@ -51,5 +51,8 @@
 // const myEE = new EventEmitter();
 // myEE.on(`asd`, (a)=>{console.log(a)})
 // myEE.emit(`asd`,{name:123});
-let x = require(`./model/userAccount`)();
-console.log(x);
+const moment = require(`moment`);
+require(`moment-timezone`);
+let x =moment.tz(new Date(), "Asia/ShangHai").format(`YYYYMMDD`)
+let a =Number(x.toString());
+console.log(a-10)

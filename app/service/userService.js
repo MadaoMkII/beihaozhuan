@@ -1,6 +1,7 @@
 'use strict';
 const moment = require('moment');
 const Service = require('egg').Service;
+require(`moment-timezone`);
 
 class UserService extends Service {
     // async tryUser(user) {
@@ -18,15 +19,15 @@ class UserService extends Service {
         let missionBox = [];
         for (const mission of missionsArray) {
             let MissionProcessingTracker = await this.ctx.model.MissionProcessingTracker.findOneAndUpdate({
-                effectDay: moment().format('l'),
+                effectDay: this.ctx.app.getFormatDate(),
                 userID: user._id,
                 missionID: mission._id,
-                recentAmount: 0
+                missionEventName: mission.eventName,
             }, {}, {upsert: true, new: true});
             missionBox.push(MissionProcessingTracker._id)
         }
         return this.ctx.model.UserAccount.findOneAndUpdate({_id: user._id},
-            {$set: {dailyMissionTrackers: missionBox}}, {new: true});
+            {$set: {dailyMissionTrackers: missionBox}}, {new: true}).populate('dailyMissionTrackers');
     };
 
     async updateUser(user_uuid, userObj) {

@@ -7,15 +7,32 @@ class goodController extends baseController {
         this.success(result);
     };
 
+    async delGood(ctx) {
+        let {uuid} = ctx.request.body;
+        if (ctx.helper.isEmpty(uuid)) {
+            ctx.throw(400, 'uuid can not be empty');
+        }
+        await ctx.service.goodService.delGood(uuid);
+        this.success();
+    };
+
     async creatGood(ctx) {
-        let newGood = {};
-        newGood.slideShowPicUrlArray = [];
-        let {category, price, description, inventory} = ctx.request.body;
+
+        let {title, category, price, description, inventory, insuranceLink} = ctx.request.body;
         price = Number(price);
         inventory = Number(inventory);
-        const validateResult = await ctx.validate('createGoodRule', {category, price, inventory});
+        const validateResult = await ctx.validate('createGoodRule', {
+            title,
+            category,
+            price,
+            description,
+            inventory,
+            insuranceLink
+        });
         if (!validateResult) return;
 
+        let newGood = {};
+        newGood.slideShowPicUrlArray = [];
         const files = ctx.request.files;
         if (!ctx.helper.isEmpty(files)) {
             for (let fileObj of files) {
@@ -30,6 +47,8 @@ class goodController extends baseController {
         newGood.uuid = `GD` + require('cuid')();
         newGood.category = category;
         newGood.price = price;
+        newGood.title = title;
+        newGood.insuranceLink = insuranceLink;
         newGood.description = description;
         newGood.inventory = inventory;
         let result = await ctx.service.goodService.createGood(newGood);

@@ -22,5 +22,10 @@ module.exports = {
         src += cipher.update(cipher_text, 'hex', 'utf8');
         src += cipher.final('utf8');
         return src;
+    },
+    getFormatDate: function () {
+        const moment = require(`moment`);
+        require(`moment-timezone`);
+        return moment.tz(new Date(), "Asia/ShangHai").format(`YYYYMMDD`);
     }
 };
