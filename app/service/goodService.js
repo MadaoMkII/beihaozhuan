@@ -17,7 +17,7 @@ class goodService extends Service {
     };
 
     async getManyGood(conditions, option) {
-        console.log(conditions)
+
         return this.ctx.model.Good.find(conditions, {}, option);
     }
 }

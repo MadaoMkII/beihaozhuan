@@ -1,9 +1,22 @@
 'use strict';
 const {Service} = require('egg');
 
-class orderTracker extends Service {
-    async makeOrder(order) {
+class orderTrackerService extends Service {
 
+    async findOrder(order, option) {
+        let searcher = {};
+        if (order.title) {
+            searcher.title = {$regex: `.*${order.title}.*`}
+        }
+        if (order.orderUUid) {
+            searcher.orderUUid = order.orderUUid;
+        }
+        console.log(searcher)
+
+        return this.ctx.model.OrderTracker.find(searcher, {}, option);
+    };
+
+    async makeOrder(order) {
         const good = await this.service.goodService.getGood(order.goodUUid);
         if (!good) {
             return this.ctx.throw(400, `can not find good`);
@@ -21,10 +34,12 @@ class orderTracker extends Service {
             this.ctx.user.Bcoins - good.price, balanceRecord);
         order.goodCategory = good.category;
         order.goodPrice = good.price;
+        order.title = good.title;
+        order.orderUUid = `ORD` + require('cuid')();
         let consumerTracker = new this.ctx.model.OrderTracker(order);
         consumerTracker.save();
         return newUser;
     }
 }
 
-module.exports = orderTracker;
+module.exports = orderTrackerService;

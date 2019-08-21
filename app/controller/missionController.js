@@ -14,19 +14,26 @@ class missionController extends Controller {
             eventName
         });
         if (!validateResult) return;
-        let missionObj = {
-            missionType: missionType,
-            title: title,
-            requireAmount: requireAmount,
-            reward: reward,
+        let missionObj = this.ctx.helper.cleanupRequest([`unit`, `page`], {
+            missionType,
+            title,
+            requireAmount,
+            reward,
+            eventName
+        });
+        let missionEntity = {
+            missionType: missionObj.missionType,
+            title: missionObj.title,
+            requireAmount: missionObj.requireAmount,
+            reward: missionObj.reward,
             UUid: require('cuid')(),
-            eventName: `defaultEvent`
+            eventName: missionObj.eventName
         };
         if (ctx.request.files) {
             const file = ctx.request.files[0];
-            missionObj.avatar = await ctx.service.picService.putImgs(file);
+            missionEntity.avatar = await ctx.service.picService.putImgs(file);
         }
-        let mission = await ctx.service.missionService.createMission(missionObj);
+        let mission = await ctx.service.missionService.createMission(missionEntity);
         return this.success(mission)
     }
 }

@@ -8,7 +8,7 @@ class HomeController extends Controller {
         let result = await ctx.oss.list({
             prefix: `images/`
         });
-        delete result.objects[0]
+        delete result.objects[0];
         await this.ctx.render('index.ejs', {
             files: result.objects
         })
@@ -20,7 +20,7 @@ class HomeController extends Controller {
         let x = this.app.encrypt(String(1234));
 
 
-        let aa= this.app.decrypt(x)
+        let aa= this.app.decrypt(x);
 
 
 
@@ -79,7 +79,7 @@ class HomeController extends Controller {
         const svgCaptcha = require('svg-captcha');
         const captcha = svgCaptcha.create();
         ctx.session.captcha = captcha.text;
-        ctx.set('Content-Type', 'image/svg+xml')
+        ctx.set('Content-Type', 'image/svg+xml');
         ctx.status = 200;
         ctx.body = captcha.data;
     };

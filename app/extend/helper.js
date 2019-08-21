@@ -30,9 +30,29 @@ module.exports = {
     },
     passwordEncrypt: function (password) {
 
-       return require('crypto').createHash('md5').update(password + this.ctx.app.config.saltword).digest('hex');
+        return require('crypto').createHash('md5').update(password + this.ctx.app.config.saltword).digest('hex');
     },
 
+    /**
+     * @description 设置下一步按钮的可点击状态
+     * @param {Array} avoidPropertyArray
+     * 需要设置状态的按钮的对应jQuery对象
+     * @param {Object} obj
+     * true表示可用，false表示不可以
+     **/
+    cleanupRequest: function (avoidPropertyArray, ...obj) {
+        let res = {};
+        for (let objElement of obj) {
+            if (!this.isEmpty(objElement)) {
+                Object.keys(objElement).forEach((key) => {
+                    if (!this.isEmpty(objElement[key]) && !avoidPropertyArray.includes(key)) {
+                        res[key] = objElement[key];
+                    }
+                });
+            }
+        }
+        return res;
+    },
     // encrypt: function (plain_text) {
     //     let cipher = crypto.createCipheriv('aes192', this.app.config.secretKey);
     //     let enc = cipher.update(plain_text, 'utf8', 'hex');
@@ -69,9 +89,6 @@ module.exports = {
         FORMAT: 'formatError',
         FOUND: 'notFoundError',
     },
-
-
-
 
 
 };

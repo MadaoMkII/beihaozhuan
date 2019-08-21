@@ -14,6 +14,18 @@ const rule = {
                 callback({message: '身份证验证错误'}); // 验证不通过
             },
         },
-    ]
+    ],
+    goodUUid: [
+        {required: false, message: 'goodUUid不能为空'},
+        {type: 'string', message: '需要是字符串'}],
+    address: [
+        {required: false, message: 'address不能为空'},
+        {type: 'string', message: '需要是字符串'}],
+    realName: [
+        {required: false, message: 'realName不能为空'},
+        {type: 'string', message: '需要是字符串'}],
+    detailAddress: [
+        {required: false, message: 'detailAddress不能为空'},
+        {type: 'string', message: '需要是字符串'}]
 };
 module.exports = rule;

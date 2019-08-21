@@ -3,7 +3,13 @@ module.exports = app => {
     let orderTracker = new mongoose.Schema({
         customer_ID: {type: mongoose.Schema.Types.ObjectId, required: true},
         goodUUid: {type: String, required: true},
-
+        orderUUid: {type: String, required: true},
+        redeemCode: String,
+        orderStatus: {
+            type: String,
+            enum: ['Close', 'Pending', `Complete`], default: "Pending"
+        },
+        title: {type: String, required: true},
         additionalInformation: {type: mongoose.Schema.Types.Mixed},
         goodCategory: {type: String, required: true},
         goodPrice: {type: Number, required: true},

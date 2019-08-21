@@ -8,7 +8,7 @@ module.exports = app => {
         },
         title: {type: String, required: true},
         category: {type: String, required: true, default: '未分类'},
-        redeemCode: String,
+
         featuredFirst: {type: String, required: true, default: "mainPage"},
         slideShowPicUrlArray: {
             type: Array,

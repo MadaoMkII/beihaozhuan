@@ -11,7 +11,18 @@
 //     sign += cipher.final('hex');
 //     return sign;
 // }
-//
+isEmpty= function (obj) {
+    if (obj === "") return true;
+    if (obj === {}) return true;
+    if (obj === []) return true;
+    if (obj === null) return true;
+    if (obj === undefined) return true;
+    if (obj.constructor.name === "Array" || obj.constructor.name === "String") return obj.length === 0;
+    // for (let key in obj) {
+    //     if (obj.hasOwnProperty(key) && isEmpty(obj[key])) return true;
+    // }
+    return false;
+};
 // // 解密
 // function deSign(sign, key, iv) {
 //     let src = '';
@@ -56,13 +67,20 @@
 // let x =moment.tz(new Date(), "Asia/ShangHai").format(`YYYYMMDD`)
 // let a =Number(x.toString());
 // console.log(a-10)
-let cleanup = (obj) => {
+cleanupRequest= function (...obj) {
     let res = {};
-    Object.keys(obj).forEach((key) => {
-        res.key = obj[key]
-    });
+    for (let objElement of obj) {
+        if (!this.isEmpty(objElement)) {
+            Object.keys(objElement).forEach((key) => {
+                if (!this.isEmpty(objElement[key])) {
+                    res[key] = objElement[key];
+                }
+            });
+        }
+    }
     return res;
-}
+};
 
 let a = {status: 'activity', title: undefined};
-cleanup(a)
+
+console.log([`unit`, `page`].includes(`page`));
