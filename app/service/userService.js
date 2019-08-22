@@ -57,6 +57,10 @@ class UserService extends Service {
         return this.ctx.model.UserAccount.findOne(user);
     };
 
+    async getManyUser(conditions, option) {
+        return this.ctx.model.UserAccount.find(conditions, {}, option);
+    };
+
     async changeBcoin(_id, newBasin_unencrypted, balanceRecord) {
         await this.setUser(_id, {Bcoins: newBasin_unencrypted}, {balanceList: balanceRecord});
     };

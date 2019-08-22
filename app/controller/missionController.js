@@ -5,22 +5,11 @@ const Controller = require('./baseController');
 
 class missionController extends Controller {
     async createMission(ctx) {
-        const {missionType, title, requireAmount, reward, eventName} = ctx.request.body;
-        const validateResult = await ctx.validate('missionRule', {
-            missionType,
-            title,
-            requireAmount,
-            reward,
-            eventName
-        });
-        if (!validateResult) return;
-        let missionObj = this.ctx.helper.cleanupRequest([`unit`, `page`], {
-            missionType,
-            title,
-            requireAmount,
-            reward,
-            eventName
-        });
+        const {missionObj} = this.cleanupRequestProperty('missionRule',
+            `missionType`, `title`, `requireAmount`, `reward`, `eventName`);
+        if (!missionObj) {
+            return;
+        }
         let missionEntity = {
             missionType: missionObj.missionType,
             title: missionObj.title,

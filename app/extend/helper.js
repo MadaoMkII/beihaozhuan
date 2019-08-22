@@ -17,11 +17,11 @@ module.exports = {
         return str;
     },
     isEmpty: function (obj) {
+        if (obj === undefined) return true;
         if (obj === "") return true;
         if (obj === {}) return true;
         if (obj === []) return true;
         if (obj === null) return true;
-        if (obj === undefined) return true;
         if (obj.constructor.name === "Array" || obj.constructor.name === "String") return obj.length === 0;
         // for (let key in obj) {
         //     if (obj.hasOwnProperty(key) && isEmpty(obj[key])) return true;
@@ -40,19 +40,9 @@ module.exports = {
      * @param {Object} obj
      * true表示可用，false表示不可以
      **/
-    cleanupRequest: function (avoidPropertyArray, ...obj) {
-        let res = {};
-        for (let objElement of obj) {
-            if (!this.isEmpty(objElement)) {
-                Object.keys(objElement).forEach((key) => {
-                    if (!this.isEmpty(objElement[key]) && !avoidPropertyArray.includes(key)) {
-                        res[key] = objElement[key];
-                    }
-                });
-            }
-        }
-        return res;
-    },
+
+
+
     // encrypt: function (plain_text) {
     //     let cipher = crypto.createCipheriv('aes192', this.app.config.secretKey);
     //     let enc = cipher.update(plain_text, 'utf8', 'hex');
@@ -67,23 +57,23 @@ module.exports = {
     //     return dec
     //
     // },
-    operatorGenerator: function (unit, page, DESC = false) {
+    // operatorGenerator: function (unit, page, DESC = false) {
+    //
+    //     // let operator = {sort: {updated_at: -1}};
+    //     let operator = {};
+    //     if (DESC) {
+    //         operator.sort = {updated_at: -1};
+    //     }
+    //     if (unit && page) {
+    //         if (page < 1 || unit < 1) {
+    //             this.throw(400, `page or unit can not less than 1`);
+    //         }
+    //         operator.skip = (parseInt(page) - 1) * parseInt(unit);
+    //         operator.limit = parseInt(unit);
+    //     }
+    //     return operator;
+    // },
 
-        // let operator = {sort: {updated_at: -1}};
-        let operator = {};
-        if (DESC) {
-            operator.sort = {updated_at: -1};
-        }
-        if (unit && page) {
-            if (page < 1 || unit < 1) {
-                this.throw(400, `page or unit can not less than 1`);
-            }
-            operator.skip = (parseInt(page) - 1) * parseInt(unit);
-            operator.limit = parseInt(unit);
-        }
-        return operator;
-    }
-    ,
     errorCode: {
         200:
             '服务器成功返回请求的数据。',

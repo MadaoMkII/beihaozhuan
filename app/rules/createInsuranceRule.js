@@ -2,7 +2,7 @@
 
 const rule = {
     IDNumber: [
-        {required: false, message: '身份证号不能为空'},
+        {required: true, message: '身份证号不能为空'},
         {type: 'string', message: '身份证号需要是字符串'},
         { //, source, options
             validator: function (rule, value, callback) {
@@ -16,16 +16,16 @@ const rule = {
         },
     ],
     goodUUid: [
-        {required: false, message: 'goodUUid不能为空'},
+        {required: true, message: 'goodUUid不能为空'},
         {type: 'string', message: '需要是字符串'}],
     address: [
-        {required: false, message: 'address不能为空'},
+        {required: true, message: 'address不能为空'},
         {type: 'string', message: '需要是字符串'}],
     realName: [
-        {required: false, message: 'realName不能为空'},
+        {required: true, message: 'realName不能为空'},
         {type: 'string', message: '需要是字符串'}],
     detailAddress: [
-        {required: false, message: 'detailAddress不能为空'},
+        {required: true, message: 'detailAddress不能为空'},
         {type: 'string', message: '需要是字符串'}]
 };
 module.exports = rule;

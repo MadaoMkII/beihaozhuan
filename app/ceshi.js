@@ -11,7 +11,7 @@
 //     sign += cipher.final('hex');
 //     return sign;
 // }
-isEmpty= function (obj) {
+isEmpty = function (obj) {
     if (obj === "") return true;
     if (obj === {}) return true;
     if (obj === []) return true;
@@ -67,7 +67,7 @@ isEmpty= function (obj) {
 // let x =moment.tz(new Date(), "Asia/ShangHai").format(`YYYYMMDD`)
 // let a =Number(x.toString());
 // console.log(a-10)
-cleanupRequest= function (...obj) {
+cleanupRequest = function (...obj) {
     let res = {};
     for (let objElement of obj) {
         if (!this.isEmpty(objElement)) {
@@ -81,6 +81,18 @@ cleanupRequest= function (...obj) {
     return res;
 };
 
-let a = {status: 'activity', title: undefined};
+let a = {
+    goodUUid: 'GDcjzjkrd2r00012suf69m3ev41',
+    additionalInformation: { name: 'play' },
+    realName: 'JavaScript',
+    IDNumber: '120101198702051510',
+    address: 'download.html',
+    detailAddress: 'en'
+};
 
-console.log([`unit`, `page`].includes(`page`));
+function change(...a) {
+
+    return a;
+
+};
+console.log(null[`additionalInformationx`]);

@@ -25,10 +25,10 @@ class userAccount extends baseController {
     };
 
     async updateUserInfo(ctx) {
-        const {nickName, avatar, gender, birthday, location, job, educationLevel} = ctx.request.body;
-        const newUser = {nickName, avatar, gender, birthday, location, job, educationLevel};
-        const validateResult = await ctx.validate('updateUser', {gender});
-        if (!validateResult) {
+
+        const {newUser} = this.cleanupRequestProperty('updateUser',
+            `nickName`, `avatar`, `gender`, `birthday`, `location`, 'job', 'educationLevel');
+        if (!newUser) {
             return;
         }
         const file = ctx.request.files[0];
@@ -42,10 +42,21 @@ class userAccount extends baseController {
         this.success(newUser_result);
     };
 
-    // async getAll(ctx) {
-    //     const user = await ctx.service.userService.getAllUser();
-    //     this.success(user);
-    // };
+    async getManyUser() {
+        //s
+
+        //let result = await ctx.service.userService.getManyUser(condition, option);
+        const [condition, option] = await this.cleanupRequestProperty('findUsersRule',
+            `tel_number`, `hasPaid`, `nickName`, `activity`, `hasVerifyWechat`, 'unit', 'page');
+        if (condition !== false) {
+            this.deepCleanUp(condition, `userStatus`, `activity`, `hasPaid`, `hasVerifyWechat`);
+            console.log(condition)
+            // let condition = cleanupResult[0];
+            // let option = cleanupResult[1];
+            let result = await this.ctx.service.userService.getManyUser(condition, option);
+            this.success(result);
+        }
+    };
 
 }
 

@@ -48,6 +48,7 @@ module.exports = app => {
             delete ret.__v;
             delete ret._id;
             delete ret.id;
+            delete ret.customer_ID;
             delete ret.created_at;
             delete ret.updated_at;
             //delete ret.password;

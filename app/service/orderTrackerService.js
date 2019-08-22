@@ -5,13 +5,14 @@ class orderTrackerService extends Service {
 
     async findOrder(order, option) {
         let searcher = {};
-        if (order.title) {
-            searcher.title = {$regex: `.*${order.title}.*`}
+        if (order) {
+            if (order.title) {
+                searcher.title = {$regex: `.*${order.title}.*`}
+            }
+            if (order.orderUUid) {
+                searcher.orderUUid = order.orderUUid;
+            }
         }
-        if (order.orderUUid) {
-            searcher.orderUUid = order.orderUUid;
-        }
-        console.log(option)
         return this.ctx.model.OrderTracker.find(searcher, {}, option);
     };
 
@@ -37,7 +38,7 @@ class orderTrackerService extends Service {
         order.orderUUid = `ORD` + require('cuid')();
         let consumerTracker = new this.ctx.model.OrderTracker(order);
         consumerTracker.save();
-        return newUser;
+        return order;
     }
 }
 

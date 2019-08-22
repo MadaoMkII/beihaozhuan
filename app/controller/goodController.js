@@ -3,11 +3,16 @@ const baseController = require(`../controller/baseController`);
 
 class goodController extends baseController {
     async getManyGoods(ctx) {
-        let {unit, page, status, title} = ctx.request.body;
-        const validateResult = await ctx.validate('pageAndUnitRule', {unit, page, status, title});
-        if (!validateResult) return;
-        let condition = this.ctx.helper.cleanupRequest([`unit`, `page`], {unit, page, status, title});
-        const option = ctx.helper.operatorGenerator(page, unit);
+        // let {unit, page, status, title} = ctx.request.body;
+        // const validateResult = await ctx.validate('pageAndUnitRule', {unit, page, status, title});
+        // if (!validateResult) return;
+        // let condition = this.ctx.helper.cleanupRequest([`unit`, `page`], {unit, page, status, title});
+        // const option = ctx.helper.operatorGenerator(page, unit);
+        const {condition, option} = this.cleanupRequestProperty('pageAndUnitRule',
+            `unit`, `page`, `status`, `title`);
+        if (!condition) {
+            return;
+        }
         let result = await ctx.service.goodService.getManyGood(condition, option);
         this.success(result);
     };
@@ -26,15 +31,12 @@ class goodController extends baseController {
         let {title, category, price, description, inventory, insuranceLink} = ctx.request.body;
         price = Number(price);
         inventory = Number(inventory);
-        const validateResult = await ctx.validate('createGoodRule', {
-            title,
-            category,
-            price,
-            description,
-            inventory,
-            insuranceLink
-        });
-        if (!validateResult) return;
+
+        const {condition, option} = this.cleanupRequestProperty('createGoodRule',
+            `title`, `category`, `category`, `description`,`inventory`,`insuranceLink`,'price');
+        if (!condition) {
+            return;
+        }
 
         let newGood = {};
         newGood.slideShowPicUrlArray = [];
@@ -50,12 +52,12 @@ class goodController extends baseController {
             }
         }
         newGood.uuid = `GD` + require('cuid')();
-        newGood.category = category;
-        newGood.price = price;
-        newGood.title = title;
-        newGood.insuranceLink = insuranceLink;
-        newGood.description = description;
-        newGood.inventory = inventory;
+        newGood.category = condition.category;
+        newGood.price = Number(condition.price);
+        newGood.title = condition.title;
+        newGood.insuranceLink = condition.insuranceLink;
+        newGood.description = condition.description;
+        newGood.inventory = Number(condition.inventory);
         let result = await ctx.service.goodService.createGood(newGood);
         this.success(result);
     };
