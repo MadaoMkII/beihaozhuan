@@ -26,13 +26,9 @@ class goodController extends baseController {
         this.success();
     };
 
-    async creatGood(ctx) {
+    async createGood(ctx) {
 
-        let {title, category, price, description, inventory, insuranceLink} = ctx.request.body;
-        price = Number(price);
-        inventory = Number(inventory);
-
-        const {condition, option} = this.cleanupRequestProperty('createGoodRule',
+        const {condition} = this.cleanupRequestProperty('createGoodRule',
             `title`, `category`, `category`, `description`,`inventory`,`insuranceLink`,'price');
         if (!condition) {
             return;

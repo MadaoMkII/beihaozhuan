@@ -1,10 +1,10 @@
-
 module.exports = app => {
 
     const mongoose = app.mongoose;
     let missionProcessingTracker = new mongoose.Schema({
         userID: {type: mongoose.Schema.Types.ObjectId, ref: 'UserAccount'},
         missionID: {type: mongoose.Schema.Types.ObjectId, ref: 'Mission'},
+        userUUid: {type: String, required: true},
         missionEventName: {type: String, required: true},
         recentAmount: {type: Number, default: 0},
         effectDay: {type: String, default: app.getFormatDate()}

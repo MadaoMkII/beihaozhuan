@@ -13,6 +13,7 @@ class orderTrackerController extends baseController {
             }
             let orderTracker = {
                 customer_ID: ctx.user._id,
+                userUUid: ctx.user.uuid,
                 goodUUid: requestEntity.goodUUid,
                 additionalInformation: requestEntity.additionalInformation,
                 realName: requestEntity.realName,
@@ -28,7 +29,19 @@ class orderTrackerController extends baseController {
 
     };
 
-    async findOrder(ctx) {
+    async findOrderOfUser() {
+
+        const cleanupResult = await this.cleanupRequestProperty('findOrderOfUser', `unit`, `page`, `userUUid`);
+        if (cleanupResult !== false) {
+            let condition = cleanupResult[0];
+            let option = cleanupResult[1];
+            let result = await this.ctx.service.orderTrackerService.findOrder(condition, option);
+            this.success(result);
+        }
+    };
+
+
+    async findOrder() {
         // let {unit, page, orderUUid, title} = ctx.request.body;
         // const validateResult = await ctx.validate('pageAndUnitRule', {unit, page});
         // if (!validateResult) return;

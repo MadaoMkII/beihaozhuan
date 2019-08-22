@@ -12,6 +12,9 @@ class orderTrackerService extends Service {
             if (order.orderUUid) {
                 searcher.orderUUid = order.orderUUid;
             }
+            if (order.orderUUid) {
+                searcher.orderUUid = order.orderUUid;
+            }
         }
         return this.ctx.model.OrderTracker.find(searcher, {}, option);
     };
@@ -30,7 +33,7 @@ class orderTrackerService extends Service {
             amount: good.price,
             createTime: new Date()
         };
-        let newUser = await this.ctx.service.userService.changeBcoin(this.ctx.user._id,
+        await this.ctx.service.userService.changeBcoin(this.ctx.user._id,
             this.ctx.user.Bcoins - good.price, balanceRecord);
         order.goodCategory = good.category;
         order.goodPrice = good.price;
