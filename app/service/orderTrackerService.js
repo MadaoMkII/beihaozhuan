@@ -11,8 +11,7 @@ class orderTrackerService extends Service {
         if (order.orderUUid) {
             searcher.orderUUid = order.orderUUid;
         }
-        console.log(searcher)
-
+        console.log(option)
         return this.ctx.model.OrderTracker.find(searcher, {}, option);
     };
 

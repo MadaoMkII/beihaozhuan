@@ -3,13 +3,6 @@
 const {Controller} = require('egg');
 
 class BaseController extends Controller {
-    pageModel = (page, unit) => {
-        // let operator = {sort: {updated_at: -1}};
-        let operator = {};
-        operator.skip = (page - 1) * parseInt(unit);
-        operator.limit = parseInt(unit);
-        return operator;
-    };
 
     success(data, msg = "OK", state = 200) {
         const {ctx} = this;

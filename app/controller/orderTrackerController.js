@@ -7,7 +7,7 @@ class orderTrackerController extends baseController {
 
             let {
                 goodUUid, additionalInformation,
-                realName, IDNumber, address, detailAddress
+                realName, IDNumber, address, detailAddress, page, unit
             } = ctx.request.body;
 
             const validateResult = await ctx.validate('createInsuranceRule', {
@@ -19,7 +19,7 @@ class orderTrackerController extends baseController {
                 goodUUid, additionalInformation,
                 realName, IDNumber, address, detailAddress
             });
-
+            const option = ctx.helper.operatorGenerator(page, unit);
             let orderTracker = {
                 customer_ID: ctx.user._id,
                 goodUUid: orderObj.goodUUid,
@@ -29,7 +29,7 @@ class orderTrackerController extends baseController {
                 address: orderObj.address,
                 detailAddress: orderObj.detailAddress,
             };
-            let result = await ctx.service.orderTrackerService.makeOrder(orderTracker);
+            let result = await ctx.service.orderTrackerService.makeOrder(orderTracker, option);
             this.success(result);
         } catch (e) {
             this.failure(e.message, 400);
@@ -42,7 +42,7 @@ class orderTrackerController extends baseController {
         const validateResult = await ctx.validate('pageAndUnitRule', {unit, page});
         if (!validateResult) return;
         let objAfterClean = this.ctx.helper.cleanupRequest([`unit`, `page`], {unit, page, orderUUid, title});
-        let option = {unit, page};
+        const option = ctx.helper.operatorGenerator(unit, page);
         let result = await this.ctx.service.orderTrackerService.findOrder(objAfterClean, option);
         this.success(result);
     }

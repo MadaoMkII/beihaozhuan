@@ -7,8 +7,7 @@ class goodController extends baseController {
         const validateResult = await ctx.validate('pageAndUnitRule', {unit, page, status, title});
         if (!validateResult) return;
         let condition = this.ctx.helper.cleanupRequest([`unit`, `page`], {unit, page, status, title});
-        const option = this.pageModel(page, unit);
-
+        const option = ctx.helper.operatorGenerator(page, unit);
         let result = await ctx.service.goodService.getManyGood(condition, option);
         this.success(result);
     };
