@@ -9,7 +9,11 @@ module.exports = app => {
         imgUrl: String,
         reward: {required: true, type: Number, default: 0},
         UUid: String,
-        eventName: {required: true, type: String, default: `defaultEvent`}
+        eventName: {required: true, type: String, default: `defaultEvent`},
+        status: {
+            type: String,
+            enum: [`activity`, `disable`], default: "Pending"
+        }
     }, {
         'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}
     });

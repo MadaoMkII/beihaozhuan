@@ -29,12 +29,10 @@ class orderTrackerController extends baseController {
 
     };
 
-    async findOrderOfUser() {
+    async findOrderByUser() {
 
-        const cleanupResult = await this.cleanupRequestProperty('findOrderOfUser', `unit`, `page`, `userUUid`);
-        if (cleanupResult !== false) {
-            let condition = cleanupResult[0];
-            let option = cleanupResult[1];
+        const [condition, option] = await this.cleanupRequestProperty('findOrderOfUser', `unit`, `page`, `userUUid`);
+        if (condition !== false) {
             let result = await this.ctx.service.orderTrackerService.findOrder(condition, option);
             this.success(result);
         }

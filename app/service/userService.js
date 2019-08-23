@@ -61,9 +61,29 @@ class UserService extends Service {
         return this.ctx.model.UserAccount.find(conditions, {}, option);
     };
 
+    async getUserBalanceListRule(conditions, option) {
+        let searcher = {};
+        searcher.uuid = conditions.userUUid;
+        let userObj = {
+            "avatar": false,
+            "gender": false,
+            "birthday": false,
+            "dailyMissionTrackers": false,
+            "uuid": false,
+            "role": false,
+            "last_login_time": false,
+            "loginTimes": false
+        };
+
+        userObj.balanceList = {$slice: [option.skip, option.limit]};
+        return this.ctx.model.UserAccount.findOne(searcher, userObj);
+
+    };
+
     async changeBcoin(_id, newBasin_unencrypted, balanceRecord) {
         await this.setUser(_id, {Bcoins: newBasin_unencrypted}, {balanceList: balanceRecord});
     };
+
 
 //{$set: {Bcoins: newBasin_unencrypted}, $push: {missionTrackers: missionEvent}}, {new: true});
 //     async changeUserMoney(_id, newBasin_unencrypted, missionEvent) {
@@ -79,4 +99,5 @@ class UserService extends Service {
     }
 }
 
-module.exports = UserService;
+module
+    .exports = UserService;

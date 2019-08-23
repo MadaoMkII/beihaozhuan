@@ -80,7 +80,7 @@ cleanupRequest = function (...obj) {
     }
     return res;
 };
-
+//https://lanhuapp.com/web/#/item/project/board/detail?pid=f2b834b5-c7f5-4347-8008-e968b8b808aa&project_id=f2b834b5-c7f5-4347-8008-e968b8b808aa&image_id=9343bd85-8cc7-4005-9ebe-d0ce249005ca
 let a = {
     goodUUid: 'GDcjzjkrd2r00012suf69m3ev41',
     additionalInformation: { name: 'play' },

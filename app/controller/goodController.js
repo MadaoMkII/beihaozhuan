@@ -8,7 +8,7 @@ class goodController extends baseController {
         // if (!validateResult) return;
         // let condition = this.ctx.helper.cleanupRequest([`unit`, `page`], {unit, page, status, title});
         // const option = ctx.helper.operatorGenerator(page, unit);
-        const {condition, option} = this.cleanupRequestProperty('pageAndUnitRule',
+        const [condition, option] = this.cleanupRequestProperty('pageAndUnitRule',
             `unit`, `page`, `status`, `title`);
         if (!condition) {
             return;
@@ -28,8 +28,8 @@ class goodController extends baseController {
 
     async createGood(ctx) {
 
-        const {condition} = this.cleanupRequestProperty('createGoodRule',
-            `title`, `category`, `category`, `description`,`inventory`,`insuranceLink`,'price');
+        const [condition] = this.cleanupRequestProperty('createGoodRule',
+            `title`, `category`, `category`, `description`, `inventory`, `insuranceLink`, 'price');
         if (!condition) {
             return;
         }

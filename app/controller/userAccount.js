@@ -4,9 +4,16 @@ const baseController = require(`../controller/baseController`);
 class userAccount extends baseController {
 
     async getUserInfo(ctx) {
-        const eventEmitter = await this.ctx.service.missionEventManager.getEventEmitter();
         let newUser = await ctx.service.userService.initialLoginUser(ctx.user);
         this.success(newUser);
+    };
+
+    async getUserBalanceList(ctx) {
+        const [condition, option] = await this.cleanupRequestProperty('userAccountController.getUserBalanceListRule', `unit`, `page`, `userUUid`);
+        if (condition !== false) {
+            let result = await this.ctx.service.userService.getUserBalanceListRule(condition, option);
+            this.success(result);
+        }
     };
 
     async updateUserPassword(ctx) {

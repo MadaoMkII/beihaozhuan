@@ -25,6 +25,27 @@ class missionController extends Controller {
         let mission = await ctx.service.missionService.createMission(missionEntity);
         return this.success(mission)
     }
+
+    async updateMission(ctx) {
+        const [condition] = await this.cleanupRequestProperty('missionRules.updateMissionRule',
+            `requireAmount`, `reward`, `title`, `missionType`);
+        if (condition !== false) {
+            if (ctx.request.files) {
+                const file = ctx.request.files[0];
+                condition.avatar = await ctx.service.picService.putImgs(file);
+            }
+            let result = await ctx.service.missionService.updateMission(condition);
+            this.success(result);
+        }
+    }
+
+    async getMissions(ctx) {
+        const [condition, option] = await this.cleanupRequestProperty('missionRules.getMissionRule', `unit`, `page`, `title`);
+        if (condition !== false) {
+            let result = await ctx.service.missionService.getMission(condition, option);
+            this.success(result);
+        }
+    }
 }
 
 module.exports = missionController;

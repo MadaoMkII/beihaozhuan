@@ -91,6 +91,7 @@ class BaseController extends Controller {
             });
         }
         const condition = await this.cleanupRequest([`unit`, `page`], requestEntity);
+
         return new Promise((resolve) => {
                 resolve([condition, option]);
             }

@@ -3,19 +3,15 @@ const {Service} = require('egg');
 
 class orderTrackerService extends Service {
 
-    async findOrder(order, option) {
+    async findOrder(conditions, option) {
         let searcher = {};
-        if (order) {
-            if (order.title) {
-                searcher.title = {$regex: `.*${order.title}.*`}
+        Object.keys(conditions).forEach((key) => {
+            if (key === `title`) {
+                searcher.title = {$regex: `.*${conditions.title}.*`}
+            } else {
+                searcher[key] = conditions[key];
             }
-            if (order.orderUUid) {
-                searcher.orderUUid = order.orderUUid;
-            }
-            if (order.orderUUid) {
-                searcher.orderUUid = order.orderUUid;
-            }
-        }
+        });
         return this.ctx.model.OrderTracker.find(searcher, {}, option);
     };
 
