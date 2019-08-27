@@ -45,7 +45,8 @@ class orderTrackerController extends baseController {
         // if (!validateResult) return;
         // let objAfterClean = this.ctx.helper.cleanupRequest([`unit`, `page`], {unit, page, orderUUid, title});
         // const option = ctx.helper.operatorGenerator(unit, page);
-        const cleanupResult = await this.cleanupRequestProperty('pageAndUnitRule', `unit`, `page`, `status`, `title`);
+        const cleanupResult = await this.cleanupRequestProperty('pageAndUnitRule',
+            `unit`, `page`, `orderUUid`, `title`);
         if (cleanupResult !== false) {
             let condition = cleanupResult[0];
             let option = cleanupResult[1];
