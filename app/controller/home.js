@@ -16,39 +16,7 @@ class HomeController extends Controller {
     };
 
     async main() {
-
-        let x = this.app.encrypt(String(1234));
-
-
-        let aa= this.app.decrypt(x);
-
-
-
-
-        this.ctx.body = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>LoginPage</title>
-</head>
-<body>
-    <form action="/verify/verifyCaptTxt" method="post">
-        <input type="hidden" name="_csrf" value="${this.ctx.csrf}">
-        <label for="captchaTxt">
-            verifyCode:
-            <input type="text" value="" id="captchaTxt" name="captchaTxt">
-        </label>
-        <!--<label for="password">-->
-            <!--Password:-->
-            <!--<input type="text" value="pass1" id="password" name="password">-->
-        <!--</label>-->
-        <input type="submit" value="Submit">
-        <img src="http://127.0.0.1:7001/verify/getImg">
-    </form>
-</body>
-</html>`;
+        await this.ctx.render('index.ejs', null)
     };
 
 
@@ -58,15 +26,6 @@ class HomeController extends Controller {
         ctx.body = result;
     }
 
-    async updateUser() {
-        await this.service.user.updateUser();
-        this.ctx.body = 'hi, egg3';
-    }
-
-    async deleteUser() {
-        await this.service.user.deleteUser();
-        this.ctx.body = 'hi, egg3';
-    };
 
     // async getUserInfo() {
     //     console.log(this.ctx.isAuthenticated())

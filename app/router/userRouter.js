@@ -5,7 +5,7 @@ module.exports = app => {
     router.post('/user/register', controller[`authController`].register);
     router.post('/user/login', controller[`authController`].login);
     router.get('/user/logout', controller[`authController`].logout);
-    router.get('/index', controller[`home`].index);
+    //router.get('/index', controller[`home`].index);
     router.get('/checkHealth', (ctx) => {
 
         ctx.response.body = {
