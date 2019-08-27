@@ -5,5 +5,5 @@ console.log(`服务器启动！`);
 egg.startCluster({
     workers,
     baseDir: __dirname,
-    port: process.env.PORT || 3000
+    // port: process.env.PORT || 3000
 });

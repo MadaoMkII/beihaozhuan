@@ -35,7 +35,11 @@ module.exports = appInfo => {
             enable: false
         },
     };
-
+    config.cluster = {
+        listen: {
+            port: 3000,
+        }
+    };
     config.domainWhiteList = ['http://localhost:4200'];
     // add your user config here
     const userConfig = {
