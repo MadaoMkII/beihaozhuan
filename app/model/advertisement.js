@@ -1,12 +1,13 @@
 module.exports = app => {
     const mongoose = app.mongoose;
-
-    let advertising = new mongoose.Schema({
+    let advertisement = new mongoose.Schema({
         title: {type: String, required: true},
+        category: {type: String, required: true},
         channel: {type: String, required: true},
         reward: {type: String, required: true, default: 0},
         activity: {type: Boolean, default: false},
         advData: {type: mongoose.Schema.Types.Mixed},
+        positionName: {type: String},
         uuid: {
             required: true,
             type: String,
@@ -19,24 +20,6 @@ module.exports = app => {
         }
     });
 
-    let advertisingPosition = new mongoose.Schema({
-        uuid: {
-            required: true,
-            type: String,
-            unique: true
-        },
-        title: {type: String, required: true},
-        location: {type: String, required: true, default: '未分类', unique: true},
-        length: {type: Number, required: true, default: 0},
-        weight: {type: Number, required: true, default: 0},
-        activity: {type: Boolean, default: false},
-        advertisingData: {advertising}
-    }, {
-        'timestamps': {
-            'createdAt': 'created_at', 'updatedAt': 'updated_at', toObject: {virtuals: true},
-            toJSON: {virtuals: true}
-        }
-    });
 
     // goodSchema.set('toObject', {
     //     virtuals: true,
@@ -56,7 +39,7 @@ module.exports = app => {
     //         // }
     //     }
     // });
-    advertisingPosition.set('toJSON', {
+    advertisement.set('toJSON', {
         virtuals: true,
         transform: (doc, ret) => {
             delete ret.__v;
@@ -77,5 +60,5 @@ module.exports = app => {
         }
     });
 
-    return mongoose.model('AdvertisingPosition', advertisingPosition, 'AdvertisingPosition');
+    return mongoose.model('Advertisement', advertisement, 'Advertisement');
 };

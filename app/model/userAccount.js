@@ -7,7 +7,8 @@ module.exports = app => {
         category: {type: String, required: true},
         income: {type: Boolean, required: true, default: true},
         amount: {type: Number, default: 0},
-        createTime: Date
+        createTime: Date,
+        status: {type: String, enum: [`success`, `failed`, `pending`], default: `pending`}
     }, {});
 
     balanceRecord.set('toJSON', {
@@ -30,6 +31,7 @@ module.exports = app => {
             type: String,
             unique: true
         },
+        withdrawRecord: [{type: mongoose.Schema.Types.Mixed}],
         password: {
             required: true,
             type: String

@@ -20,6 +20,14 @@ class goodService extends Service {
 
         return this.ctx.model.Good.find(conditions, {}, option);
     }
+
+    async getBannerGood() {
+        return this.ctx.model.Good.findOne({}, {inventory: false});
+    }
+
+    async getRecommendGoods() {
+        return this.ctx.model.Good.find({}, {inventory: false}, {limit: 4});
+    }
 }
 
 

@@ -8,8 +8,7 @@ module.exports = app => {
         },
         title: {type: String, required: true},
         category: {type: String, required: true, default: '未分类'},
-
-        featuredFirst: {type: String, required: true, default: "mainPage"},
+        // featuredFirst: {type: String, required: true, default: "mainPage"},
         slideShowPicUrlArray: {
             type: Array,
             default: [`https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/001.jpg`,
@@ -26,7 +25,10 @@ module.exports = app => {
             min: [0, 'Must bigger than 0 '],
             max: 1000
         },
-        mainlyShowPicUrl: String,
+        mainlyShowPicUrl: {
+            type: String,
+            default: `https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/UI/QQ%E6%88%AA%E5%9B%BE20190827233433.png`
+        },
         status: {
             type: String,
             enum: ['activity', 'disable'], default: "disable"

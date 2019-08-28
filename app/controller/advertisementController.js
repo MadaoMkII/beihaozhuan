@@ -31,6 +31,17 @@ class advertisementController extends Controller {
         this.success(re);
     }
 
+    async createAdvertisement(ctx) {
+
+        const [advertisement] = await this.cleanupRequestProperty('advertisementRules.createAdvertisementRule',
+            `title`, `channel`, `reward`, `positionName`, `category`);
+        if (!advertisement) {
+            return;
+        }
+        console.log(advertisement)
+        let result = await ctx.service.advertisementService.createAdvertisement(advertisement);
+        this.success(result);
+    }
 }
 
 module.exports = advertisementController;

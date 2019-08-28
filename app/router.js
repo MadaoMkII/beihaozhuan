@@ -9,6 +9,7 @@ module.exports = app => {
     // router.get('/login', controller.home.login);
     // router.post('/getSession', controller[`captchaController`].verifyCaptchaText);
     require('./router/goodRouter')(app);
+    require('./router/settingRouter')(app);
     require('./router/emailRouter')(app);
     require('./router/imgRouter')(app);
     require('./router/userRouter')(app);
