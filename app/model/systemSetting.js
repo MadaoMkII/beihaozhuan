@@ -4,13 +4,14 @@ module.exports = app => {
     // mongoose.set('useFindAndModify', false);
 
     let systemSetting = new mongoose.Schema({
-        uuid: {
-            required: true,
-            type: String,
-            unique: true
-        },
+        // uuid: {
+        //     required: true,
+        //     type: String,
+        //     unique: true
+        // },
         goodSetting: {
             recommendGoods_ID: [{type: mongoose.Schema.Types.ObjectId, ref: 'Good'}],
+            bannerGood: {type: mongoose.Schema.Types.ObjectId, ref: 'Good'}
         },
         advPosition: [{
             location: {type: String, required: true, default: '未分类', unique: true},

@@ -1,12 +1,11 @@
-module.exports = app => {
-
+exports.getModel =  function (app) {
     const mongoose = app.mongoose;
     let missionProcessingTracker = new mongoose.Schema({
         userID: {type: mongoose.Schema.Types.ObjectId, ref: 'UserAccount'},
         missionID: {type: mongoose.Schema.Types.ObjectId, ref: 'Mission'},
         missionEventName: {type: String, required: true},
         recentAmount: {type: Number, default: 0},
-        effectDay: {type: String, default: app.getFormatDate()}
+        //effectDay: {type: String, default: app.getFormatDate()}
     }, {
         'timestamps': {
             'createdAt': 'created_at', 'updatedAt': 'updated_at'
@@ -34,5 +33,5 @@ module.exports = app => {
             // }
         }
     });
-    return mongoose.model('MissionProcessingTracker', missionProcessingTracker, 'MissionProcessingTracker');
+    return missionProcessingTracker;
 };
