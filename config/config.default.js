@@ -32,8 +32,14 @@ module.exports = appInfo => {
     config.security = {
         csrf: {
             //useSession: true, // 默认为 false，当设置为 true 时，将会把 csrf token 保存到 Session 中
-            enable: false
+            enable: false,
+            ignoreJSON: true
         },
+        domainWhiteList: [ 'http://localhost:8080' ]
+    };
+    config.cors = {
+        origin:'*',
+        allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH'
     };
     config.cluster = {
         listen: {
