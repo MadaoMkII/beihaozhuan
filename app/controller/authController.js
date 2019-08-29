@@ -9,7 +9,7 @@ class authController extends Controller {
         let server = ctx.protocol + '://' + ctx.host;
         let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
         let {password, tel_number, smsVerifyCode, rememberMe} = ctx.request.body;
-
+        let userResult, verifyFlag;
         // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
         //     String(smsVerifyCode).toLowerCase())) {
         //     ctx.throw(400, `smsVerifyCode verify failed`);
@@ -17,14 +17,26 @@ class authController extends Controller {
         if (ctx.user) {
             ctx.logout();
         }
+        if (!this.ctx.helper.isEmpty(smsVerifyCode)) {
+            if (ctx.session.smsVerifyCode === smsVerifyCode) {
+                verifyFlag = true;
+                ctx.session.smsVerifyCode = undefined;
+                userResult = await ctx.service.userService.getUser({
+                    tel_number: tel_number
+                });
+            } else {
+                this.failure(`smsVerifyCode 验证失败`, 400);
+                return;
+            }
+        } else if (!this.ctx.helper.isEmpty(password)) {
+            userResult = await ctx.service.userService.getUser({
+                tel_number: tel_number,
+                password: ctx.helper.passwordEncrypt(password)
+            });
+        }
 
-        let encryptedPassword = ctx.helper.passwordEncrypt(password);
-        let userResult = await ctx.service.userService.getUser({
-            tel_number: tel_number,
-            password: encryptedPassword
-        });
 
-        if (userResult) {
+        if (userResult || verifyFlag) {
             await ctx.service.userService.updateUser_login(userResult.uuid);
 
             if (rememberMe) {
