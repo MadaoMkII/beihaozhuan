@@ -35,7 +35,9 @@ class authController extends Controller {
             });
         }
 
-
+        if (ctx.helper.isEmpty(userResult)) {
+            this.failure(`该用户未注册`, 400);
+        }
         if (userResult || verifyFlag) {
             await ctx.service.userService.updateUser_login(userResult.uuid);
 
@@ -75,7 +77,7 @@ class authController extends Controller {
             }
             if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
                 String(requestEntity.smsVerifyCode).toLowerCase())) {
-                ctx.throw(400, `VerifyCode verify failed, Need: `+ctx.session.smsVerifyCode );
+                ctx.throw(400, `VerifyCode verify failed`);
             }
             if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
                 String(requestEntity.tel_number).toLowerCase())) {
