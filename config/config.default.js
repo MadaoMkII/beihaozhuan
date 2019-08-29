@@ -40,7 +40,7 @@ module.exports = appInfo => {
             port: 3000,
         }
     };
-    config.domainWhiteList = ['http://localhost:4200'];
+    config.domainWhiteList = ['http://localhost:4200', 'http://localhost:8080'];
     // add your user config here
     const userConfig = {
         // myAppName: 'egg',

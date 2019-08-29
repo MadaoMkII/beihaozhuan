@@ -1,7 +1,7 @@
 let missionProcessingTracker = require(`./baseMissionProcessing`);
-module.exports =  app => {
+module.exports = app => {
     const mongoose = app.mongoose;
-    let weeklyMissionProcessingTracker =  missionProcessingTracker.getModel(app);
+    let weeklyMissionProcessingTracker = missionProcessingTracker.getModel(app);
     // let weeklyMissionProcessingTracker = new mongoose.Schema({
     //     title: {type: String},
     // }, {
@@ -10,5 +10,6 @@ module.exports =  app => {
     //         toJSON: {virtuals: true}
     //     }
     // });
-    return mongoose.model('WeeklyMissionProcessingTracker', weeklyMissionProcessingTracker, 'WeeklyMissionProcessingTracker');
+    return mongoose.model('WeeklyMissionProcessingTracker',
+        weeklyMissionProcessingTracker, 'WeeklyMissionProcessingTracker');
 };

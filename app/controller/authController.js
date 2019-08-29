@@ -94,7 +94,7 @@ class authController extends Controller {
                 Bcoins: 1000
             };
             await ctx.service.userService.addUser(newUser);
-
+            delete newUser.password;
             this.success(newUser);
         } catch (e) {
             if (e.message.toString().includes(`E11000`)) {
