@@ -35,11 +35,12 @@ module.exports = appInfo => {
             enable: false,
             ignoreJSON: true
         },
-        domainWhiteList: [ 'http://localhost:8080' ]
+        domainWhiteList: ['http://localhost:8080']
     };
     config.cors = {
-        origin:'*',
-        allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH'
+        origin: 'http://localhost:8080',
+        allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+        credentials: true
     };
     config.cluster = {
         listen: {
