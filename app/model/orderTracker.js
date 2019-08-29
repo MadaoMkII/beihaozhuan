@@ -1,5 +1,6 @@
 module.exports = app => {
     const mongoose = app.mongoose;
+    const connection = app.mongooseDB.get('orderGoodConnection');
     let orderTracker = new mongoose.Schema({
         customer_ID: {type: mongoose.Schema.Types.ObjectId, required: true},
         goodUUid: {type: String, required: true},
@@ -65,5 +66,5 @@ module.exports = app => {
         }
     });
 
-    return mongoose.model('OrderTracker', orderTracker, 'OrderTracker');
+    return connection.model('OrderTracker', orderTracker, 'OrderTracker');
 };

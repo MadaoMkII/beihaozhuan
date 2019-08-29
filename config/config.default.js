@@ -12,17 +12,58 @@ module.exports = appInfo => {
      **/
     const config = exports = {};
     config.mongoose = {
-        client: {
-            url: '\t\n' +
-                'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
-            options: {
-                poolSize: 6,
-                keepAlive: true,
-                dbName: `beihaozhuan`,
-                useCreateIndex: true,
-                useFindAndModify: false,
+        clients: {
+            userConnection: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_userConnection`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                },
             },
-        },
+            orderGoodConnection: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_orderGood`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                },
+            },
+            missionConnection: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_mission`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                }
+            },
+            loggerConnection: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_logger`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                }
+            },
+            commonConnection: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_common`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                }
+            }
+        }
     };
     // use for cookie sign key, should change to your own and keep security
     config.keys = appInfo.name + '_1562732382211_2587';
@@ -149,5 +190,6 @@ module.exports = appInfo => {
         ...config,
         ...userConfig,
     };
-};
+}
+;
 

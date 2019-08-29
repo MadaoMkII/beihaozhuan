@@ -2,7 +2,7 @@ module.exports = app => {
     const mongoose = app.mongoose;
     // mongoose.set('useCreateIndex', true);
     // mongoose.set('useFindAndModify', false);
-
+    const connection = app.mongooseDB.get('userConnection');
     let balanceRecord = new mongoose.Schema({
         category: {type: String, required: true},
         income: {type: Boolean, required: true, default: true},
@@ -110,5 +110,5 @@ module.exports = app => {
         }
     });
 
-    return mongoose.model('UserAccount', userAccountSchema, 'userAccount');
+    return connection.model('UserAccount', userAccountSchema, 'userAccount');
 };

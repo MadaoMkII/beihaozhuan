@@ -1,5 +1,6 @@
 module.exports = app => {
     const mongoose = app.mongoose;
+    const connection = app.mongooseDB.get('commonConnection');
     let advertisement = new mongoose.Schema({
         title: {type: String, required: true},
         category: {type: String, required: true},
@@ -60,5 +61,5 @@ module.exports = app => {
         }
     });
 
-    return mongoose.model('Advertisement', advertisement, 'Advertisement');
+    return connection.model('Advertisement', advertisement, 'Advertisement');
 };

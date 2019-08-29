@@ -2,6 +2,7 @@ module.exports = app => {
     const mongoose = app.mongoose;
     // mongoose.set('useCreateIndex', true);
     // mongoose.set('useFindAndModify', false);
+    const connection = app.mongooseDB.get('missionConnection');
     const mission = new mongoose.Schema({
         missionType: String,
         title: String,
@@ -35,5 +36,5 @@ module.exports = app => {
             // }
         }
     });
-    return mongoose.model('Mission', mission, 'Mission');
+    return connection.model('Mission', mission, 'Mission');
 };

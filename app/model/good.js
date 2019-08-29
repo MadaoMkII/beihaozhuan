@@ -1,5 +1,6 @@
 module.exports = app => {
     const mongoose = app.mongoose;
+    const connection = app.mongooseDB.get('commonConnection');
     let goodSchema = new mongoose.Schema({
         uuid: {
             required: true,
@@ -85,5 +86,5 @@ module.exports = app => {
         }
     });
 
-    return mongoose.model('Good', goodSchema, 'Good');
+    return connection.model('Good', goodSchema, 'Good');
 };

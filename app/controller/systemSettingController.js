@@ -1,5 +1,4 @@
 'use strict';
-
 const Controller = require('./baseController');
 
 class systemSettingController extends Controller {
