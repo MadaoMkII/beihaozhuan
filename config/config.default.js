@@ -74,7 +74,7 @@ module.exports = appInfo => {
         csrf: {
             //useSession: true, // 默认为 false，当设置为 true 时，将会把 csrf token 保存到 Session 中
             enable: false,
-            ignoreJSON: true
+            ignoreJSON: false
         },
         domainWhiteList: ['http://localhost:8080']
     };

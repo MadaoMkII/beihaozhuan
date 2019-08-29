@@ -2,7 +2,7 @@ module.exports = app => {
     const mongoose = app.mongoose;
     // mongoose.set('useCreateIndex', true);
     // mongoose.set('useFindAndModify', false);
-    const connection = app.mongooseDB.get('orderGoodConnection');
+    const connection = app.mongooseDB.get('commonConnection');
     let systemSetting = new mongoose.Schema({
         // uuid: {
         //     required: true,

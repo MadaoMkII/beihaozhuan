@@ -6,6 +6,7 @@ module.exports = app => {
     router.post('/mission/updateMission', controller[`missionController`].updateMission);
 
 
-    router.get('/mission/getUserMissionProcessing', controller[`missionProcessingTrackerController`].getUserMissionProcessing);
+    router.get('/mission/getUserMissionProcessing', app.middleware.authenticatedMiddleware(`User`),
+        controller[`missionProcessingTrackerController`].getUserMissionProcessing);
 
 };

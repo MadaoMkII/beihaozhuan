@@ -27,35 +27,39 @@ class goodController extends baseController {
     };
 
     async createGood(ctx) {
+        try {
+            const [condition] = await this.cleanupRequestProperty('createGoodRule',
+                `title`, `category`, `description`, `inventory`, `insuranceLink`, 'price');
+            if (!condition) {
+                return;
+            }
 
-        const [condition] = await this.cleanupRequestProperty('createGoodRule',
-            `title`, `category`, `description`, `inventory`, `insuranceLink`, 'price');
-        if (!condition) {
-            return;
-        }
-
-        let newGood = {};
-        newGood.slideShowPicUrlArray = [];
-        const files = ctx.request.files;
-        if (!ctx.helper.isEmpty(files)) {
-            for (let fileObj of files) {
-                let ossUrl = await ctx.service.picService.putImgs(fileObj);
-                if (fileObj.field === `mainlyShowPicUrl`) {
-                    newGood.mainlyShowPicUrl = ossUrl;
-                } else {
-                    newGood.slideShowPicUrlArray.push(ossUrl);
+            let newGood = {};
+            newGood.slideShowPicUrlArray = [];
+            const files = ctx.request.files;
+            if (!ctx.helper.isEmpty(files)) {
+                for (let fileObj of files) {
+                    let ossUrl = await ctx.service.picService.putImgs(fileObj);
+                    if (fileObj.field === `mainlyShowPicUrl`) {
+                        newGood.mainlyShowPicUrl = ossUrl;
+                    } else {
+                        newGood.slideShowPicUrlArray.push(ossUrl);
+                    }
                 }
             }
+            newGood.uuid = `GD` + require('cuid')();
+            newGood.category = condition.category;
+            newGood.price = Number(condition.price);
+            newGood.title = condition.title;
+            newGood.insuranceLink = condition.insuranceLink;
+            newGood.description = condition.description;
+            newGood.inventory = Number(condition.inventory);
+            let result = await ctx.service.goodService.createGood(newGood);
+            this.success(result);
+        } catch (e) {
+            this.failure(e, 503)
         }
-        newGood.uuid = `GD` + require('cuid')();
-        newGood.category = condition.category;
-        newGood.price = Number(condition.price);
-        newGood.title = condition.title;
-        newGood.insuranceLink = condition.insuranceLink;
-        newGood.description = condition.description;
-        newGood.inventory = Number(condition.inventory);
-        let result = await ctx.service.goodService.createGood(newGood);
-        this.success(result);
+
     };
 }
 

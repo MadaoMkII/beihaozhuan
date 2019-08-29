@@ -5,7 +5,7 @@ const Controller = require('./baseController');
 
 class missionController extends Controller {
     async createMission(ctx) {
-        const {missionObj} = this.cleanupRequestProperty('missionRule',
+        const [missionObj] = await this.cleanupRequestProperty('missionRule',
             `missionType`, `title`, `requireAmount`, `reward`, `eventName`);
         if (!missionObj) {
             return;
