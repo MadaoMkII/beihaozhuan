@@ -15,11 +15,11 @@ const rule = {
     ],
     price: [
         {required: true, message: 'price不能为空'},
-        {type: 'number', message: '必须大于0'}
+        {type: 'string', message: '必须大于0'}
     ],
     inventory: [
         {required: true, message: 'inventory不能为空'},
-        {type: 'number', message: '必须大于0'}
+        {type: 'string', message: '必须大于0'}
     ]
 };
 
