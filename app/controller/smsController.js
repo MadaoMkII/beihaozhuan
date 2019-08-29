@@ -10,6 +10,20 @@ class smsController extends baseController {
 
     };
 
+    async sendLoginVerifySmsMessage() {
+        let resultUser =await this.ctx.service.userService.getUser({tel_number: this.ctx.request.body.tel_number});
+
+        if (this.ctx.helper.isEmpty(resultUser)) {
+            this.failure(`该手机号未注册`, 400);
+            return;
+        }
+        const {tel_number} = this.ctx.request.body;
+        const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
+        this.ctx.session.smsLoginVerifyCode = text;
+        await this.sendSmsMessage(tel_number, text);
+
+    };
+
     async sendfindPasswordBackSmsMessage(ctx) {
         const {tel_number} = ctx.request.body;
         const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);

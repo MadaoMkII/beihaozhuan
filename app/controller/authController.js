@@ -8,7 +8,12 @@ class authController extends Controller {
     async login(ctx) {
         let server = ctx.protocol + '://' + ctx.host;
         let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
-        let {password, tel_number, smsVerifyCode, rememberMe} = ctx.request.body;
+
+        const [condition] = await this.cleanupRequestProperty('authRules.loginRule',
+            `password`, `tel_number`, `smsLoginVerifyCode`, `rememberMe`);
+        if (!condition) {
+            return;
+        }
         let userResult, verifyFlag;
         // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
         //     String(smsVerifyCode).toLowerCase())) {
@@ -17,31 +22,32 @@ class authController extends Controller {
         if (ctx.user) {
             ctx.logout();
         }
-        if (!this.ctx.helper.isEmpty(smsVerifyCode)) {
-            if (ctx.session.smsVerifyCode === smsVerifyCode) {
+        if (!this.ctx.helper.isEmpty(condition.smsLoginVerifyCode)) {
+            if (ctx.session.smsLoginVerifyCode === condition.smsLoginVerifyCode) {
                 verifyFlag = true;
-                ctx.session.smsVerifyCode = undefined;
+                ctx.session.smsLoginVerifyCode = undefined;
                 userResult = await ctx.service.userService.getUser({
-                    tel_number: tel_number
+                    tel_number: condition.tel_number
                 });
             } else {
-                this.failure(`smsVerifyCode 验证失败`, 400);
+                this.failure(`smsLoginVerifyCode 验证失败`, 400);
                 return;
             }
-        } else if (!this.ctx.helper.isEmpty(password)) {
+        } else if (!this.ctx.helper.isEmpty(condition.password)) {
             userResult = await ctx.service.userService.getUser({
-                tel_number: tel_number,
-                password: ctx.helper.passwordEncrypt(password)
+                tel_number: condition.tel_number,
+                password: ctx.helper.passwordEncrypt(condition.password)
             });
         }
 
-        if (ctx.helper.isEmpty(userResult)) {
+        if (ctx.helper.isEmpty(userResult) || ctx.helper.isEmpty(userResult.uuid)) {
             this.failure(`该用户未注册`, 400);
+            return;
         }
         if (userResult || verifyFlag) {
             await ctx.service.userService.updateUser_login(userResult.uuid);
 
-            if (rememberMe) {
+            if (condition.rememberMe) {
                 ctx.session.maxAge = ms('7d');
             } else {
                 ctx.session.maxAge = ms('2h');
