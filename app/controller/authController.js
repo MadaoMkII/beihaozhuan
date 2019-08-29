@@ -75,7 +75,7 @@ class authController extends Controller {
             }
             if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
                 String(requestEntity.smsVerifyCode).toLowerCase())) {
-                ctx.throw(400, `VerifyCode verify failed`);
+                ctx.throw(400, `VerifyCode verify failed, Need: `+ctx.session.smsVerifyCode );
             }
             if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
                 String(requestEntity.tel_number).toLowerCase())) {

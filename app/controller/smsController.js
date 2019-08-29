@@ -5,7 +5,7 @@ class smsController extends baseController {
     async sendVerifySmsMessage(ctx) {
         const {tel_number} = ctx.request.body;
         const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
-        this.ctx.session.smsVerifyCode = text;
+        ctx.session.smsVerifyCode = text;
         await this.sendSmsMessage(tel_number, text);
 
     };
