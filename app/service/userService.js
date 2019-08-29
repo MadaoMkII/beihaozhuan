@@ -57,8 +57,8 @@ class UserService extends Service {
         return this.ctx.model.UserAccount.findOne(user);
     };
 
-    async getManyUser(conditions, option) {
-        return this.ctx.model.UserAccount.find(conditions, {}, option);
+    async getManyUser(conditions, option, project = {}) {
+        return this.ctx.model.UserAccount.find(conditions, project, option);
     };
 
     async getUserBalanceListRule(conditions, option) {
