@@ -17,13 +17,16 @@ class UserService extends Service {
         // }
         let missionsArray = await this.ctx.model.Mission.find();
         let missionBox = [];
-        let tracker = await new this.ctx.model.WeeklyMissionProcessingTracker({
+        let object ={
             userID: `5d680f04a50d8b2d54205298`,
             missionID: `5d680f04a50d8b2d54205298`,
             missionEventName: `xman`,
             recentAmount: 11,
-            effectDay: `2019/12`});
+            effectDay: `2019/12`};
+        let tracker = await new this.ctx.model.WeeklyMissionProcessingTracker(object);
        await tracker.save();
+        let tracker2 = await new this.ctx.model.DailyMissionProcessingTracker(object);
+        await tracker2.save();
         // for (const mission of missionsArray) {
         //     let MissionProcessingTracker = await this.ctx.model.MissionProcessingTracker.save({
         //         effectDay: this.ctx.app.getFormatDate(),
@@ -107,5 +110,4 @@ class UserService extends Service {
     }
 }
 
-module
-    .exports = UserService;
+module.exports = UserService;

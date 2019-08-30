@@ -19,10 +19,6 @@ const rule = {
     reward: [
         {required: true, message: 'reward不能为空'},
         {type: 'number', message: 'reward需要是数字'},
-    ],
-    eventName: [
-        {required: true, message: 'eventName不能为空'},
-        {type: 'string', message: 'eventName需要是数字'},
     ]
 };
 module.exports = rule;

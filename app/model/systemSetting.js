@@ -65,6 +65,6 @@ module.exports = app => {
             // }
         }
     });
-    return mongoose.model('SystemSetting', systemSetting, 'SystemSetting');
+    return connection.model('SystemSetting', systemSetting, 'SystemSetting');
 };
 

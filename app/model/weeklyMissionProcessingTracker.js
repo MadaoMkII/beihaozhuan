@@ -2,7 +2,7 @@ module.exports = app => {
     const mongoose = app.mongoose;
     // mongoose.set('useCreateIndex', true);
     // mongoose.set('useFindAndModify', false);
-    const connection = app.mongooseDB.get('missionConnection');
+    const connection = app.mongooseDB.get('missionTracker');
     let missionProcessingTracker = new mongoose.Schema({
         userID: {type: app.mongoose.Schema.Types.ObjectId, ref: 'UserAccount'},
         missionID: {type: app.mongoose.Schema.Types.ObjectId, ref: 'Mission'},

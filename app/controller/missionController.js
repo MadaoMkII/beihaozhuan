@@ -5,25 +5,30 @@ const Controller = require('./baseController');
 
 class missionController extends Controller {
     async createMission(ctx) {
-        const [missionObj] = await this.cleanupRequestProperty('missionRule',
-            `missionType`, `title`, `requireAmount`, `reward`, `eventName`);
-        if (!missionObj) {
-            return;
+        try {
+            const [missionObj] = await this.cleanupRequestProperty('missionRule',
+                `missionType`, `title`, `requireAmount`, `reward`);
+            if (!missionObj) {
+                return;
+            }
+            let missionEntity = {
+                missionType: missionObj.missionType,
+                title: missionObj.title,
+                requireAmount: missionObj.requireAmount,
+                reward: missionObj.reward,
+                UUid: require('cuid')(),
+                eventName: missionObj.eventName
+            };
+            if (ctx.request.files) {
+                const file = ctx.request.files[0];
+                missionEntity.avatar = await ctx.service.picService.putImgs(file);
+            }
+            let mission = await ctx.service.missionService.createMission(missionEntity);
+            return this.success(mission)
+        }catch (e) {
+            this.failure(e.message)
         }
-        let missionEntity = {
-            missionType: missionObj.missionType,
-            title: missionObj.title,
-            requireAmount: missionObj.requireAmount,
-            reward: missionObj.reward,
-            UUid: require('cuid')(),
-            eventName: missionObj.eventName
-        };
-        if (ctx.request.files) {
-            const file = ctx.request.files[0];
-            missionEntity.avatar = await ctx.service.picService.putImgs(file);
-        }
-        let mission = await ctx.service.missionService.createMission(missionEntity);
-        return this.success(mission)
+
     }
 
     async updateMission(ctx) {
@@ -45,6 +50,10 @@ class missionController extends Controller {
             let result = await ctx.service.missionService.getMission(condition, option);
             this.success(result);
         }
+    }
+    async checkMissions(ctx) {
+            let result = await ctx.service.missionProcessingTrackerService.requireMissionToTrack(ctx.user._id);
+            this.success(result);
     }
 }
 

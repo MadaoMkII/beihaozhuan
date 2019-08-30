@@ -4,7 +4,7 @@ const baseController = require(`../controller/baseController`);
 class userAccount extends baseController {
 
     async getUserInfo(ctx) {
-        //let newUser = await ctx.service.userService.initialLoginUser(ctx.user);
+        let newUser = await ctx.service.userService.initialLoginUser(ctx.user);
         this.success(ctx.user);
     };
 
@@ -35,9 +35,7 @@ class userAccount extends baseController {
 
         const [condition] = await this.cleanupRequestProperty('userAccountController.updateInfoRule',
             `nickName`, `gender`, `birthday`, `location`, 'job', 'educationLevel');
-        console.log(condition)
         if (!condition) {
-            this.failure(`好像还是不对`);
             return;
         }
 

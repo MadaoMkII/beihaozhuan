@@ -95,7 +95,11 @@
 //     return a;
 //
 // };
-let aa = [{name: 1, pipi: "hundouluo"}, {name: 2, pipi: "hundouluo"}];
-console.log(aa.find((element) => {
-    return element.name === 2
-}));
+// let aa = [{name: 1, pipi: "hundouluo"}, {name: 2, pipi: "hundouluo"}];
+// console.log(aa.find((element) => {
+//     return element.name === 2
+// }));
+var { DateTime ,Info} = require('luxon');
+var local = DateTime.local();
+var rezoned = local.setZone("Asia/Shanghai");
+console.log(rezoned.year+``+rezoned.month)

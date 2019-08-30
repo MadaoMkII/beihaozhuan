@@ -33,22 +33,22 @@ module.exports = appInfo => {
                     useFindAndModify: false,
                 },
             },
-            missionConnection: {
-                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
-                options: {
-                    poolSize: 6,
-                    keepAlive: true,
-                    dbName: `beihaozhuan_mission`,
-                    useCreateIndex: true,
-                    useFindAndModify: false,
-                }
-            },
             loggerConnection: {
                 url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
                 options: {
                     poolSize: 6,
                     keepAlive: true,
                     dbName: `beihaozhuan_logger`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                }
+            },
+            missionTracker: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_missionTracker`,
                     useCreateIndex: true,
                     useFindAndModify: false,
                 }

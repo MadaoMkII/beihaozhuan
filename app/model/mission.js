@@ -2,18 +2,18 @@ module.exports = app => {
     const mongoose = app.mongoose;
     // mongoose.set('useCreateIndex', true);
     // mongoose.set('useFindAndModify', false);
-    const connection = app.mongooseDB.get('missionConnection');
+    const connection = app.mongooseDB.get('commonConnection');
     const mission = new mongoose.Schema({
-        missionType: String,
-        title: String,
+        missionType: {required: true, type: String, enum: [`Weekly`, `Daily`, `Permanent`]},
+        title: {required: true, type: String, unique: true},
         requireAmount: {required: true, type: Number, default: 0},
         imgUrl: String,
         reward: {required: true, type: Number, default: 0},
-        UUid: String,
-        eventName: {required: true, type: String, default: `defaultEvent`},
+        UUid: {required: true, type: String},
+        //eventName: {required: true, type: String, default: `defaultEvent`},
         status: {
-            type: String,
-            enum: [`activity`, `disable`, `Pending`], default: "Pending"
+            type: String, required: true,
+            enum: [`activity`, `disable`], default: "disable"
         }
     }, {
         'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}
