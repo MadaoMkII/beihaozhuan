@@ -80,7 +80,7 @@ module.exports = appInfo => {
     };
     config.cors = {
         origin: 'http://localhost:8080',
-        allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+        allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
         credentials: true
     };
     config.cluster = {

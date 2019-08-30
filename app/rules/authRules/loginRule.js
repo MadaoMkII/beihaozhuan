@@ -20,7 +20,7 @@ const rule = {
         // }
     ],
     password: [
-        {required: false},
+        {required: false, message: '手机号不能为空'},
         {type: 'string', message: '密码字段需要是字符串'},
         // { //, source, options
         //     validator: function (rule, value, callback) {

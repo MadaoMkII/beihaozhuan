@@ -4,8 +4,8 @@ const baseController = require(`../controller/baseController`);
 class userAccount extends baseController {
 
     async getUserInfo(ctx) {
-        let newUser = await ctx.service.userService.initialLoginUser(ctx.user);
-        this.success(newUser);
+        //let newUser = await ctx.service.userService.initialLoginUser(ctx.user);
+        this.success(ctx.user);
     };
 
     async getUserBalanceList() {
@@ -33,19 +33,21 @@ class userAccount extends baseController {
 
     async updateUserInfo(ctx) {
 
-        const {newUser} = this.cleanupRequestProperty('updateUser',
-            `nickName`, `avatar`, `gender`, `birthday`, `location`, 'job', 'educationLevel');
-        if (!newUser) {
+        const [condition] = await this.cleanupRequestProperty('userAccountController.updateInfoRule',
+            `nickName`, `gender`, `birthday`, `location`, 'job', 'educationLevel');
+        console.log(condition)
+        if (!condition) {
+            this.failure(`好像还是不对`);
             return;
         }
-        const file = ctx.request.files[0];
+
         let ossUrl;
-        if (file) {
+        if (ctx.request.files) {
+            const file = ctx.request.files[0];
             ossUrl = await ctx.service.picService.putImgs(file);
-            newUser.avatar = ossUrl;
+            condition.avatar = ossUrl;
         }
-        const newUser_result = await this.ctx.service.userService.updateUser(ctx.user.uuid, newUser);
-        ctx.user = newUser_result;
+        const newUser_result = await this.ctx.service.userService.updateUser(ctx.user.uuid, condition);
         this.success(newUser_result);
     };
 

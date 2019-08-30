@@ -1,6 +1,6 @@
 const rule = {
     role: [
-        {required: false},
+        {required: false, message: '可以能为空'},
         {type: 'string', message: '必须为字符串'}
     ]
 };

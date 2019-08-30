@@ -9,11 +9,11 @@ const rule = {
     ],
     title: [
         {required: false, message: '不能为空'},
-        {type: 'string', message: 'title必须为字符串'}
+        {type: 'string', message: '必须为字符串'}
     ],
     missionType: [
         {required: true, message: '不能为空'},
-        {type: 'string', message: 'title必须为字符串'}
+        {type: 'string', message: '必须为字符串'}
     ]
 };
 

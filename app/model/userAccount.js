@@ -64,7 +64,7 @@ module.exports = app => {
         job: String,
         educationLevel: String,
         loginTimes: {type: Number},
-        dailyMissionTrackers: [{type: mongoose.Schema.Types.ObjectId, ref: 'MissionProcessingTracker'}],
+        //dailyMissionTrackers: [{type: mongoose.Schema.Types.ObjectId, ref: 'MissionProcessingTracker'}],
         balanceList: [balanceRecord],
         last_login_time: Date
     }, {

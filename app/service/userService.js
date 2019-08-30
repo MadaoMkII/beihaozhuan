@@ -17,17 +17,25 @@ class UserService extends Service {
         // }
         let missionsArray = await this.ctx.model.Mission.find();
         let missionBox = [];
-        for (const mission of missionsArray) {
-            let MissionProcessingTracker = await this.ctx.model.MissionProcessingTracker.findOneAndUpdate({
-                effectDay: this.ctx.app.getFormatDate(),
-                userID: user._id,
-                missionID: mission._id,
-                missionEventName: mission.eventName,
-            }, {}, {upsert: true, new: true});
-            missionBox.push(MissionProcessingTracker._id)
-        }
-        return this.ctx.model.UserAccount.findOneAndUpdate({_id: user._id},
-            {$set: {dailyMissionTrackers: missionBox}}, {new: true}).populate('dailyMissionTrackers');
+        let tracker = await new this.ctx.model.WeeklyMissionProcessingTracker({
+            userID: `5d680f04a50d8b2d54205298`,
+            missionID: `5d680f04a50d8b2d54205298`,
+            missionEventName: `xman`,
+            recentAmount: 11,
+            effectDay: `2019/12`});
+       await tracker.save();
+        // for (const mission of missionsArray) {
+        //     let MissionProcessingTracker = await this.ctx.model.MissionProcessingTracker.save({
+        //         effectDay: this.ctx.app.getFormatDate(),
+        //         userID: user._id,
+        //         missionID: mission._id,
+        //         missionEventName: mission.eventName,
+        //     });
+        //     missionBox.push(MissionProcessingTracker._id)
+        // }
+        // return this.ctx.model.UserAccount.findOneAndUpdate({_id: user._id},
+        //     {$set: {dailyMissionTrackers: missionBox}}, {new: true}).populate('dailyMissionTrackers');
+        return tracker;
     };
 
     async updateUser(user_uuid, userObj) {
