@@ -17,7 +17,7 @@ class picController extends Controller {
 
             let result = await ctx.service.picService.deleteImg(imageUrl);
 
-            if (ctx.helper.isEmpty(result) || 200 != result.res.status) {
+            if (ctx.helper.isEmpty(result) || 200 !== result.res.status) {
                 return this.failure(`find not`, 404);
             }
             this.success();

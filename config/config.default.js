@@ -12,16 +12,58 @@ module.exports = appInfo => {
      **/
     const config = exports = {};
     config.mongoose = {
-        client: {
-            url: '\t\n' +
-            'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173', options: {
-                poolSize: 6,
-                keepAlive: true,
-                dbName: `beihaozhuan`,
-                useCreateIndex: true,
-                useFindAndModify: false,
+        clients: {
+            userConnection: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_userConnection`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                },
             },
-        },
+            orderGoodConnection: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_orderGood`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                },
+            },
+            loggerConnection: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_logger`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                }
+            },
+            missionTracker: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_missionTracker`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                }
+            },
+            commonConnection: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_common`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                }
+            }
+        }
     };
     // use for cookie sign key, should change to your own and keep security
     config.keys = appInfo.name + '_1562732382211_2587';
@@ -31,11 +73,22 @@ module.exports = appInfo => {
     config.security = {
         csrf: {
             //useSession: true, // 默认为 false，当设置为 true 时，将会把 csrf token 保存到 Session 中
-            enable: false
+            enable: false,
+            ignoreJSON: false
         },
+        domainWhiteList: ['http://localhost:8080']
     };
-
-    config.domainWhiteList = ['http://localhost:4200'];
+    config.cors = {
+        origin: 'http://localhost:8080',
+        allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+        credentials: true
+    };
+    config.cluster = {
+        listen: {
+            port: 3000,
+        }
+    };
+    config.domainWhiteList = ['http://localhost:4200', 'http://localhost:8080'];
     // add your user config here
     const userConfig = {
         // myAppName: 'egg',
@@ -61,7 +114,12 @@ module.exports = appInfo => {
     config.saltword = "RX78";
     config.secretKey = "GP02A";
 
+    exports.eventDictionary = function () {
+        let dictionaryMap = new Map();
+        dictionaryMap.set(``, ``);
 
+
+    };
     //config.middleware = ['authenticatedMiddleware'];
 
     // 配置 gzip 中间件的配置
@@ -132,5 +190,6 @@ module.exports = appInfo => {
         ...config,
         ...userConfig,
     };
-};
+}
+;
 

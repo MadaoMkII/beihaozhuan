@@ -8,9 +8,13 @@ class authController extends Controller {
     async login(ctx) {
         let server = ctx.protocol + '://' + ctx.host;
         let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
-        let {password, tel_number, smsVerifyCode, rememberMe} = ctx.request.body;
-        //const validateResult = await ctx.validate('loginRule', { tel_number, password });
-        //if(!validateResult) return;
+
+        const [condition] = await this.cleanupRequestProperty('authRules.loginRule',
+            `password`, `tel_number`, `smsLoginVerifyCode`, `rememberMe`);
+        if (!condition) {
+            return;
+        }
+        let userResult, verifyFlag;
         // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
         //     String(smsVerifyCode).toLowerCase())) {
         //     ctx.throw(400, `smsVerifyCode verify failed`);
@@ -18,20 +22,34 @@ class authController extends Controller {
         if (ctx.user) {
             ctx.logout();
         }
+        if (!this.ctx.helper.isEmpty(condition.smsLoginVerifyCode)) {
+            if (ctx.session.smsLoginVerifyCode === condition.smsLoginVerifyCode) {
+                verifyFlag = true;
+                ctx.session.smsLoginVerifyCode = undefined;
+                userResult = await ctx.service.userService.getUser({
+                    tel_number: condition.tel_number
+                });
+            } else {
+                this.failure(`smsLoginVerifyCode 验证失败`, 400);
+                return;
+            }
+        } else if (!this.ctx.helper.isEmpty(condition.password)) {
+            userResult = await ctx.service.userService.getUser({
+                tel_number: condition.tel_number,
+                password: ctx.helper.passwordEncrypt(condition.password)
+            });
+        }
 
-        let encryptedPassword = ctx.helper.passwordEncrypt(password);
-        let userResult = await ctx.service.userService.getUser({
-            tel_number: tel_number,
-            password: encryptedPassword
-        });
-
-        if (userResult) {
+        if (ctx.helper.isEmpty(userResult) || ctx.helper.isEmpty(userResult.uuid)) {
+            this.failure(`该用户未注册`, 400);
+            return;
+        }
+        if (userResult || verifyFlag) {
             await ctx.service.userService.updateUser_login(userResult.uuid);
 
-            if (rememberMe) {
+            if (condition.rememberMe) {
                 ctx.session.maxAge = ms('7d');
-            }
-            else {
+            } else {
                 ctx.session.maxAge = ms('2h');
             }
             ctx.login(userResult);
@@ -58,40 +76,41 @@ class authController extends Controller {
 
     async register(ctx) {
         try {
-            const {smsVerifyCode, password, tel_number} = ctx.request.body;
-
-            const validateResult = await ctx.validate('loginRule', {tel_number, password});
-            if (!validateResult) return;
+            const [requestEntity] = await this.cleanupRequestProperty('loginRule',
+                `smsVerifyCode`, `password`, `tel_number`);
+            if (!requestEntity) {
+                return;
+            }
             if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
-                String(smsVerifyCode).toLowerCase())) {
+                String(requestEntity.smsVerifyCode).toLowerCase())) {
                 ctx.throw(400, `VerifyCode verify failed`);
             }
             if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
-                String(tel_number).toLowerCase())) {
+                String(requestEntity.tel_number).toLowerCase())) {
                 ctx.throw(400, `tel_number doesn't exist`);
-            }
-            let mainland_reg = /^1[3|4|5|7|8][0-9]{9}$/;
-            if (!mainland_reg.test(tel_number)) {
-
-                ctx.throw(400, `tel_number verify failed`);
             }
             ctx.session.tel_number = null;
             ctx.session.smsVerifyCode = null;
 
-            const enPassword = ctx.helper.passwordEncrypt(password);
+            const enPassword = ctx.helper.passwordEncrypt(requestEntity.password);
             let uuid = require('cuid')();
             const newUser = {
                 password: enPassword,
                 uuid: uuid,
                 role: 'User',
-                tel_number: tel_number,
+                tel_number: requestEntity.tel_number,
                 Bcoins: 1000
             };
             await ctx.service.userService.addUser(newUser);
-
+            delete newUser.password;
             this.success(newUser);
         } catch (e) {
-            this.failure(e.message, 400);
+            if (e.message.toString().includes(`E11000`)) {
+                return this.failure(`tel_number is duplicated `, 400);
+            } else {
+                this.failure(e.message, 400);
+            }
+
         }
 
     }
