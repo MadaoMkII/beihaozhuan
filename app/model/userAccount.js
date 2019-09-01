@@ -29,7 +29,8 @@ module.exports = app => {
         uuid: {
             required: true,
             type: String,
-            unique: true
+            unique: true,
+            sparse: true
         },
         withdrawRecord: [{type: mongoose.Schema.Types.Mixed}],
         password: {
@@ -45,7 +46,8 @@ module.exports = app => {
         tel_number: {
             required: true,
             type: String,
-            unique: true
+            unique: true,
+            sparse: true
         },
         // email_address: {
         //     type: String,

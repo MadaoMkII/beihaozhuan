@@ -1,42 +1,17 @@
-'use strict';
-const Controller = require('./baseController');
+`use strict`;
+const baseController = require(`../controller/baseController`);
 
-class systemSettingController extends Controller {
-    async setBannerGood(ctx) {
-        const {uuid} = ctx.request.body;
-        if (ctx.helper.isEmpty(uuid)) {
-            ctx.throw(400, ``);
-        }
-        await ctx.service.systemSettingService.setBannerGood(uuid);
-        this.success();
+class SystemSettingController extends baseController {
+
+    async setSetting(ctx) {
+        let newUser = await ctx.service.systemSettingService.setSetting(ctx.request.body);
+        this.success(newUser);
     };
 
-    async setAdvPosition(ctx) {
-        const [advertisement] = await this.cleanupRequestProperty('systemSettingRules.setAdvPositionRule',
-            `location`, `adv_ID`, `title`, `length`, `activity`, `weight`);
-        if (!advertisement) {
-            return;
-        }
-        let result = await ctx.service.systemSettingService.setAdvPosition(advertisement);
+    async getSetting(ctx) {
+        let result = await this.ctx.service.systemSettingService.getSetting();
         this.success(result);
     };
-
-    async getAdvPosition(ctx) {
-        let {location} = ctx.request.body;
-        let result;
-        if (ctx.helper.isEmpty(location)) {
-            result = await ctx.service.systemSettingService.findAdvPosition({});
-        } else {
-            result = await ctx.service.systemSettingService.findAdvPosition({"advPosition.location": location});
-        }
-
-        let positionInfo = [];
-        positionInfo.push(result.advPosition.find((element) => {
-            element.advPosition.location = location;
-        }));
-        this.success(result);
-    }
-
 }
 
-module.exports = systemSettingController;
+module.exports = SystemSettingController;

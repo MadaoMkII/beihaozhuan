@@ -12,7 +12,8 @@ module.exports = app => {
         uuid: {
             required: true,
             type: String,
-            unique: true
+            unique: true,
+            sparse: true
         }
     }, {
         'timestamps': {

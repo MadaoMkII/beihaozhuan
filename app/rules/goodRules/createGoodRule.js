@@ -1,0 +1,14 @@
+'use strict';
+
+const rule = {
+    uuid: [
+        {required: true, message: 'uuid不能为空'},
+        {type: 'string', message: '类型不正确'}
+    ],
+    status: [
+        {required: true, message: 'activity能为空'},
+        {type: "enum", enum: ['disable', 'enable']}
+    ]
+};
+
+module.exports = rule;

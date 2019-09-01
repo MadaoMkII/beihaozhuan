@@ -26,6 +26,19 @@ class goodController extends baseController {
         this.success();
     };
 
+    async setGoodStatus(ctx) {
+        const [condition,] = await this.cleanupRequestProperty('goodRules.createGoodRule',
+            `uuid`, `status`);
+        if (!condition) {
+            return;
+        }
+
+        let result = await ctx.service.goodService.setGoodStatus(condition);
+
+        this.success(result);
+
+    };
+
     async createGood(ctx) {
         try {
             const [condition] = await this.cleanupRequestProperty('createGoodRule',

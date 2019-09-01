@@ -25,8 +25,8 @@ class goodService extends Service {
         return this.ctx.model.Good.findOne({}, {inventory: false});
     }
 
-    async getRecommendGoods() {
-        return this.ctx.model.Good.find({}, {inventory: false}, {limit: 4});
+    async setGoodStatus(goodObj) {
+        return this.ctx.model.Good.findOneAndUpdate({uuid: goodObj.uuid}, {$set: {status: goodObj.status}}, {new: true});
     }
 }
 

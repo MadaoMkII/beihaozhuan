@@ -4,30 +4,13 @@ module.exports = app => {
     // mongoose.set('useFindAndModify', false);
     const connection = app.mongooseDB.get('commonConnection');
     let systemSetting = new mongoose.Schema({
-        // uuid: {
-        //     required: true,
-        //     type: String,
-        //     unique: true
-        // },
-        goodSetting: {
-            recommendGoods_ID: [{type: mongoose.Schema.Types.ObjectId, ref: 'Good'}],
-            bannerGood: {type: mongoose.Schema.Types.ObjectId, ref: 'Good'}
-        },
-        advPosition: [{
-            location: {type: String, required: true, default: '未分类', unique: true},
-            advPositionInfo: {
-                adv_ID: {type: mongoose.Schema.Types.ObjectId, ref: 'Good'},
-                title: {type: String, required: true},
-                length: {type: Number, required: true, default: 0},
-                weight: {type: Number, required: true, default: 0},
-                activity: {type: Boolean, default: false}
-            }
-        }]
+        registerMission: {activity: Boolean, reward: Number},
+        inviteMission: {numberOfInvite: Number, activity: Boolean, reward: Number},
+        weighting: Number,
+        serviceNumber: {default: `405-123-4568`, type: String}
     }, {
         'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}
     });
-
-
     systemSetting.set('toObject', {
         virtuals: true,
         transform: (doc, ret) => {
