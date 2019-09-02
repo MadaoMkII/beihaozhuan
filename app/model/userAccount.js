@@ -91,15 +91,9 @@ module.exports = app => {
             delete ret._id;
             delete ret.id;
             delete ret.password;
-            delete ret.updated_at;
+            ret.updated_at = app.getFormatDateForJSON(doc.updated_at);
             ret.Bcoins = doc.Bcoins;
-            // if (doc.created_at && doc.updated_at) {
-            //     ret.created_at = new Date(doc.created_at).getTime();
-            //     ret.updated_at = new Date(doc.updated_at).getTime();
-            // }
-            // if (doc.last_login_time) {
-            //     ret.last_login_time = new Date(doc.last_login_time).getTime();
-            // }
+            ret.birthday = app.getFormatDateForJSON(doc.birthday);
         }
     });
     userAccountSchema.set('toObject', {
@@ -110,14 +104,7 @@ module.exports = app => {
             delete ret.id;
             //delete ret.password;
             ret.Bcoins = doc.Bcoins;
-            // ret.VIPLevel = vipCoculart(doc.growthPoints);
-            // if (doc.created_at && doc.updated_at) {
-            //     ret.created_at = new Date(doc.created_at).getTime();
-            //     ret.updated_at = new Date(doc.updated_at).getTime();
-            // }
-            // if (doc.last_login_time) {
-            //     ret.last_login_time = new Date(doc.last_login_time).getTime();
-            // }
+
         }
     });
 

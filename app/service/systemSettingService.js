@@ -25,7 +25,6 @@ class SystemSettingService extends Service {
 
     async setSetting(settingEntity) {
         let lastSettingObj = await this.getSetting();
-        console.log(settingEntity)
         let registerMission = {
             activity: await this.setValue(lastSettingObj.registerMission, settingEntity.registerMission, `activity`),
             reward: await this.setValue(lastSettingObj.registerMission, settingEntity.registerMission, `reward`)

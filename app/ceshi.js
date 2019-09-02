@@ -99,10 +99,8 @@
 // console.log(aa.find((element) => {
 //     return element.name === 2
 // }));
-// var { DateTime ,Info} = require('luxon');
-// var local = DateTime.local();
-// var rezoned = local.setZone("Asia/Shanghai");
-// console.log(rezoned.year+``+rezoned.month)
+var { DateTime ,Info} = require('luxon');
+var local = DateTime.fromISO(new Date().toISOString());
+var rezoned = local.setZone("Asia/Shanghai");
+console.log(rezoned.toFormat(`yyyy-MM-dd  HH`))
 
-let x  = {a:11,b:undefined}
-console.log(x)

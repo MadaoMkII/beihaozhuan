@@ -80,6 +80,10 @@ class userAccount extends baseController {
         this.success(newUser);
     };
 
+    async setUserStatus(ctx) {
+
+    };
+
     async setUserRole(ctx) {
 
         let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',

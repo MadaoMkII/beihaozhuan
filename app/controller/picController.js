@@ -7,7 +7,19 @@ const path = require('path');
 class picController extends Controller {
 
 
-    async getImgs() {
+    async delImgs(ctx) {
+        let body = [
+            "https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/11354820137869.jpg",
+            "https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/336568005599.jpg",
+            "https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/1578842122952.jpg"
+        ];
+        let result = await this.service.picService.deleteManyImg(body)
+        if (result !== null && result.res.status === 200) {
+            return this.success(result);
+        } else {
+            return this.failure()
+        }
+
     };
 
     async deleteImg(ctx) {
@@ -33,8 +45,8 @@ class picController extends Controller {
 
             //const stream = await ctx.getFileStream();
             let ossurl;
-            files.forEach((file) =>{
-                ossurl= ctx.service.picService.putImgs(file);
+            files.forEach((file) => {
+                ossurl = ctx.service.picService.putImgs(file);
             });
 
             this.success();

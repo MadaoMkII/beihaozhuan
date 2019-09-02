@@ -4,7 +4,6 @@ const baseController = require(`../controller/baseController`);
 class orderTrackerController extends baseController {
     async createOrder(ctx) {
         try {
-
             const [requestEntity] = await this.cleanupRequestProperty('orderTrackerRules.createInsuranceRule',
                 `goodUUid`, `additionalInformation`,
                 `realName`, `IDNumber`, `address`, `detailAddress`);

@@ -4,27 +4,22 @@ const Service = require('egg').Service;
 require(`moment-timezone`);
 
 class UserService extends Service {
-    // async tryUser(user) {
-    //     let uuid = require('cuid')();
-    //     const userNew = this.ctx.model.UserAccount(
-    //         {username: uuid + 'a', password: uuid + `b`, uuid: uuid, tel_number: uuid + 'f', Bcoins: 123}
-    //     );
-    //     return userNew;
-    // };
+
     async initialLoginUser(user) {
         // if(user.dailyMissionTrackers!==[]){
         //     this.ctx.model.mission.findOne();
         // }
         let missionsArray = await this.ctx.model.Mission.find();
         let missionBox = [];
-        let object ={
+        let object = {
             userID: `5d680f04a50d8b2d54205298`,
             missionID: `5d680f04a50d8b2d54205298`,
             missionEventName: `xman`,
             recentAmount: 11,
-            effectDay: `2019/12`};
+            effectDay: `2019/12`
+        };
         let tracker = await new this.ctx.model.WeeklyMissionProcessingTracker(object);
-       await tracker.save();
+        await tracker.save();
         let tracker2 = await new this.ctx.model.DailyMissionProcessingTracker(object);
         await tracker2.save();
         // for (const mission of missionsArray) {
@@ -69,6 +64,9 @@ class UserService extends Service {
     };
 
     async getManyUser(conditions, option, project = {}) {
+        if (!this.ctx.helper.isEmpty(conditions.nickName)) {
+            conditions.nickName = {$regex: `.*${conditions.nickName}.*`};
+        }
         return this.ctx.model.UserAccount.find(conditions, project, option);
     };
 

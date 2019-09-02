@@ -11,8 +11,18 @@ class picService extends Service {
     async deleteImg(fileUrl) {
         let ossFilePath = this.app.config.oss.client.bucketUrl;
         let deleteFileUrl = fileUrl.replace(ossFilePath, ``);
-        let result = await this.ctx.oss.delete(deleteFileUrl);
-        return result;
+        return await this.ctx.oss.delete(deleteFileUrl);
+    };
+
+    async deleteManyImg(fileUrlArray) {
+        let ossFilePath = this.app.config.oss.client.bucketUrl;
+        let deleteUrlArray = [];
+        fileUrlArray.forEach((fileUrl) => {
+           let newUrl= fileUrl.replace(ossFilePath, ``);
+            deleteUrlArray.push(newUrl)
+        });
+
+        return await this.ctx.oss.deleteMulti(deleteUrlArray);
     };
 
     async putImgs(stream, path = 'images') {

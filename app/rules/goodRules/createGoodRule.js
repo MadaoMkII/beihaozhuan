@@ -1,13 +1,30 @@
 'use strict';
 
 const rule = {
-    uuid: [
-        {required: true, message: 'uuid不能为空'},
+    title: [
+        {required: true, message: 'title不能为空'},
         {type: 'string', message: '类型不正确'}
     ],
-    status: [
-        {required: true, message: 'activity能为空'},
-        {type: "enum", enum: ['disable', 'enable']}
+    category: [
+        {required: false, message: 'category不能为空'},
+        {type: 'string', message: '类型不正确'}
+    ],
+    description: [
+        {required: true, message: 'description不能为空'},
+        {type: 'string', message: '类型不正确'}
+    ],
+    price: [
+        {required: true, message: 'price不能为空'},
+        {type: 'string', message: '类型不正确 必须为string'}
+    ],
+    inventory: [
+        {required: true, message: 'inventory不能为空'},
+        {type: 'string', message: '类型不正确 必须为string'}
+    ],
+    paymentMethod: [
+        {required: false, message: 'paymentMethod能为空'},
+        {type: "enum", enum: ['Bcoin', 'Money']}
+
     ]
 };
 

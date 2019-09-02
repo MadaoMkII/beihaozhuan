@@ -7,6 +7,17 @@ class goodService extends Service {
         good.save();
     };
 
+    async updateGood(goodObj, uuid) {
+
+        let oldGood = await this.ctx.model.Good.findOneAndUpdate({uuid: uuid}, {$set: goodObj}, {new: false});
+        if (!this.ctx.helper.isEmpty(oldGood)) {
+            let waitingForDeletingImgs = oldGood.slideShowPicUrlArray;
+            waitingForDeletingImgs.push(oldGood.mainlyShowPicUrl);
+            await this.ctx.service.picService.deleteManyImg(waitingForDeletingImgs);
+        }
+        return oldGood;
+    };
+
     async delGood(uuid) {
         return this.ctx.model.Good.deleteOne({uuid: uuid});
     };
@@ -17,8 +28,9 @@ class goodService extends Service {
     };
 
     async getManyGood(conditions, option) {
-
-        return this.ctx.model.Good.find(conditions, {}, option);
+        let count = await this.ctx.model.Good.countDocuments(conditions);//estimatedDocumentCount
+        let result = await this.ctx.model.Good.find(conditions, {}, option)
+        return [result, count];
     }
 
     async getBannerGood() {

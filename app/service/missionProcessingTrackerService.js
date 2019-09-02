@@ -17,7 +17,7 @@ class MissionEventManager extends Service {
         let missionsAgg = await this.ctx.model.Mission.aggregate([
             {$group: {_id: "$missionType", missions: {$push: "$$ROOT"}}}, {
                 $project: {
-                    //"missions._id": 0,
+                    "missions._id": 0,
                     "missions.created_at": 0,
                     "missions.updated_at": 0,
                     "missions.__v": 0
@@ -32,7 +32,7 @@ class MissionEventManager extends Service {
                         missionID: mission._id,
                         missionEventName: mission.title
                     };
-                    console.log(mission)
+
                     let modelName = missionArray._id + `MissionProcessingTracker`;
                     let weeklyTracker = await this.ctx.model[modelName].findOne(conditions);
                     if (!weeklyTracker) {
