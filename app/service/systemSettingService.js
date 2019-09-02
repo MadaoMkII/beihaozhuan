@@ -13,7 +13,7 @@ class SystemSettingService extends Service {
         //     serviceNumber: `xs`
         // });
         //await setting.save();
-        return await this.ctx.model.SystemSetting.findOne({}, {}, {sort: {updated_at: -1}});
+        return this.ctx.model.SystemSetting.findOne({}, {}, {sort: {updated_at: -1}});
     };
 
     async setValue(oldObj, inputObj, checkedProperty) {

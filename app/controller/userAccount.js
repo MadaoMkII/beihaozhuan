@@ -23,7 +23,7 @@ class userAccount extends baseController {
         }
         const tel_number = ctx.session.tel_number;
         const {password} = ctx.request.body;
-        const validateResult = await ctx.validate('loginRule', {tel_number, password});
+        const validateResult = await ctx.validate('authRules.loginRule', {tel_number, password});
         if (!validateResult) return;
         let encryptedPassword = ctx.helper.passwordEncrypt(password);
         await ctx.service.userService.updateUserPassword(tel_number, encryptedPassword);
@@ -40,7 +40,7 @@ class userAccount extends baseController {
         }
 
         let ossUrl;
-        if (ctx.request.files) {
+        if (!this.ctx.helper.isEmpty(ctx.request.files)) {
             const file = ctx.request.files[0];
             ossUrl = await ctx.service.picService.putImgs(file);
             condition.avatar = ossUrl;
@@ -51,7 +51,7 @@ class userAccount extends baseController {
 
     async getManyUser() {
         //let result = await ctx.service.userService.getManyUser(condition, option);
-        const [condition, option] = await this.cleanupRequestProperty('findUsersRule',
+        const [condition, option] = await this.cleanupRequestProperty('userAccountController.findUsersRule',
             `tel_number`, `hasPaid`, `nickName`, `activity`, `hasVerifyWechat`, 'unit', 'page');
         if (condition !== false) {
             this.deepCleanUp(condition, `userStatus`, `activity`, `hasPaid`, `hasVerifyWechat`);

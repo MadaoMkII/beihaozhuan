@@ -41,7 +41,7 @@ class goodController extends baseController {
 
     async createGood(ctx) {
         try {
-            const [condition] = await this.cleanupRequestProperty('createGoodRule',
+            const [condition] = await this.cleanupRequestProperty('goodRules.createGoodRule',
                 `title`, `category`, `description`, `inventory`, `insuranceLink`, 'price');
             if (!condition) {
                 return;

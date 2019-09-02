@@ -4,8 +4,19 @@ module.exports = app => {
     // mongoose.set('useFindAndModify', false);
     const connection = app.mongooseDB.get('commonConnection');
     let systemSetting = new mongoose.Schema({
-        registerMission: {activity: Boolean, reward: Number},
-        inviteMission: {numberOfInvite: Number, activity: Boolean, reward: Number},
+        registerMission: {
+            activity: {
+                type: String,
+                enum: ['enable', 'disable'], default: "disable"
+            }, reward: Number
+        },
+        inviteMission: {
+            numberOfInvite: Number,
+            activity: {
+                type: String,
+                enum: ['enable', 'disable'], default: "disable"
+            }, reward: Number
+        },
         weighting: Number,
         serviceNumber: {default: `405-123-4568`, type: String}
     }, {

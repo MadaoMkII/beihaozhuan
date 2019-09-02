@@ -5,7 +5,10 @@ module.exports = app => {
     const connection = app.mongooseDB.get('userConnection');
     let balanceRecord = new mongoose.Schema({
         category: {type: String, required: true},
-        income: {type: Boolean, required: true, default: true},
+        income: {
+            type: String,
+            enum: ['enable', 'disable'], default: "disable"
+        },
         amount: {type: Number, default: 0},
         createTime: Date,
         status: {type: String, enum: [`success`, `failed`, `pending`], default: `pending`}
@@ -39,8 +42,14 @@ module.exports = app => {
         },
         role: String,
         userStatus: {
-            hasVerifyWechat: {type: Boolean, default: false},
-            activity: {type: Boolean, default: true},
+            hasVerifyWechat: {
+                type: String,
+                enum: ['enable', 'disable'], default: "disable"
+            },
+            activity: {
+                type: String,
+                enum: ['enable', 'disable'], default: "disable"
+            }
         },
         OPENID: {type: String},
         tel_number: {
