@@ -51,7 +51,7 @@ module.exports = app => {
                 enum: ['enable', 'disable'], default: "disable"
             }
         },
-        OPENID: {type: String},
+        //OPENID: {type: String},
         tel_number: {
             required: true,
             type: String,
@@ -91,16 +91,24 @@ module.exports = app => {
             delete ret._id;
             delete ret.id;
             delete ret.password;
-            ret.updated_at = app.getFormatDateForJSON(doc.updated_at);
+            if (doc.updated_at) {
+                ret.updated_at = app.getFormatDateForJSON(doc.updated_at);
+            }
+            if (doc.created_at) {
+                ret.created_at = app.getFormatDateForJSON(doc.created_at);
+            }
             ret.Bcoins = doc.Bcoins;
-            ret.birthday = app.getFormatDateForJSON(doc.birthday);
+            if (doc.birthday) {
+                ret.birthday = app.getFormatDateForJSON(doc.birthday);
+            }
+
         }
     });
     userAccountSchema.set('toObject', {
         virtuals: true,
         transform: (doc, ret) => {
             delete ret.__v;
-            delete ret._id;
+            //delete ret._id;
             delete ret.id;
             //delete ret.password;
             ret.Bcoins = doc.Bcoins;

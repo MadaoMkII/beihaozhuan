@@ -13,7 +13,7 @@ class goodService extends Service {
         if (!this.ctx.helper.isEmpty(oldGood)) {
             let waitingForDeletingImgs = oldGood.slideShowPicUrlArray;
             waitingForDeletingImgs.push(oldGood.mainlyShowPicUrl);
-            await this.ctx.service.picService.deleteManyImg(waitingForDeletingImgs);
+            //await this.ctx.service.picService.deleteManyImg(waitingForDeletingImgs);
         }
         return oldGood;
     };

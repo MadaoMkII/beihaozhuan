@@ -5,7 +5,7 @@ module.exports = app => {
     const connection = app.mongooseDB.get('missionTracker');
     let structure = {
         userID: {type: app.mongoose.Schema.Types.ObjectId, ref: 'UserAccount'},
-        missionID: {type: app.mongoose.Schema.Types.ObjectId, ref: 'Mission'},
+        missionID: {type: app.mongoose.Schema.Types.ObjectId},
         missionEventName: {type: String, required: true},
         recentAmount: {type: Number, default: 0}
     };
