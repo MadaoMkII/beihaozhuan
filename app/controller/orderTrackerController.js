@@ -4,8 +4,7 @@ const baseController = require(`../controller/baseController`);
 class orderTrackerController extends baseController {
     async createOrder(ctx) {
         try {
-
-            const [requestEntity] = await this.cleanupRequestProperty('createInsuranceRule',
+            const [requestEntity] = await this.cleanupRequestProperty('orderTrackerRules.createInsuranceRule',
                 `goodUUid`, `additionalInformation`,
                 `realName`, `IDNumber`, `address`, `detailAddress`);
             if (!requestEntity) {
@@ -31,7 +30,7 @@ class orderTrackerController extends baseController {
 
     async findOrderByUser() {
 
-        const [condition, option] = await this.cleanupRequestProperty('findOrderOfUser', `unit`, `page`, `userUUid`);
+        const [condition, option] = await this.cleanupRequestProperty('orderTrackerRules.findOrderOfUser', `unit`, `page`, `userUUid`);
         if (condition !== false) {
             let result = await this.ctx.service.orderTrackerService.findOrder(condition, option);
             this.success(result);

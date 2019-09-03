@@ -6,13 +6,17 @@ module.exports = app => {
         category: {type: String, required: true},
         channel: {type: String, required: true},
         reward: {type: String, required: true, default: 0},
-        activity: {type: Boolean, default: false},
+        activity: {
+            type: String,
+            enum: ['enable', 'disable'], default: "disable"
+        },
         advData: {type: mongoose.Schema.Types.Mixed},
         positionName: {type: String},
         uuid: {
             required: true,
             type: String,
-            unique: true
+            unique: true,
+            sparse: true
         }
     }, {
         'timestamps': {

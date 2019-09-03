@@ -165,7 +165,7 @@ module.exports = appInfo => {
         fields: 100,
         fileSize: '2048mb',
         files: 100,
-        fileExtensions: [],
+        fileExtensions: [``],
     };
 
     exports.email = {

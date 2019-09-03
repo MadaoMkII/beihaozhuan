@@ -5,7 +5,10 @@ module.exports = app => {
     const connection = app.mongooseDB.get('userConnection');
     let balanceRecord = new mongoose.Schema({
         category: {type: String, required: true},
-        income: {type: Boolean, required: true, default: true},
+        income: {
+            type: String,
+            enum: ['enable', 'disable'], default: "disable"
+        },
         amount: {type: Number, default: 0},
         createTime: Date,
         status: {type: String, enum: [`success`, `failed`, `pending`], default: `pending`}
@@ -29,7 +32,8 @@ module.exports = app => {
         uuid: {
             required: true,
             type: String,
-            unique: true
+            unique: true,
+            sparse: true
         },
         withdrawRecord: [{type: mongoose.Schema.Types.Mixed}],
         password: {
@@ -38,14 +42,21 @@ module.exports = app => {
         },
         role: String,
         userStatus: {
-            hasVerifyWechat: {type: Boolean, default: false},
-            activity: {type: Boolean, default: true},
+            hasVerifyWechat: {
+                type: String,
+                enum: ['enable', 'disable'], default: "disable"
+            },
+            activity: {
+                type: String,
+                enum: ['enable', 'disable'], default: "disable"
+            }
         },
-        OPENID: {type: String},
+        //OPENID: {type: String},
         tel_number: {
             required: true,
             type: String,
-            unique: true
+            unique: true,
+            sparse: true
         },
         // email_address: {
         //     type: String,
@@ -80,33 +91,28 @@ module.exports = app => {
             delete ret._id;
             delete ret.id;
             delete ret.password;
-            delete ret.updated_at;
+            if (doc.updated_at) {
+                ret.updated_at = app.getFormatDateForJSON(doc.updated_at);
+            }
+            if (doc.created_at) {
+                ret.created_at = app.getFormatDateForJSON(doc.created_at);
+            }
             ret.Bcoins = doc.Bcoins;
-            // if (doc.created_at && doc.updated_at) {
-            //     ret.created_at = new Date(doc.created_at).getTime();
-            //     ret.updated_at = new Date(doc.updated_at).getTime();
-            // }
-            // if (doc.last_login_time) {
-            //     ret.last_login_time = new Date(doc.last_login_time).getTime();
-            // }
+            if (doc.birthday) {
+                ret.birthday = app.getFormatDateForJSON(doc.birthday);
+            }
+
         }
     });
     userAccountSchema.set('toObject', {
         virtuals: true,
         transform: (doc, ret) => {
             delete ret.__v;
-            delete ret._id;
+            //delete ret._id;
             delete ret.id;
             //delete ret.password;
             ret.Bcoins = doc.Bcoins;
-            // ret.VIPLevel = vipCoculart(doc.growthPoints);
-            // if (doc.created_at && doc.updated_at) {
-            //     ret.created_at = new Date(doc.created_at).getTime();
-            //     ret.updated_at = new Date(doc.updated_at).getTime();
-            // }
-            // if (doc.last_login_time) {
-            //     ret.last_login_time = new Date(doc.last_login_time).getTime();
-            // }
+
         }
     });
 

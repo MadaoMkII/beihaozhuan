@@ -5,7 +5,8 @@ module.exports = app => {
         uuid: {
             required: true,
             type: String,
-            unique: true
+            unique: true,
+            sparse: true
         },
         title: {type: String, required: true},
         category: {type: String, required: true, default: '未分类'},
@@ -32,7 +33,7 @@ module.exports = app => {
         },
         status: {
             type: String,
-            enum: ['activity', 'disable'], default: "disable"
+            enum: ['enable', 'disable'], default: "disable"
         },
         insuranceLink: {type: String},
         paymentMethod: {

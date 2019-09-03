@@ -27,5 +27,11 @@ module.exports = {
         const moment = require(`moment`);
         require(`moment-timezone`);
         return moment.tz(new Date(), "Asia/ShangHai").format(`YYYYMMDD`);
+    },
+    getFormatDateForJSON: function (date) {
+        let {DateTime} = require('luxon');
+        let local = DateTime.fromISO(date.toISOString());
+        let rezoned = local.setZone("Asia/Shanghai");
+        return rezoned.toFormat(`yyyy-MM-dd`);
     }
 };

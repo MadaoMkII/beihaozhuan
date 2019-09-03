@@ -4,5 +4,5 @@ module.exports = app => {
     router.post('/verify/verifyCaptTxt', controller['captchaController'].verifyCaptchaText);
     router.post('/uploadImgForEndpoint', controller.picController.uploadImgs);
     router.get('/', controller.home.main);
-    router.get('/deleteImage', controller.picController.deleteImg);
+    router.post('/deleteImages', controller.picController.delImgs);
 };

@@ -15,11 +15,16 @@ const rule = {
     ],
     price: [
         {required: true, message: 'price不能为空'},
-        {type: 'number', message: '必须大于0'}
+        {type: 'string', message: '类型不正确 必须为string'}
     ],
     inventory: [
         {required: true, message: 'inventory不能为空'},
-        {type: 'number', message: '必须大于0'}
+        {type: 'string', message: '类型不正确 必须为string'}
+    ],
+    paymentMethod: [
+        {required: false, message: 'paymentMethod能为空'},
+        {type: "enum", enum: ['Bcoin', 'Money']}
+
     ]
 };
 

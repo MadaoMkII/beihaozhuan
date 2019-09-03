@@ -7,7 +7,6 @@ module.exports = app => {
     router.get('/user/logout', controller[`authController`].logout);
     //router.get('/index', controller[`home`].index);
     router.get('/checkHealth', (ctx) => {
-
         ctx.response.body = {
             "success": true,
             "message": "Service is running~"
@@ -15,8 +14,9 @@ module.exports = app => {
         ctx.status = 200;
     });
     router.post('/user/getUserBalanceList', controller[`userAccount`].getUserBalanceList);
+    router.post('/user/getUser', controller[`userAccount`].getUser);
     router.post('/user/updateUserPassword', controller[`userAccount`].updateUserPassword);
     router.get('/user/getInfo', app.middleware.authenticatedMiddleware(`User`), controller['userAccount'].getUserInfo);
     router.post('/user/getManagementUserInfo', controller[`userAccount`].getManagementUserInfo);
-
+    router.post('/user/setUserStatus', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].setUserStatus);
 };

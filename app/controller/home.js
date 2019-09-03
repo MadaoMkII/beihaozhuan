@@ -20,11 +20,7 @@ class HomeController extends Controller {
     };
 
 
-    async addUser(ctx) {
-        let body = ctx.request.body;
-        let result = await this.service.user.addUser({username: body.username, password: body.password});
-        ctx.body = result;
-    }
+
 
 
     // async getUserInfo() {
@@ -42,7 +38,6 @@ class HomeController extends Controller {
         ctx.status = 200;
         ctx.body = captcha.data;
     };
-
 
 
 }

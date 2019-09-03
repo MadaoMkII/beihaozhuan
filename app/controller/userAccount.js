@@ -1,17 +1,18 @@
 `use strict`;
 const baseController = require(`../controller/baseController`);
-
 class userAccount extends baseController {
 
     async getUserInfo(ctx) {
-        let newUser = await ctx.service.userService.initialLoginUser(ctx.user);
-        this.success(ctx.user);
+        let userObj = ctx.user;
+        let newUser = await ctx.service.userService.initialLoginUser(userObj);
+        this.success(userObj);
     };
 
-    async getUserBalanceList() {
-        const [condition, option] = await this.cleanupRequestProperty('userAccountController.getUserBalanceListRule', `unit`, `page`, `userUUid`);
+    async getUserBalanceList(ctx) {
+        const [condition, option] = await this.cleanupRequestProperty('userAccountController.getUserBalanceListRule',
+            `unit`, `page`, `userUUid`);
         if (condition !== false) {
-            let result = await this.ctx.service.userService.getUserBalanceListRule(condition, option);
+            let result = await ctx.service.userService.getUserBalanceListRule(condition, option);
             this.success(result);
         }
     };
@@ -23,7 +24,7 @@ class userAccount extends baseController {
         }
         const tel_number = ctx.session.tel_number;
         const {password} = ctx.request.body;
-        const validateResult = await ctx.validate('loginRule', {tel_number, password});
+        const validateResult = await ctx.validate('authRules.loginRule', {tel_number, password});
         if (!validateResult) return;
         let encryptedPassword = ctx.helper.passwordEncrypt(password);
         await ctx.service.userService.updateUserPassword(tel_number, encryptedPassword);
@@ -40,7 +41,7 @@ class userAccount extends baseController {
         }
 
         let ossUrl;
-        if (ctx.request.files) {
+        if (!this.ctx.helper.isEmpty(ctx.request.files)) {
             const file = ctx.request.files[0];
             ossUrl = await ctx.service.picService.putImgs(file);
             condition.avatar = ossUrl;
@@ -49,17 +50,18 @@ class userAccount extends baseController {
         this.success(newUser_result);
     };
 
-    async getManyUser() {
+    async getManyUser(ctx) {
         //let result = await ctx.service.userService.getManyUser(condition, option);
-        const [condition, option] = await this.cleanupRequestProperty('findUsersRule',
+        const [condition, option] = await this.cleanupRequestProperty('userAccountController.findUsersRule',
             `tel_number`, `hasPaid`, `nickName`, `activity`, `hasVerifyWechat`, 'unit', 'page');
         if (condition !== false) {
             this.deepCleanUp(condition, `userStatus`, `activity`, `hasPaid`, `hasVerifyWechat`);
             // let condition = cleanupResult[0];
             // let option = cleanupResult[1];
-            let result = await this.ctx.service.userService.getManyUser(condition,
+            let [result, count] = await this.ctx.service.userService.getManyUser(condition,
                 option, {Bcoins: 1, tel_number: 1, loginTimes: 1, nickName: 1, avatar: 1, userStatus: 1});
             this.success(result);
+            ctx.body = Object.assign(ctx.body, {count: count});
         }
     };
 
@@ -80,13 +82,26 @@ class userAccount extends baseController {
         this.success(newUser);
     };
 
-    async setUserRole(ctx) {
+    async setUserStatus(ctx) {
+        let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
+            'activity', 'uuid');
+        await ctx.service.userService.updateUser(condition.uuid, {"userStatus.activity": condition.activity});
+        this.success();
+    };
 
+    async setUserRole(ctx) {
         let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
             'role', 'uuid');
 
         await ctx.service.userService.updateUser(condition.role, condition.uuid);
         this.success();
+    };
+
+    async getUser(ctx) {
+        let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
+            'uuid');
+        let result = await ctx.service.userService.getUser({uuid: condition.uuid}, {uuid: 0, password: 0});
+        this.success(result);
     };
 }
 

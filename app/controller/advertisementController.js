@@ -38,7 +38,6 @@ class advertisementController extends Controller {
         if (!advertisement) {
             return;
         }
-        console.log(advertisement)
         let result = await ctx.service.advertisementService.createAdvertisement(advertisement);
         this.success(result);
     }

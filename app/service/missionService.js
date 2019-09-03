@@ -9,14 +9,19 @@ class missionService extends Service {
     };
 
     async updateMission(missionObj) {
-        let missionType = missionObj.missionType;
-        delete missionObj.missionType;
-        return this.ctx.model.Mission.findOneAndUpdate({missionType: missionType},
+        let missionUUid = missionObj.uuid;
+        delete missionObj.uuid;
+        return this.ctx.model.Mission.findOneAndUpdate({UUid: missionUUid},
             {$set: missionObj}, {new: true});
     };
 
     async getMission(condition) {
         return this.ctx.model.Mission.find(condition);
+    };
+
+    async setMissionStatus(condition) {
+        return this.ctx.model.Mission.findOneAndUpdate({UUid: condition.uuid},
+            {$set: {status: condition.status}}, {new: true});
     }
 }
 

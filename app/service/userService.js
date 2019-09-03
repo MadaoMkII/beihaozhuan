@@ -4,29 +4,52 @@ const Service = require('egg').Service;
 require(`moment-timezone`);
 
 class UserService extends Service {
-    // async tryUser(user) {
-    //     let uuid = require('cuid')();
-    //     const userNew = this.ctx.model.UserAccount(
-    //         {username: uuid + 'a', password: uuid + `b`, uuid: uuid, tel_number: uuid + 'f', Bcoins: 123}
-    //     );
-    //     return userNew;
-    // };
+
     async initialLoginUser(user) {
+        let requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack();
+
+        requireMissionResult.forEach((missionTypeObj) => {
+
+            if (missionTypeObj._id === `Daily`) {
+
+                missionTypeObj.missions.forEach((mission) => {
+                    let dailyEntity = {
+                        userID: user._id,
+                        missionID: mission._id,
+                        missionEventName: mission.title,
+                        recentAmount: 0,
+                        effectDay: this.ctx.app[`getFormatDate`]()
+                    };
+                    console.log(dailyEntity)
+                    // this.ctx.model.DailyMissionProcessingTracker.findOneAndUpdate({
+                    //     userID: user.uuid,
+                    //     effectDay: this.ctx.app.getFormatDate()
+                    // }, {$set: {}});
+
+                });
+
+
+            }
+
+
+        });
         // if(user.dailyMissionTrackers!==[]){
         //     this.ctx.model.mission.findOne();
         // }
-        let missionsArray = await this.ctx.model.Mission.find();
-        let missionBox = [];
-        let object ={
-            userID: `5d680f04a50d8b2d54205298`,
-            missionID: `5d680f04a50d8b2d54205298`,
-            missionEventName: `xman`,
-            recentAmount: 11,
-            effectDay: `2019/12`};
-        let tracker = await new this.ctx.model.WeeklyMissionProcessingTracker(object);
-       await tracker.save();
-        let tracker2 = await new this.ctx.model.DailyMissionProcessingTracker(object);
-        await tracker2.save();
+        // let missionsArray = await this.ctx.model.Mission.find();
+        // let missionBox = [];
+        // let object = {
+        //     userID: `5d680f04a50d8b2d54205298`,
+        //     missionID: `5d680f04a50d8b2d54205298`,
+        //     missionEventName: `xman`,
+        //     recentAmount: 11,
+        //     effectDay: `2019/12`
+        // };
+        // let tracker = await new this.ctx.model.WeeklyMissionProcessingTracker(object);
+        // await tracker.save();
+        // let tracker2 = await new this.ctx.model.DailyMissionProcessingTracker(object);
+        // await tracker2.save();
+
         // for (const mission of missionsArray) {
         //     let MissionProcessingTracker = await this.ctx.model.MissionProcessingTracker.save({
         //         effectDay: this.ctx.app.getFormatDate(),
@@ -38,7 +61,7 @@ class UserService extends Service {
         // }
         // return this.ctx.model.UserAccount.findOneAndUpdate({_id: user._id},
         //     {$set: {dailyMissionTrackers: missionBox}}, {new: true}).populate('dailyMissionTrackers');
-        return tracker;
+        return null;
     };
 
     async updateUser(user_uuid, userObj) {
@@ -64,12 +87,17 @@ class UserService extends Service {
         await userNew.save();
     };
 
-    async getUser(user) {
-        return this.ctx.model.UserAccount.findOne(user);
+    async getUser(user, project) {
+        return this.ctx.model.UserAccount.findOne(user, project);
     };
 
     async getManyUser(conditions, option, project = {}) {
-        return this.ctx.model.UserAccount.find(conditions, project, option);
+        if (!this.ctx.helper.isEmpty(conditions.nickName)) {
+            conditions.nickName = {$regex: `.*${conditions.nickName}.*`};
+        }
+        let count = await this.ctx.model.UserAccount.countDocuments(conditions);
+        let data = await this.ctx.model.UserAccount.find(conditions, project, option);
+        return [data, count];
     };
 
     async getUserBalanceListRule(conditions, option) {
@@ -103,6 +131,10 @@ class UserService extends Service {
 //         }
 //         this.setUser(_id, {Bcoins: newBasin_unencrypted}, {missionTrackers: missionEvent})
 //     }
+    async setUserStatus(id, setObj, pushObj) {
+        return this.ctx.model.UserAccount.findOneAndUpdate({_id: id},
+            {$set: setObj, $push: pushObj}, {new: true});
+    };
 
     async setUser(id, setObj, pushObj) {
         return this.ctx.model.UserAccount.findOneAndUpdate({_id: id},

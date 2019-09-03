@@ -10,7 +10,7 @@ const rule = {
     ],
     requireAmount: [
         {required: true, message: 'requireAmount不能为空'},
-        {type: 'number', message: 'requireAmount需要是数字'},
+        {type: 'number', min: 1, message: '必须为number ,最小值为1'}
     ],
     imgUrl: [
         {required: false, message: 'imgUrl'},
@@ -18,7 +18,7 @@ const rule = {
     ],
     reward: [
         {required: true, message: 'reward不能为空'},
-        {type: 'number', message: 'reward需要是数字'},
+        {type: 'number', min: 1, message: '必须为number ,最小值为1'}
     ]
 };
 module.exports = rule;

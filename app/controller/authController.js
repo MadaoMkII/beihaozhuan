@@ -76,7 +76,7 @@ class authController extends Controller {
 
     async register(ctx) {
         try {
-            const [requestEntity] = await this.cleanupRequestProperty('loginRule',
+            const [requestEntity] = await this.cleanupRequestProperty('authRules.loginRule',
                 `smsVerifyCode`, `password`, `tel_number`);
             if (!requestEntity) {
                 return;

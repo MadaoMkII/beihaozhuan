@@ -1,47 +1,65 @@
 'use strict';
-const {Service} = require('egg');
+const moment = require('moment');
+const Service = require('egg').Service;
+require(`moment-timezone`);
 
-class systemSettingService extends Service {
-    async findAdvPosition(location) {
+class SystemSettingService extends Service {
 
-        return this.ctx.model.SystemSetting.findOne(location,
-            {"advPosition.$._id": false});
+    async getSetting() {
+        // let setting = new this.ctx.model.SystemSetting({
+        //     registerMission: {activity: false, reward: 11},
+        //     inviteMission: {numberOfInvite: 112, activity: false, reward: 1036},
+        //     weighting: 2,
+        //     serviceNumber: `xs`
+        // });
+        //await setting.save();
+        return this.ctx.model.SystemSetting.findOne({}, {}, {sort: {updated_at: -1}});
     };
 
-    async setBannerGood(uuid) {
-        let good = await this.ctx.service.goodService.getGood(uuid);
-        if (good === null) {
-            this.ctx.throw(400, `Good doesn't exist`)
+    async setValue(oldObj, inputObj, checkedProperty) {
+        if (this.ctx.helper.isEmpty(inputObj)) {
+            return oldObj[checkedProperty];
         }
-        return this.ctx.model.SystemSetting.findOneAndUpdate({},
-            {$set: {"goodSetting.bannerGood": good._id}}, {new: true, upsert: true});
+        return this.ctx.helper.isEmpty(inputObj[checkedProperty]) ? oldObj[checkedProperty] : inputObj[checkedProperty]
     };
 
-    async setAdvPosition(setting) {
+    async setSetting(settingEntity) {
+        let lastSettingObj = await this.getSetting();
+        let registerMission = {
+            activity: await this.setValue(lastSettingObj.registerMission, settingEntity.registerMission, `activity`),
+            reward: await this.setValue(lastSettingObj.registerMission, settingEntity.registerMission, `reward`)
+        };
+        let inviteMission = {
+            numberOfInvite: await this.setValue(lastSettingObj.inviteMission, settingEntity.inviteMission, `numberOfInvite`),
+            activity: await this.setValue(lastSettingObj.inviteMission, settingEntity.inviteMission, `activity`),
+            reward: await this.setValue(lastSettingObj.inviteMission, settingEntity.inviteMission, `reward`)
+        };
+        let weighting = await this.setValue(lastSettingObj, settingEntity, `weighting`);
+        let serviceNumber = await this.setValue(lastSettingObj, settingEntity, `serviceNumber`);
 
-        // return  this.ctx.model.SystemSetting.create({
-        //      advPosition: [{
-        //          location: `未分类`,
-        //          advPositionInfo: {
-        //              adv_ID: setting.adv_ID,
-        //              title: setting.title,
-        //              length: setting.length,
-        //              weight: setting.weight,
-        //              activity: false
-        //          }
-        //      }]
-        //  });
+        let systemSettingObj = new this.ctx.model.SystemSetting({
+            registerMission: registerMission,
+            inviteMission: inviteMission,
+            weighting: weighting,
+            serviceNumber: serviceNumber
+        });
 
-        return this.ctx.model.SystemSetting.findOneAndUpdate({"advPosition.location": setting.location}, {
-            $set: {
-                "advPosition.$.advPositionInfo.title": setting.title,
-                "advPosition.$.advPositionInfo.adv_ID": setting.adv_ID,
-                "advPosition.$.advPositionInfo.length": setting.length,
-                "advPosition.$.advPositionInfo.weight": setting.weight,
-                "advPosition.$.advPositionInfo.activity": setting.activity
-            }
-        }, {new: true, upsert: true});
-    };
+        systemSettingObj.save();
+
+
+        // return this.ctx.model.Mission.findOneAndUpdate({
+        //     missionType: "Permanent",
+        //     title: ""
+        // }, {
+        //     $set: {
+        //         registerMission: registerMission,
+        //         inviteMission: inviteMission,
+        //         weighting: weighting,
+        //         serviceNumber: serviceNumber
+        //     }
+        // }, {sort: {updated_at: -1}, new: true});
+
+    }
 }
 
-module.exports = systemSettingService;
+module.exports = SystemSettingService;

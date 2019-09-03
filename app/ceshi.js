@@ -100,6 +100,7 @@
 //     return element.name === 2
 // }));
 var { DateTime ,Info} = require('luxon');
-var local = DateTime.local();
+var local = DateTime.fromISO(new Date().toISOString());
 var rezoned = local.setZone("Asia/Shanghai");
-console.log(rezoned.year+``+rezoned.month)
+console.log(rezoned.toFormat(`yyyy-MM-dd  HH`))
+

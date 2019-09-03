@@ -5,7 +5,7 @@ module.exports = app => {
     const connection = app.mongooseDB.get('commonConnection');
     const mission = new mongoose.Schema({
         missionType: {required: true, type: String, enum: [`Weekly`, `Daily`, `Permanent`]},
-        title: {required: true, type: String, unique: true},
+        title: {required: true, type: String, unique: true, sparse: true},
         requireAmount: {required: true, type: Number, default: 0},
         imgUrl: String,
         reward: {required: true, type: Number, default: 0},
