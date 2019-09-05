@@ -21,13 +21,12 @@ class advertisementController extends Controller {
         this.success(mission)
     };
 
-    async checkAD(ctx) {
-        const eventEmitter = await ctx.service.missionEventManager.getEventEmitter();
-        let re = eventEmitter.emit('checkAD', {
-            missionEventName: `ADV`,
-            userID: ctx.user._id,
-            effectDay: ctx.app.getFormatDate()
-        }, ctx);
+    async   checkAD(ctx) {
+
+        const eventEmitter = await ctx.service.missionEventManager.initMissionEventManager(ctx.user);
+        let re = eventEmitter.emit('签到',
+            ctx.user._id);
+        console.log(eventEmitter.eventNames())
         this.success(re);
     }
 

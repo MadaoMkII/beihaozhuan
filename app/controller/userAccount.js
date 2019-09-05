@@ -5,6 +5,14 @@ class userAccount extends baseController {
     async getUserInfo(ctx) {
         let userObj = ctx.user;
         let newUser = await ctx.service.userService.initialLoginUser(userObj);
+        await ctx.service.missionEventManager.initMissionEventManager(ctx.user);
+
+       let event =  await ctx.service.missionEventManager.getEventEmitter();
+
+
+
+
+
         this.success(userObj);
     };
 
