@@ -6,12 +6,15 @@ class MissionEventManager extends Service {
 
     async getUserDailyMissionProcessing(user_ID) {
 
-        return this.ctx.model.DailyMissionProcessingTracker.find({userID: user_ID})
+        return this.ctx.model.DailyMissionProcessingTracker.find({
+            userID: user_ID,
+            effectDay: this.ctx.app.getFormatDate()
+        })
             .populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
     async requireMissionToTrack() {
-        let missionsAgg = await this.ctx.model.Mission.aggregate([
+        return await this.ctx.model.Mission.aggregate([
             {$group: {_id: "$missionType", missions: {$push: "$$ROOT"}}}, {
                 $project: {
                     // "missions._id": 0,
@@ -40,7 +43,7 @@ class MissionEventManager extends Service {
         //     }
         //
         // });
-        return missionsAgg;
+
     }
 
 }
