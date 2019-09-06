@@ -47,7 +47,7 @@ class missionController extends Controller {
 
     async updateMission(ctx) {
         const [condition] = await this.cleanupRequestProperty('missionRules.updateMissionRule',
-                `requireAmount`, `reward`, `title`, `uuid`);
+            `requireAmount`, `reward`, `title`, `uuid`);
         if (condition !== false) {
             if (ctx.request.files) {
                 const file = ctx.request.files[0];
@@ -60,7 +60,7 @@ class missionController extends Controller {
 
     async getMissions(ctx) {
         const [condition, option] = await this.cleanupRequestProperty('missionRules.getMissionRule',
-            `unit`, `page`, `title`, `missionType`);
+            `title`, `missionType`);//`unit`, `page`,
         if (condition !== false) {
             if (!ctx.helper.isEmpty(condition.title)) {
                 condition.title = {$regex: `.*${condition.title}.*`};

@@ -28,9 +28,9 @@ class goodService extends Service {
     };
 
     async getManyGood(conditions, option) {
-        let count = await this.ctx.model.Good.countDocuments(conditions);//estimatedDocumentCount
-        let result = await this.ctx.model.Good.find(conditions, {}, option)
-        return [result, count];
+        //let count = await this.ctx.model.Good.countDocuments(conditions);//estimatedDocumentCount
+        return this.ctx.model.Good.find(conditions, {}, option)
+
     }
 
     async getBannerGood() {

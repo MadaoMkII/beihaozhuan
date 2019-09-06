@@ -5,9 +5,8 @@ require(`moment-timezone`);
 
 class UserService extends Service {
 
-    async initialLoginUser(user) {
+    async syncingTasks(user) {
         let requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack(user._id);
-
         requireMissionResult.find((missionArray) => {
             if ([`Weekly`, `Daily`, `Permanent`].includes(missionArray._id)) {
                 missionArray.missions.forEach(async (mission) => {
@@ -15,10 +14,20 @@ class UserService extends Service {
                         userID: user._id,
                         missionID: mission._id,
                         missionEventName: mission.title,
-                        effectDay: this.ctx.app.getFormatDate()
                     };
-
                     let modelName = missionArray._id + `MissionProcessingTracker`;
+
+                    switch (missionArray._id) {
+                        case `Permanent`:
+                            conditions.effectDay = `Permanent`;
+                            break;
+                        case `Daily`:
+                            conditions.effectDay = this.ctx.app[`getFormatDate`](new Date());
+                            break;
+                        case `Weekly`:
+                            conditions.effectDay = this.ctx.app[`getFormatWeek`](new Date());
+                            break;
+                    }
                     let missionTracker = await this.ctx.model[modelName].findOne(conditions);
                     if (this.ctx.helper.isEmpty(missionTracker)) {
                         let missionTracker = new this.ctx.model[modelName](conditions);
@@ -26,11 +35,7 @@ class UserService extends Service {
                     }
                 });
             }
-
         });
-
-
-        return null;
     };
 
     async updateUser(user_uuid, userObj) {

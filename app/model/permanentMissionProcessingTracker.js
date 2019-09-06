@@ -7,7 +7,8 @@ module.exports = app => {
         userID: {type: app.mongoose.Schema.Types.ObjectId, ref: 'UserAccount'},
         missionID: {type: app.mongoose.Schema.Types.ObjectId},
         missionEventName: {type: String, required: true},
-        recentAmount: {type: Number, default: 0}
+        recentAmount: {type: Number, default: 0},
+        effectDay: {type: String, default: `Permanent`}
     };
     let missionProcessingTracker = new mongoose.Schema(structure, {
         'timestamps': {

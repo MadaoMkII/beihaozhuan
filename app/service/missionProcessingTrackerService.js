@@ -8,13 +8,28 @@ class MissionEventManager extends Service {
 
         return this.ctx.model.DailyMissionProcessingTracker.find({
             userID: user_ID,
-            effectDay: this.ctx.app.getFormatDate()
-        })
-            .populate({path: `missionID`, model: this.ctx.model.Mission});
+            effectDay: this.ctx.app[`getFormatDate`]()
+        }).populate({path: `missionID`, model: this.ctx.model.Mission});
+    }
+
+    async getUserWeeklyMissionProcessing(user_ID) {
+
+        return this.ctx.model.WeeklyMissionProcessingTracker.find({
+            userID: user_ID,
+            effectDay: this.ctx.app[`getFormatWeek`]()
+        }).populate({path: `missionID`, model: this.ctx.model.Mission});
+    }
+
+    async getUserPermanentMissionProcessing(user_ID) {
+
+        return this.ctx.model.PermanentMissionProcessingTracker.find({
+            userID: user_ID,
+            effectDay: `Permanent`
+        }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
     async requireMissionToTrack() {
-        return await this.ctx.model.Mission.aggregate([
+        return this.ctx.model.Mission.aggregate([
             {$group: {_id: "$missionType", missions: {$push: "$$ROOT"}}}, {
                 $project: {
                     // "missions._id": 0,
@@ -24,28 +39,7 @@ class MissionEventManager extends Service {
                 }
             }
         ]);
-        // missionsAgg.find((missionArray) => {
-        //     if ([`Weekly`, `Daily`, `Permanent`].includes(missionArray._id)) {
-        //         missionArray.missions.forEach(async (mission) => {
-        //             let conditions = {
-        //                 userID: user_ID,
-        //                 missionID: mission._id,
-        //                 missionEventName: mission.title
-        //             };
-        //
-        //             let modelName = missionArray._id + `MissionProcessingTracker`;
-        //             let weeklyTracker = await this.ctx.model[modelName].findOne(conditions);
-        //             if (!weeklyTracker) {
-        //                 let missionTracker = new this.ctx.model[modelName](conditions);
-        //                 missionTracker.save();
-        //             }
-        //         });
-        //     }
-        //
-        // });
-
     }
-
 }
 
 module.exports = MissionEventManager;
