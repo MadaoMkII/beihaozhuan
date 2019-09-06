@@ -12,8 +12,8 @@ class BaseController extends Controller {
         };
         if (!ctx.helper.isEmpty(data)) {
             if (Array.isArray(data)) {
-                ctx.body.data = data[0];
                 ctx.body.count = data[1];
+                ctx.body.data = data[0];
                 //ctx.body = Object.assign(ctx.body, {count: data[1]});
             } else {
                 ctx.body.data = data;

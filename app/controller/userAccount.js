@@ -60,9 +60,8 @@ class userAccount extends baseController {
         if (condition !== false) {
             this.deepCleanUp(condition, `userStatus`, `activity`, `hasPaid`, `hasVerifyWechat`);
             let [result, count] = await this.ctx.service.userService.getManyUser(condition,
-                option, {Bcoins: 1, tel_number: 1, loginTimes: 1, nickName: 1, avatar: 1, userStatus: 1});
-            this.success(result);
-            ctx.body = Object.assign(ctx.body, {count: count});
+                option, {Bcoins: 1, tel_number: 1, loginTimes: 1, nickName: 1, avatar: 1, userStatus: 1, uuid: 1});
+            this.success([result, count]);
         }
     };
 
