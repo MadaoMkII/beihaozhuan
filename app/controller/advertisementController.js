@@ -22,12 +22,11 @@ class advertisementController extends Controller {
     };
 
     async checkAD(ctx) {
-        const eventEmitter = await ctx.service.missionEventManager.getEventEmitter();
-        let re = eventEmitter.emit('checkAD', {
-            missionEventName: `ADV`,
-            userID: ctx.user._id,
-            effectDay: ctx.app.getFormatDate()
-        }, ctx);
+        let {eventName} = ctx.query;
+        const eventEmitter = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
+        let re = eventEmitter.emit(eventName,
+            ctx.user._id);
+        console.log(eventEmitter.eventNames())
         this.success(re);
     }
 

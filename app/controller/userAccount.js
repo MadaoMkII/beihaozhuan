@@ -1,10 +1,13 @@
 `use strict`;
 const baseController = require(`../controller/baseController`);
+
 class userAccount extends baseController {
 
     async getUserInfo(ctx) {
         let userObj = ctx.user;
-        let newUser = await ctx.service.userService.initialLoginUser(userObj);
+        await ctx.service.userService.syncingTasks(userObj);
+        let events = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
+        console.log(events.eventNames())
         this.success(userObj);
     };
 
@@ -56,8 +59,6 @@ class userAccount extends baseController {
             `tel_number`, `hasPaid`, `nickName`, `activity`, `hasVerifyWechat`, 'unit', 'page');
         if (condition !== false) {
             this.deepCleanUp(condition, `userStatus`, `activity`, `hasPaid`, `hasVerifyWechat`);
-            // let condition = cleanupResult[0];
-            // let option = cleanupResult[1];
             let [result, count] = await this.ctx.service.userService.getManyUser(condition,
                 option, {Bcoins: 1, tel_number: 1, loginTimes: 1, nickName: 1, avatar: 1, userStatus: 1});
             this.success(result);

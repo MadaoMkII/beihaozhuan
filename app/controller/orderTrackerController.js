@@ -29,7 +29,6 @@ class orderTrackerController extends baseController {
     };
 
     async findOrderByUser() {
-
         const [condition, option] = await this.cleanupRequestProperty('orderTrackerRules.findOrderOfUser', `unit`, `page`, `userUUid`);
         if (condition !== false) {
             let result = await this.ctx.service.orderTrackerService.findOrder(condition, option);
@@ -39,19 +38,14 @@ class orderTrackerController extends baseController {
 
 
     async findOrder() {
-        // let {unit, page, orderUUid, title} = ctx.request.body;
-        // const validateResult = await ctx.validate('pageAndUnitRule', {unit, page});
-        // if (!validateResult) return;
-        // let objAfterClean = this.ctx.helper.cleanupRequest([`unit`, `page`], {unit, page, orderUUid, title});
-        // const option = ctx.helper.operatorGenerator(unit, page);
-        const cleanupResult = await this.cleanupRequestProperty('pageAndUnitRule',
+        const [condition, option] = await this.cleanupRequestProperty('orderTrackerRules.findGoodRule',
             `unit`, `page`, `orderUUid`, `title`);
-        if (cleanupResult !== false) {
-            let condition = cleanupResult[0];
-            let option = cleanupResult[1];
-            let result = await this.ctx.service.orderTrackerService.findOrder(condition, option);
-            this.success(result);
+        if (!condition) {
+            return;
         }
+        let result = await this.ctx.service.orderTrackerService.findOrder(condition, option);
+        let count = await this.getFindModelCount(`OrderTracker`, condition);
+        this.success([result, count]);
     }
 }
 

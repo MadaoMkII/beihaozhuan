@@ -10,9 +10,16 @@ class BaseController extends Controller {
             code: '0',
             msg: msg,
         };
-        if (data) {
-            ctx.body.data = data;
+        if (!ctx.helper.isEmpty(data)) {
+            if (Array.isArray(data)) {
+                ctx.body.data = data[0];
+                ctx.body.count = data[1];
+                //ctx.body = Object.assign(ctx.body, {count: data[1]});
+            } else {
+                ctx.body.data = data;
+            }
         }
+
         ctx.status = state;
     };
 
@@ -98,6 +105,10 @@ class BaseController extends Controller {
         );
     };
 
+    async getFindModelCount(modelName, conditions) {
+        let count = await this.ctx.model[modelName].estimatedDocumentCount(conditions);
+        return this.ctx.helper.isEmpty(count) ? 0 : count;
+    };
 
     // validateError(err) {
     //     const ctx = this.ctx;

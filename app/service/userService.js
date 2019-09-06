@@ -5,63 +5,37 @@ require(`moment-timezone`);
 
 class UserService extends Service {
 
-    async initialLoginUser(user) {
-        let requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack();
-
-        requireMissionResult.forEach((missionTypeObj) => {
-
-            if (missionTypeObj._id === `Daily`) {
-
-                missionTypeObj.missions.forEach((mission) => {
-                    let dailyEntity = {
+    async syncingTasks(user) {
+        let requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack(user._id);
+        requireMissionResult.find((missionArray) => {
+            if ([`Weekly`, `Daily`, `Permanent`].includes(missionArray._id)) {
+                missionArray.missions.forEach(async (mission) => {
+                    let conditions = {
                         userID: user._id,
                         missionID: mission._id,
                         missionEventName: mission.title,
-                        recentAmount: 0,
-                        effectDay: this.ctx.app[`getFormatDate`]()
                     };
-                    console.log(dailyEntity)
-                    // this.ctx.model.DailyMissionProcessingTracker.findOneAndUpdate({
-                    //     userID: user.uuid,
-                    //     effectDay: this.ctx.app.getFormatDate()
-                    // }, {$set: {}});
+                    let modelName = missionArray._id + `MissionProcessingTracker`;
 
+                    switch (missionArray._id) {
+                        case `Permanent`:
+                            conditions.effectDay = `Permanent`;
+                            break;
+                        case `Daily`:
+                            conditions.effectDay = this.ctx.app[`getFormatDate`](new Date());
+                            break;
+                        case `Weekly`:
+                            conditions.effectDay = this.ctx.app[`getFormatWeek`](new Date());
+                            break;
+                    }
+                    let missionTracker = await this.ctx.model[modelName].findOne(conditions);
+                    if (this.ctx.helper.isEmpty(missionTracker)) {
+                        let missionTracker = new this.ctx.model[modelName](conditions);
+                        missionTracker.save();
+                    }
                 });
-
-
             }
-
-
         });
-        // if(user.dailyMissionTrackers!==[]){
-        //     this.ctx.model.mission.findOne();
-        // }
-        // let missionsArray = await this.ctx.model.Mission.find();
-        // let missionBox = [];
-        // let object = {
-        //     userID: `5d680f04a50d8b2d54205298`,
-        //     missionID: `5d680f04a50d8b2d54205298`,
-        //     missionEventName: `xman`,
-        //     recentAmount: 11,
-        //     effectDay: `2019/12`
-        // };
-        // let tracker = await new this.ctx.model.WeeklyMissionProcessingTracker(object);
-        // await tracker.save();
-        // let tracker2 = await new this.ctx.model.DailyMissionProcessingTracker(object);
-        // await tracker2.save();
-
-        // for (const mission of missionsArray) {
-        //     let MissionProcessingTracker = await this.ctx.model.MissionProcessingTracker.save({
-        //         effectDay: this.ctx.app.getFormatDate(),
-        //         userID: user._id,
-        //         missionID: mission._id,
-        //         missionEventName: mission.eventName,
-        //     });
-        //     missionBox.push(MissionProcessingTracker._id)
-        // }
-        // return this.ctx.model.UserAccount.findOneAndUpdate({_id: user._id},
-        //     {$set: {dailyMissionTrackers: missionBox}}, {new: true}).populate('dailyMissionTrackers');
-        return null;
     };
 
     async updateUser(user_uuid, userObj) {

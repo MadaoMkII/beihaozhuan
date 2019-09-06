@@ -13,11 +13,9 @@ class goodController extends baseController {
         if (!condition) {
             return;
         }
-        let [result, count] = await ctx.service.goodService.getManyGood(condition, option);
-        this.success(result);
-        ctx.body = Object.assign(ctx.body, {count: count});
-
-
+        let count = await this.getFindModelCount(`Good`, condition);
+        let result = await ctx.service.goodService.getManyGood(condition, option);
+        return this.success([result, count]);
     };
 
     async delGood(ctx) {
@@ -26,7 +24,7 @@ class goodController extends baseController {
             this.failure(`uuid can not be empty`, 400)
         }
         await ctx.service.goodService.delGood(uuid);
-        this.success();
+        return this.success();
     };
 
     async setGoodStatus(ctx) {
@@ -99,7 +97,7 @@ class goodController extends baseController {
             }
             newGood.uuid = uuid;
             let result = await ctx.service.goodService.createGood(newGood);
-            this.success(result);
+            return this.success(result);
         } catch (e) {
             this.failure(e.message, 503)
         }

@@ -33,5 +33,11 @@ module.exports = {
         let local = DateTime.fromISO(date.toISOString());
         let rezoned = local.setZone("Asia/Shanghai");
         return rezoned.toFormat(`yyyy-MM-dd`);
+    },
+    getFormatWeek: function () {
+        let {DateTime} = require('luxon');
+        let local = DateTime.fromISO(new Date().toISOString());
+        let rezoned = local.setZone("Asia/Shanghai");
+        return rezoned.weekYear + `/` + rezoned.weekNumber;
     }
 };

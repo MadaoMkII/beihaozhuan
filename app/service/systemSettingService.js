@@ -46,19 +46,6 @@ class SystemSettingService extends Service {
 
         systemSettingObj.save();
 
-
-        // return this.ctx.model.Mission.findOneAndUpdate({
-        //     missionType: "Permanent",
-        //     title: ""
-        // }, {
-        //     $set: {
-        //         registerMission: registerMission,
-        //         inviteMission: inviteMission,
-        //         weighting: weighting,
-        //         serviceNumber: serviceNumber
-        //     }
-        // }, {sort: {updated_at: -1}, new: true});
-
     }
 }
 
