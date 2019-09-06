@@ -13,6 +13,9 @@ class goodController extends baseController {
         if (!condition) {
             return;
         }
+        if (!ctx.helper.isEmpty(condition.title)) {
+            condition.title = {$regex: `.*${condition.title}.*`};
+        }
         let count = await this.getFindModelCount(`Good`, condition);
         let result = await ctx.service.goodService.getManyGood(condition, option);
         return this.success([result, count]);
