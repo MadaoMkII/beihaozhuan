@@ -1,6 +1,6 @@
 module.exports = app => {
     const {router, controller} = app;
-    router.post('/user/getUsers', controller[`userAccount`].getManyUser);
+    router.post('/user/getManyUser', controller[`userAccount`].getManyUser);
     router.post('/user/updateInfo', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].updateUserInfo);
     router.post('/user/register', controller[`authController`].register);
     router.post('/user/login', controller[`authController`].login);
@@ -18,5 +18,6 @@ module.exports = app => {
     router.post('/user/updateUserPassword', controller[`userAccount`].updateUserPassword);
     router.get('/user/getInfo', app.middleware.authenticatedMiddleware(`User`), controller['userAccount'].getUserInfo);
     router.post('/user/getManagementUserInfo', controller[`userAccount`].getManagementUserInfo);
+    router.post('/user/setUserAdmin', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].setUserAdmin);
     router.post('/user/setUserStatus', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].setUserStatus);
 };
