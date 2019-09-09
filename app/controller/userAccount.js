@@ -7,7 +7,6 @@ class userAccount extends baseController {
         let userObj = ctx.user;
         await ctx.service.userService.syncingTasks(userObj);
         let events = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
-        console.log(events.eventNames())
         this.success(userObj);
     };
 
@@ -53,7 +52,7 @@ class userAccount extends baseController {
         this.success(newUser_result);
     };
 
-    async getManyUser(ctx) {
+    async getManyUser() {
         //let result = await ctx.service.userService.getManyUser(condition, option);
         const [condition, option] = await this.cleanupRequestProperty('userAccountController.findUsersRule',
             `tel_number`, `hasPaid`, `nickName`, `activity`, `hasVerifyWechat`, 'unit', 'page');
@@ -68,6 +67,9 @@ class userAccount extends baseController {
     async getManagementUserInfo(ctx) {
         const {role} = ctx.request.body;
         let [condition, option] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo', `role`, 'unit', 'page');
+        if (!condition) {
+            return;
+        }
         if (ctx.helper.isEmpty(role)) {
             condition = {role: {$in: [`Super_Admin`, `Admin`]}};
         }
@@ -85,6 +87,9 @@ class userAccount extends baseController {
     async setUserStatus(ctx) {
         let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
             'activity', 'uuid');
+        if (!condition) {
+            return;
+        }
         await ctx.service.userService.updateUser(condition.uuid, {"userStatus.activity": condition.activity});
         this.success();
     };
@@ -97,9 +102,22 @@ class userAccount extends baseController {
         this.success();
     };
 
+    async setUserAdmin(ctx) {
+        let [condition,] = await this.cleanupRequestProperty('userAccountController.setUserAdminRule',
+            'role', 'uuid', 'realName');
+        if (!condition) {
+            return;
+        }
+        let user = await ctx.service.userService.updateUser(condition.uuid, condition, {new: true});
+        this.success(user);
+    };
+
     async getUser(ctx) {
         let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
             'uuid');
+        if (!condition) {
+            return;
+        }
         let result = await ctx.service.userService.getUser({uuid: condition.uuid}, {uuid: 0, password: 0});
         this.success(result);
     };
