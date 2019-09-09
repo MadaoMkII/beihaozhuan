@@ -19,6 +19,7 @@
     "egg-controller": "^0.3.28",
     "egg-cors": "^2.2.0",
     "egg-origin": "^1.0.3",
+    "egg-aop": "^0.5.3",
     "egg-mock": "^3.21.0",
     "egg-mongoose": "^3.2.0",
     "egg-multipart": "^2.7.1",
