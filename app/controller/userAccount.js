@@ -66,7 +66,8 @@ class userAccount extends baseController {
 
     async getManagementUserInfo(ctx) {
         const {role} = ctx.request.body;
-        let [condition, option] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo', `role`, 'unit', 'page');
+        let [condition, option] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
+            `role`, 'unit', 'page');
         if (!condition) {
             return;
         }

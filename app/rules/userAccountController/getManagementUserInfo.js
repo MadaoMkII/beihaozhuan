@@ -1,8 +1,10 @@
-const rule = {
-    uuid: [
-        {required: true, message: '可以能为空'},
-        {type: 'string', message: '必须为字符串'}
+'use strict';
+const pageAndUnitRules = require(`../pageAndUnitRule`);
+let rule = {
+    role: [
+        {required: false, message: 'role不能为空'},
+        {type: "enum", enum: ['Admin', 'Super_Admin']}
     ]
 };
-
+Object.assign(rule, pageAndUnitRules);
 module.exports = rule;
