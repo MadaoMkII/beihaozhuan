@@ -9,4 +9,7 @@ module.exports = app => {
         controller[`systemSettingController`].setSetting);
     router.post('/setting/getSetting', app.middleware.authenticatedMiddleware(`User`),
         controller[`systemSettingController`].getSetting);
+    router.get('/', async (ctx)=>{
+        ctx.redirect('/index.html')
+    });
 };
