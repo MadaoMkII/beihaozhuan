@@ -76,10 +76,10 @@ module.exports = appInfo => {
             enable: false,
             ignoreJSON: false
         },
-        domainWhiteList: ['http://localhost:8080']
+        domainWhiteList: ['http://localhost:8080', 'http://127.0.0.1:3000']
     };
     config.cors = {
-        origin: 'http://localhost:8080',
+        origin: ['http://localhost:8080', 'http://127.0.0.1:3000'],
         allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
         credentials: true
     };
@@ -88,7 +88,7 @@ module.exports = appInfo => {
             port: 3000,
         }
     };
-    config.domainWhiteList = ['http://localhost:4200', 'http://localhost:8080','http://127.0.0.1:3000'];
+    config.domainWhiteList = ['http://localhost:4200', 'http://localhost:8080', 'http://127.0.0.1:3000'];
     // add your user config here
     const userConfig = {
         // myAppName: 'egg',
