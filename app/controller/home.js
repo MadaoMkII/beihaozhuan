@@ -16,7 +16,7 @@ class HomeController extends Controller {
     };
 
     async main() {
-        await this.ctx.render('index.ejs', null)
+        this.ctx.redirect('back', '/index.html');
     };
 
 

@@ -104,7 +104,7 @@ class userAccount extends baseController {
 
     async setUserAdmin(ctx) {
         let [condition,] = await this.cleanupRequestProperty('userAccountController.setUserAdminRule',
-            'role', 'uuid', 'realName');
+            'role', 'tel_number', 'realName');
         if (!condition) {
             return;
         }
