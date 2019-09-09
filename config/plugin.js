@@ -38,7 +38,3 @@ exports.validatePlus = {
     enable: true,
     package: 'egg-validate-plus',
 };
-exports.origin = {
-    enable: true,
-    package: 'egg-origin',
-};
