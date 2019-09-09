@@ -3,11 +3,7 @@ const baseController = require(`../controller/baseController`);
 
 class goodController extends baseController {
     async getManyGoods(ctx) {
-        // let {unit, page, status, title} = ctx.request.body;
-        // const validateResult = await ctx.validate('pageAndUnitRule', {unit, page, status, title});
-        // if (!validateResult) return;
-        // let condition = this.ctx.helper.cleanupRequest([`unit`, `page`], {unit, page, status, title});
-        // const option = ctx.helper.operatorGenerator(page, unit);
+
         const [condition, option] = await this.cleanupRequestProperty('goodRules.findGoodRule',
             `unit`, `page`, `status`, `title`, `uuid`);
         if (!condition) {

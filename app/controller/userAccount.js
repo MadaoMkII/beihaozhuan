@@ -80,18 +80,18 @@ class userAccount extends baseController {
             nickName: 1,
             updated_at: 1,
             userStatus: 1,
-            Bcoins: 1
+            Bcoins: 1, uuid: 1
         });
         this.success(newUser);
     };
 
     async setUserStatus(ctx) {
-        let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
-            'activity', 'uuid');
+        let [condition,] = await this.cleanupRequestProperty('userAccountController.setUserStatusRule',
+            'uuid');
         if (!condition) {
             return;
         }
-        await ctx.service.userService.updateUser(condition.uuid, {"userStatus.activity": condition.activity});
+        await ctx.service.userService.updateUser(condition.uuid, {role: `User`});
         this.success();
     };
 
@@ -109,7 +109,9 @@ class userAccount extends baseController {
         if (!condition) {
             return;
         }
-        let user = await ctx.service.userService.updateUser(condition.uuid, condition, {new: true});
+        let user = await ctx.service.userService.getUser({tel_number: condition.tel_number});
+        delete condition.tel_number;
+        await ctx.service.userService.updateUser(user.uuid, condition, {new: true});
         this.success(user);
     };
 
