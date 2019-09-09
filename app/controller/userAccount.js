@@ -4,7 +4,6 @@ const baseController = require(`../controller/baseController`);
 class userAccount extends baseController {
 
     async getUserInfo(ctx) {
-        console.log(this.ctx.host)
         let userObj = ctx.user;
         await ctx.service.userService.syncingTasks(userObj);
         let events = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
