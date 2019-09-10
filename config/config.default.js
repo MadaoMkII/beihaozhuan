@@ -83,6 +83,7 @@ module.exports = appInfo => {
         allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
         credentials: true
     };
+    config.proxy = true;
     config.cluster = {
         listen: {
             port: 3000,

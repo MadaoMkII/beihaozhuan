@@ -10,7 +10,7 @@ class userAccount extends baseController {
         console.log(ctx.hostname)
         console.log(ctx.origin)
         console.log(ctx.is())
-        console.log(ctx.ip)
+        console.log(ctx.ips)
         let userObj = ctx.user;
         await ctx.service.userService.syncingTasks(userObj);
         let events = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
