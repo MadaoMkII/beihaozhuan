@@ -1,6 +1,6 @@
 'use strict';
 
-const {Controller} = require('egg');
+const Controller = require('./baseController');
 
 class callBackController extends Controller {
     async getCallBackInfo(ctx) {
