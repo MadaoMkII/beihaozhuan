@@ -55,7 +55,6 @@ class MissionEventManager extends Service {
                         effectDay: mission.effectDay,
                         missionEventName: mission.missionEventName
                     };
-                    console.log(missionSearcher)
                     let res = await this.ctx.model.WeeklyMissionProcessingTracker.findOneAndUpdate(missionSearcher,
                         {$inc: {recentAmount: 1}},
                         {new: true});

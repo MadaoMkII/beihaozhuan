@@ -83,9 +83,6 @@ module.exports = appInfo => {
         allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
         credentials: true
     };
-    exports.origin = {
-        whiteList: ["http://localhost:3000", "http://www.beihaozhuan.com"]
-    };
     config.cluster = {
         listen: {
             port: 3000,
