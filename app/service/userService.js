@@ -14,6 +14,7 @@ class UserService extends Service {
                         userID: user._id,
                         missionID: mission._id,
                         missionEventName: mission.title,
+                        requireAmount: mission.requireAmount
                     };
                     let modelName = missionArray._id + `MissionProcessingTracker`;
 

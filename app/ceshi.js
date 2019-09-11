@@ -103,6 +103,7 @@ let {DateTime} = require('luxon');
 let local = DateTime.fromISO(new Date(`2019/01/07`).toISOString());
 let rezoned = local.setZone("Asia/Shanghai");
 
-console.log(rezoned.weekYear)
+
+console.log()
 
 

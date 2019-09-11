@@ -1,4 +1,6 @@
 `use strict`;
+const fs = require('fs');
+const path = require('path');
 module.exports = app => {
     const {router, controller} = app;
     // router.post('/setting/setAdvPosition', app.middleware.authenticatedMiddleware(`User`),
@@ -11,6 +13,13 @@ module.exports = app => {
         controller[`systemSettingController`].getSetting);
     router.get('/callback', controller[`callBackController`].getCallBackInfo);
     router.get('/', async (ctx) => {
-        ctx.redirect('/index.html')
+        ctx.response.type = 'html';
+        ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
+        // ctx.redirect('/index.html')
+    });
+    router.get('/admin', async (ctx) => {
+        ctx.response.type = 'html';
+        ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/admin.html'));
+        // ctx.redirect('/index.html')
     });
 };

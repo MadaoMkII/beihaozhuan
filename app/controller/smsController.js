@@ -4,6 +4,11 @@ const baseController = require(`../controller/baseController`);
 class smsController extends baseController {
     async sendVerifySmsMessage(ctx) {
         const {tel_number} = ctx.request.body;
+        let resultUser = await this.ctx.service.userService.getUser({tel_number: this.ctx.request.body.tel_number});
+        if (!this.ctx.helper.isEmpty(resultUser)) {
+            this.failure(`该手机号已注册`, 400);
+            return;
+        }
         const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
         ctx.session.smsVerifyCode = text;
         await this.sendSmsMessage(tel_number, text);
@@ -11,7 +16,7 @@ class smsController extends baseController {
     };
 
     async sendLoginVerifySmsMessage() {
-        let resultUser =await this.ctx.service.userService.getUser({tel_number: this.ctx.request.body.tel_number});
+        let resultUser = await this.ctx.service.userService.getUser({tel_number: this.ctx.request.body.tel_number});
 
         if (this.ctx.helper.isEmpty(resultUser)) {
             this.failure(`该手机号未注册`, 400);

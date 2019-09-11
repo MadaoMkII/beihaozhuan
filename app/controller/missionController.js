@@ -49,7 +49,7 @@ class missionController extends Controller {
         const [condition] = await this.cleanupRequestProperty('missionRules.updateMissionRule',
             `requireAmount`, `reward`, `title`, `uuid`);
         if (condition !== false) {
-            if (ctx.request.files) {
+            if (!ctx.helper.isEmpty(ctx.request.files)) {
                 const file = ctx.request.files[0];
                 condition.avatar = await ctx.service.picService.putImgs(file);
             }

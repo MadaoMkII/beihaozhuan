@@ -15,7 +15,8 @@ module.exports = app => {
     });
     router.post('/user/getUserBalanceList', controller[`userAccount`].getUserBalanceList);
     router.post('/user/getUser', controller[`userAccount`].getUser);
-    router.post('/user/updateUserPassword', controller[`userAccount`].updateUserPassword);
+    router.get('/user/isLogin', controller[`userAccount`].isLogin);
+    router.get('/user/updateUserPassword', controller[`userAccount`].updateUserPassword);
     router.get('/user/getInfo', app.middleware.authenticatedMiddleware(`User`), controller['userAccount'].getUserInfo);
     router.post('/user/getManagementUserInfo', controller[`userAccount`].getManagementUserInfo);
     router.post('/user/setUserAdmin', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].setUserAdmin);

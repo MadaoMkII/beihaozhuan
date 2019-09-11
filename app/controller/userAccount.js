@@ -2,6 +2,14 @@
 const baseController = require(`../controller/baseController`);
 
 class userAccount extends baseController {
+    async isLogin(ctx) {
+        if (ctx.helper.isEmpty(ctx.user)) {
+            return this.success(`用户已经登录`, 200);
+        } else {
+            return this.failure(`用户尚未登录`, 401);
+        }
+
+    };
 
     async getUserInfo(ctx) {
         console.log(ctx.url)
@@ -56,6 +64,14 @@ class userAccount extends baseController {
             condition.avatar = ossUrl;
         }
         const newUser_result = await this.ctx.service.userService.updateUser(ctx.user.uuid, condition);
+        const eventEmitter = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
+        let re = eventEmitter.emit(`完善用户信息`,
+            newUser_result._id);
+        console.log(re)
+        // Object.keys(newUser_result).forEach((key) => {//注册时候还是得需要一个新的接口，否则会有event错误
+        //     if( ctx.helper.isEmpty(newUser_result[key])){
+        //     }
+        // });
         this.success(newUser_result);
     };
 
@@ -120,6 +136,10 @@ class userAccount extends baseController {
         delete condition.tel_number;
         await ctx.service.userService.updateUser(user.uuid, condition, {new: true});
         this.success(user);
+    };
+
+    async generatorInviteLink(ctx) {
+        return `http://${ctx.hostname}/???/register?inviteCode=${ctx.user.inviteCode}`;
     };
 
     async getUser(ctx) {

@@ -77,14 +77,21 @@ class authController extends Controller {
     async register(ctx) {
         try {
             const [requestEntity] = await this.cleanupRequestProperty('authRules.loginRule',
-                `smsVerifyCode`, `password`, `tel_number`);
+                `smsVerifyCode`, `password`, `tel_number`, `inviteCode`);
             if (!requestEntity) {
                 return;
             }
-            if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
-                String(requestEntity.smsVerifyCode).toLowerCase())) {
-                ctx.throw(400, `VerifyCode verify failed`);
+            if (!ctx.helper.isEmpty(requestEntity.inviteCode)) {
+                let userResult = await ctx.service.userService.getUser({
+                    inviteCode: requestEntity.inviteCode
+                });
+                console.log(userResult)
+                return;
             }
+            // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
+            //     String(requestEntity.smsVerifyCode).toLowerCase())) {
+            //     ctx.throw(400, `VerifyCode verify failed`);
+            // }
             if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
                 String(requestEntity.tel_number).toLowerCase())) {
                 ctx.throw(400, `tel_number doesn't exist`);

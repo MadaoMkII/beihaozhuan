@@ -1,10 +1,14 @@
 'use strict';
 
 const rule = {
-    // email: [
-    //     {required: true, message: '邮箱不能为空'},
-    //     {type: 'email', message: '邮箱格式不正确'},
-    // ],
+    inviteCode: [
+        {required: false, message: ''},
+        {type: 'string', message: '格式不正确'},
+    ],
+    smsVerifyCode: [
+        {required: false, message: ''},
+        {type: 'string', message: '格式不正确'},
+    ],
     tel_number: [
         {required: true, message: '手机号不能为空'},
         {type: 'string', message: '手机号类型不正确'},

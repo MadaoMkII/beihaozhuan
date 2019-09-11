@@ -11,7 +11,8 @@ class BaseController extends Controller {
             msg: msg,
         };
         if (!ctx.helper.isEmpty(data)) {
-            if (Array.isArray(data)) {
+
+            if (Array.isArray(data) && data.length === 2 && !isNaN(data[1])) {
                 ctx.body.count = data[1];
                 ctx.body.data = data[0];
                 //ctx.body = Object.assign(ctx.body, {count: data[1]});
@@ -106,7 +107,7 @@ class BaseController extends Controller {
     };
 
     async getFindModelCount(modelName, conditions) {
-        let count = await this.ctx.model[modelName].estimatedDocumentCount(conditions);
+        let count = await this.ctx.model[modelName].countDocuments(conditions);
         return this.ctx.helper.isEmpty(count) ? 0 : count;
     };
 

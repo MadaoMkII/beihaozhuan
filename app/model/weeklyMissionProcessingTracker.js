@@ -8,6 +8,8 @@ module.exports = app => {
         missionID: {type: app.mongoose.Schema.Types.ObjectId, ref: 'Mission'},
         missionEventName: {type: String, required: true},
         recentAmount: {type: Number, default: 0},
+        requireAmount: {type: Number, default: 0},
+        completed: {type: Boolean, default: false},
         effectDay: {type: String, default: app.getFormatDate()}
     }, {
         'timestamps': {

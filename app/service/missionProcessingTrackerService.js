@@ -3,6 +3,41 @@ const Service = require('egg').Service;
 require(`../model/mission`);
 
 class MissionEventManager extends Service {
+    async completeMission(modelName, userID, missionEventName) {
+        let effectDay = {};
+        switch (modelName) {
+            case `Permanent`:
+                effectDay = `Permanent`;
+                break;
+            case `Daily`:
+                effectDay = this.ctx.app[`getFormatDate`](new Date());
+                break;
+            case `Weekly`:
+                effectDay = this.ctx.app[`getFormatWeek`](new Date());
+                break;
+        }
+        let fullModelName = modelName + `MissionProcessingTracker`;
+        let missionTracker = await this.ctx.model[fullModelName].findOne({
+            userID: userID,
+            missionEventName: missionEventName,
+            completed: false,
+            effectDay: effectDay
+        });
+        if (this.ctx.helper.isEmpty(missionTracker)) {
+            this.ctx.throw(`missionTracker type wrong`);
+        }
+        if (missionTracker.recentAmount >= missionTracker.requireAmount) {
+            return this.ctx.model[fullModelName].findOneAndUpdate({
+                userID: userID,
+                missionEventName: missionEventName,
+                completed: false,
+                effectDay: effectDay
+            }, {$set: {completed: true}}, {new: true});
+        } else {
+            this.ctx.throw(400, `Already complete`);
+        }
+    }
+
 
     async getUserDailyMissionProcessing(user_ID) {
 

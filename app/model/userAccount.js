@@ -65,6 +65,7 @@ module.exports = app => {
         //referrer: {type: referer},
         nickName: {type: String, default: '无名氏'},
         realName: {type: String},
+        inviteCode: {type: String, default: app.getInviteCode},
         avatar: {type: String, default: 'https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/none.gif'},
         gender: {type: String, required: true, default: `male`},
         Bcoins: {type: String, required: true, set: app.encrypt, get: app.decrypt},

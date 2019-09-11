@@ -39,5 +39,8 @@ module.exports = {
         let local = DateTime.fromISO(new Date().toISOString());
         let rezoned = local.setZone("Asia/Shanghai");
         return rezoned.weekYear + `/` + rezoned.weekNumber;
+    },
+    getInviteCode: function () {
+        return (Math.random() / 100000 * Date.now() * 3.1415926).toFixed(0)
     }
 };

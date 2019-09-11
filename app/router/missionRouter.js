@@ -8,7 +8,14 @@ module.exports = app => {
         controller[`missionController`].setMissionStatus);
     router.get('/mission/check', controller[`missionController`].checkMissions);
 
-    router.get('/mission/getUserMissionProcessing', app.middleware.authenticatedMiddleware(`User`),
-        controller[`missionProcessingTrackerController`].getUserMissionProcessing);
-
+    router.get('/mission/getUserDailyMissionProcessing', app.middleware.authenticatedMiddleware(`User`),
+        controller[`missionProcessingTrackerController`].getUserDailyMissionProcessing);
+    router.get('/mission/getUserWeeklyMissionProcessing', app.middleware.authenticatedMiddleware(`User`),
+        controller[`missionProcessingTrackerController`].getUserWeeklyMissionProcessing);
+    router.get('/mission/getUserWeeklyMissionProcessing', app.middleware.authenticatedMiddleware(`User`),
+        controller[`missionProcessingTrackerController`].getUserWeeklyMissionProcessing);
+    router.get('/mission/getUserPermanentMissionProcessing', app.middleware.authenticatedMiddleware(`User`),
+        controller[`missionProcessingTrackerController`].getUserPermanentMissionProcessing);
+    router.post('/mission/completeMission', app.middleware.authenticatedMiddleware(`User`),
+        controller[`missionProcessingTrackerController`].completeMission);
 };
