@@ -39,10 +39,11 @@ class BaseController extends Controller {
         properties.forEach((property) => {
             if (!this.ctx.helper.isEmpty(object[property])) {
                 object[newProperty] = {};
-                object[newProperty][property] = object[property];
+                object[newProperty + `.` + property] = object[property];
                 delete object[property];
             }
         });
+        delete object[newProperty];
     };
 
     operatorGenerator(unit, page, DESC = false) {

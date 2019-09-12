@@ -56,7 +56,23 @@ class UserService extends Service {
         }, {new: true});
     };
 
-    async addUser(user) {
+    async getReferrerID(inviteCode) {
+
+        if (!this.ctx.helper.isEmpty(inviteCode)) {
+            let userResult = await this.ctx.model.UserAccount.findOne({
+                inviteCode: inviteCode
+            });
+            return userResult._id;
+        }
+    };
+
+    async addUser(user, inviteCode) {
+        user.referrer = await this.getReferrerID(inviteCode);
+        if (!this.ctx.helper.isEmpty(user.referrer)) {
+            let userResult = await this.ctx.model.UserAccount.findOne({
+                _id: user.referrer
+            });
+        }
         const userNew = this.ctx.model.UserAccount(
             user
         );

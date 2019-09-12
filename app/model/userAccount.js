@@ -79,6 +79,8 @@ module.exports = app => {
         loginTimes: {type: Number},
         //dailyMissionTrackers: [{type: mongoose.Schema.Types.ObjectId, ref: 'MissionProcessingTracker'}],
         balanceList: [balanceRecord],
+        referrer: {type: mongoose.Schema.Types.Mixed},//上线
+        referrals: [{type: mongoose.Schema.Types.Mixed}],//xia线
         last_login_time: Date
     }, {
         'timestamps': {
@@ -111,7 +113,6 @@ module.exports = app => {
         transform: (doc, ret) => {
             delete ret.__v;
             //delete ret._id;
-            delete ret.id;
             //delete ret.password;
             ret.Bcoins = doc.Bcoins;
 
