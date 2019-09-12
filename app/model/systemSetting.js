@@ -18,7 +18,8 @@ module.exports = app => {
             }, reward: Number
         },
         weighting: Number,
-        serviceNumber: {default: `405-123-4568`, type: String}
+        serviceNumber: {default: `405-123-4568`, type: String},
+        recommendGood: {type: mongoose.Schema.Types.ObjectId}
     }, {
         'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}
     });

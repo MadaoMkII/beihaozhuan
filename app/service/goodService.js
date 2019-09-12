@@ -40,6 +40,16 @@ class goodService extends Service {
     async setGoodStatus(goodObj) {
         return this.ctx.model.Good.findOneAndUpdate({uuid: goodObj.uuid}, {$set: {status: goodObj.status}}, {new: true});
     }
+
+    async getRecommendGood() {
+        let settingGood = await this.ctx.model.SystemSetting.findOne({}, {recommendGood: 1},
+            {sort: {updated_at: -1}}).populate({
+            path: `recommendGood`,
+            model: this.ctx.model.Good
+        });
+
+        return settingGood.recommendGood;
+    };
 }
 
 

@@ -101,6 +101,11 @@ class goodController extends baseController {
             this.failure(e.message, 503)
         }
     };
+
+    async getRecommendGood(ctx) {
+        let setting = await this.service.goodService.getRecommendGood();
+        this.success(setting);
+    };
 }
 
 module.exports = goodController;

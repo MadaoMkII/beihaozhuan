@@ -12,6 +12,10 @@ class SystemSettingController extends baseController {
         let result = await this.ctx.service.systemSettingService.getSetting();
         this.success(result);
     };
+    async getMemberNumber(ctx) {
+
+        this.success({count:1024});
+    };
 }
 
 module.exports = SystemSettingController;

@@ -15,8 +15,8 @@ class missionService extends Service {
             {$set: missionObj}, {new: true});
     };
 
-    async getMission(condition) {
-        return this.ctx.model.Mission.find(condition);
+    async getMission(condition, option) {
+        return this.ctx.model.Mission.find(condition, {}, option);
     };
 
     async setMissionStatus(condition) {

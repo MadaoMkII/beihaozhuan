@@ -1,6 +1,5 @@
 'use strict';
 let ms = require('ms');
-let moment = require('moment');
 const Controller = require('./baseController');
 
 class authController extends Controller {
@@ -82,7 +81,6 @@ class authController extends Controller {
             if (!requestEntity) {
                 return;
             }
-console.log(requestEntity)
             // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
             //     String(requestEntity.smsVerifyCode).toLowerCase())) {
             //     ctx.throw(400, `VerifyCode verify failed`);
@@ -93,7 +91,10 @@ console.log(requestEntity)
             // }
             ctx.session.tel_number = null;
             ctx.session.smsVerifyCode = null;
-
+            let oldUser = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
+            if (!ctx.helper.isEmpty(oldUser)) {
+                return this.failure(`电话号码已经被注册`, 400);
+            }
             const enPassword = ctx.helper.passwordEncrypt(requestEntity.password);
             let uuid = require('cuid')();
             const newUser = {

@@ -36,12 +36,14 @@ class SystemSettingService extends Service {
         };
         let weighting = await this.setValue(lastSettingObj, settingEntity, `weighting`);
         let serviceNumber = await this.setValue(lastSettingObj, settingEntity, `serviceNumber`);
+        let recommendGood = await this.setValue(lastSettingObj, settingEntity, `recommendGood`);
 
         let systemSettingObj = new this.ctx.model.SystemSetting({
             registerMission: registerMission,
             inviteMission: inviteMission,
             weighting: weighting,
-            serviceNumber: serviceNumber
+            serviceNumber: serviceNumber,
+            recommendGood: recommendGood
         });
 
         systemSettingObj.save();

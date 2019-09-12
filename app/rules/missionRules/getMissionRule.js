@@ -1,3 +1,5 @@
+'use strict';
+const pageAndUnitRules = require(`../pageAndUnitRule`);
 const rule = {
     title: [
         {required: false, message: '可以能为空'},
@@ -8,5 +10,5 @@ const rule = {
         {type: "enum", enum: ['Permanent', 'Weekly', `Daily`], message: '数值仅可为 Daily / Weekly / Permanent'}
     ]
 };
-
+Object.assign(rule, pageAndUnitRules);
 module.exports = rule;

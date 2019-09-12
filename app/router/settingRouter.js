@@ -12,6 +12,9 @@ module.exports = app => {
     router.post('/setting/getSetting', app.middleware.authenticatedMiddleware(`User`),
         controller[`systemSettingController`].getSetting);
     router.get('/callback', controller[`callBackController`].getCallBackInfo);
+
+    router.get('/setting/getMemberNumber', controller[`systemSettingController`].getMemberNumber);
+
     router.get('/', async (ctx) => {
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
