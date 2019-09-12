@@ -51,7 +51,7 @@ class missionController extends Controller {
         if (condition !== false) {
             if (!ctx.helper.isEmpty(ctx.request.files)) {
                 const file = ctx.request.files[0];
-                condition.avatar = await ctx.service.picService.putImgs(file);
+                condition.imgUrl = await ctx.service.picService.putImgs(file);
             }
             let result = await ctx.service.missionService.updateMission(condition);
             this.success(result);

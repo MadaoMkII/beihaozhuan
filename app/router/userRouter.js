@@ -20,6 +20,7 @@ module.exports = app => {
     router.get('/user/getInfo', app.middleware.authenticatedMiddleware(`User`), controller['userAccount'].getUserInfo);
     router.post('/user/getManagementUserInfo', controller[`userAccount`].getManagementUserInfo);
     router.post('/user/setUserAdmin', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].setUserAdmin);
+    router.post('/user/updateAdmin', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].updateAdmin);
     router.post('/user/disableUserAdminStatus', app.middleware.authenticatedMiddleware(`User`),
         controller[`userAccount`].setUserStatus);
     router.post('/user/setUserRole', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].setUserRole);

@@ -3,10 +3,10 @@ const baseController = require(`../controller/baseController`);
 
 class userAccount extends baseController {
     async isLogin(ctx) {
-        if (ctx.helper.isEmpty(ctx.user)) {
+        if (!ctx.helper.isEmpty(ctx.user)) {
             return this.success(`用户已经登录`, 200);
         } else {
-            return this.failure(`用户尚未登录`, 401);
+            return this.success(`用户尚未登录`, 200);
         }
 
     };
@@ -103,7 +103,7 @@ class userAccount extends baseController {
             nickName: 1,
             updated_at: 1,
             userStatus: 1,
-            Bcoins: 1, uuid: 1
+            Bcoins: 1, uuid: 1, realName: 1
         });
         this.success(newUser);
     };
@@ -122,7 +122,7 @@ class userAccount extends baseController {
         let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
             'role', 'uuid');
 
-        await ctx.service.userService.updateUser(condition.role, condition.uuid);
+        await ctx.service.userService.updateUser(condition.uuid, condition.role);
         this.success();
     };
 
@@ -143,13 +143,35 @@ class userAccount extends baseController {
     };
 
     async getUser(ctx) {
-        let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
-            'uuid');
-        if (!condition) {
-            return;
-        }
-        let result = await ctx.service.userService.getUser({uuid: condition.uuid}, {uuid: 0, password: 0});
+        const {uuid} = ctx.request.body;
+        // let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
+        //     'uuid');
+        // if (!condition) {
+        //     return;
+        // }
+        let result = await ctx.service.userService.getUser({uuid: uuid}, {uuid: 0, password: 0});
         this.success(result);
+    };
+
+    async updateAdmin(ctx) {
+        try {
+            let [condition,] = await this.cleanupRequestProperty('userAccountController.setAdminRule',
+                'uuid', 'tel_number', 'realName', 'role');
+            if (!condition) {
+                return;
+            }
+            let user = await ctx.service.userService.updateUser(condition.uuid, condition);
+            if (ctx.helper.isEmpty(user)) {
+                return this.failure(`找不到这个用户`, 404);
+            }
+            this.success();
+        } catch (e) {
+            if (e.message.includes(`duplicate`)) {
+                return this.failure(`电话号码已经被使用`, 400);
+            }
+            return this.failure(`服务器忙，请稍后再试`, 500);
+        }
+
     };
 }
 

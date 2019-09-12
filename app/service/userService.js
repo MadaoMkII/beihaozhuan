@@ -40,6 +40,7 @@ class UserService extends Service {
     };
 
     async updateUser(user_uuid, userObj) {
+        delete userObj.uuid;
         return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {$set: userObj}, {new: true});
     };
 

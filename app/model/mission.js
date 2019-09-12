@@ -13,7 +13,7 @@ module.exports = app => {
         //eventName: {required: true, type: String, default: `defaultEvent`},
         status: {
             type: String, required: true,
-            enum: [`activity`, `disable`], default: "disable"
+            enum: [`enable`, `disable`], default: "disable"
         }
     }, {
         'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}

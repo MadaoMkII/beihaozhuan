@@ -5,7 +5,16 @@ const rule = {
     ],
     reward: [
         {required: false, message: '不能为空'},
-        {type: 'number', min: 1, message: '必须为number ,最小值为1'}
+        {type: 'string', message: '必须为number ,最小值为1'},
+        {
+            validator: function (rule, value, callback) {
+                if (Number(value) >= 1) {
+                    callback(); // 验证通过
+                } else {
+                    callback({message: '无法使用该手机号'}); // 验证不通过}
+                }
+            }
+        }
     ],
     title: [
         {required: false, message: '不能为空'},
