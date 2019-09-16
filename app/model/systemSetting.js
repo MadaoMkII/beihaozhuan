@@ -19,7 +19,8 @@ module.exports = app => {
         },
         weighting: Number,
         serviceNumber: {default: `405-123-4568`, type: String},
-        recommendGood: {type: mongoose.Schema.Types.ObjectId}
+        recommendGood: {type: mongoose.Schema.Types.ObjectId},
+        advertisementSetting: {type: mongoose.Schema.Types.Mixed}
     }, {
         'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}
     });

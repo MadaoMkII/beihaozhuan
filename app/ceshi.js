@@ -103,7 +103,8 @@ let {DateTime} = require('luxon');
 let local = DateTime.fromISO(new Date(`2019/01/07`).toISOString());
 let rezoned = local.setZone("Asia/Shanghai");
 
+let a = { x:{name:""}};
 
-console.log()
+console.log( typeof a.x.name  === `object`)
 
 
