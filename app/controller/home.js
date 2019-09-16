@@ -14,13 +14,13 @@ class HomeController extends Controller {
         })
 
     };
-
-    async main() {
-        this.ctx.redirect('back', '/index.html');
-    };
-
-
-
+    //
+    // async main() {
+    //     this.ctx.redirect('back', '/index.html');
+    // };
+    //
+    //
+    //
 
 
     // async getUserInfo() {

@@ -24,4 +24,7 @@ module.exports = app => {
     router.post('/user/disableUserAdminStatus', app.middleware.authenticatedMiddleware(`User`),
         controller[`userAccount`].setUserStatus);
     router.post('/user/setUserRole', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].setUserRole);
+
+
+    router.get('/user/getInviteLink', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].generatorInviteLink);
 };

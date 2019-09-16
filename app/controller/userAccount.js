@@ -139,7 +139,7 @@ class userAccount extends baseController {
     };
 
     async generatorInviteLink(ctx) {
-        return `http://${ctx.hostname}/???/register?inviteCode=${ctx.user.inviteCode}`;
+        return this.success(`http://${ctx.hostname}/register?inviteCode=${ctx.user.inviteCode}`);
     };
 
     async getUser(ctx) {
