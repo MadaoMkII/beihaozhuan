@@ -12,6 +12,8 @@ module.exports = app => {
         },
         advData: {type: mongoose.Schema.Types.Mixed},
         positionName: {type: String},
+        length: Number,
+        width: Number,
         uuid: {
             required: true,
             type: String,

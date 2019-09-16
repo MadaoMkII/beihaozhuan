@@ -9,11 +9,17 @@ module.exports = app => {
     //     controller[`systemSettingController`].setBannerGood);
     router.post('/setting/setSetting', app.middleware.authenticatedMiddleware(`User`),
         controller[`systemSettingController`].setSetting);
+
+    router.post('/setting/setRecommendGood', app.middleware.authenticatedMiddleware(`User`),
+        controller[`systemSettingController`].setRecommendGood);
+
     router.post('/setting/getSetting', app.middleware.authenticatedMiddleware(`User`),
         controller[`systemSettingController`].getSetting);
     router.get('/callback', controller[`callBackController`].getCallBackInfo);
 
     router.get('/setting/getMemberNumber', controller[`systemSettingController`].getMemberNumber);
+
+    router.get('/getSquare', controller[`systemSettingController`].getSquare);
 
     router.get('/', async (ctx) => {
         ctx.response.type = 'html';

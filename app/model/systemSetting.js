@@ -17,7 +17,6 @@ module.exports = app => {
                 enum: ['enable', 'disable'], default: "disable"
             }, reward: Number
         },
-        weighting: Number,
         serviceNumber: {default: `405-123-4568`, type: String},
         recommendGood: {type: mongoose.Schema.Types.ObjectId},
         advertisementSetting: {type: mongoose.Schema.Types.Mixed}

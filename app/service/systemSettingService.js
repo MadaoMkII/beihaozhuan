@@ -4,6 +4,19 @@ require(`moment-timezone`);
 
 class SystemSettingService extends Service {
 
+    async setRecommendGood(uuid, status) {
+        let good = await this.ctx.model.Good.findOneAndUpdate({uuid: uuid}, {$set: {isRecommend: status}});
+        if (!good) {
+            this.ctx.throw(`zhaobu dao`)
+        }
+        if (status) {
+            await this.setSetting({recommendGood: good._id});
+        } else {
+            await this.setSetting({recommendGood: undefined});
+        }
+
+    };
+
     async getSetting() {
         // let setting = new this.ctx.model.SystemSetting({
         //     registerMission: {activity: false, reward: 11},
@@ -25,6 +38,7 @@ class SystemSettingService extends Service {
     async setSetting(settingEntity) {
         let lastSettingObj = await this.getSetting();
         let settingObj = {};
+
         Object.keys(lastSettingObj[`_doc`]).forEach((key) => {
             settingObj[key] = this.setValue(lastSettingObj[`_doc`], settingEntity, key);
             if (typeof lastSettingObj[`_doc`][key] === `object` && (Object.keys(lastSettingObj[`_doc`][key]).length >= 2)) {
@@ -35,9 +49,15 @@ class SystemSettingService extends Service {
                 });
             }
         });
-        let systemSettingObj = new this.ctx.model.SystemSetting({
+        delete settingObj._id;
+        delete settingObj.created_at;
+        delete settingObj.updated_at;
+        console.log(settingObj)
+
+        //settingObj.advertisementSetting = {square: fs.readFileSync(path.resolve(__dirname, '../public/admin.html'))};
+        let systemSettingObj = new this.ctx.model.SystemSetting(
             settingObj
-        });
+        );
         systemSettingObj.save();
     }
 }

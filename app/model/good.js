@@ -40,6 +40,7 @@ module.exports = app => {
             type: String,
             enum: ['Bcoin', 'Money'], default: "Money"
         },
+        isRecommend: {type: Boolean, default: false},
         last_login_time: Date
     }, {
         'timestamps': {
