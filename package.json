@@ -50,7 +50,7 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon ENABLE_NODE_LOG=YES",
+    "start": "egg-scripts start --daemon",
     "stop": "egg-scripts stop",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
