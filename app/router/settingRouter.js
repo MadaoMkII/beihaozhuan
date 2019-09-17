@@ -31,4 +31,9 @@ module.exports = app => {
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/admin.html'));
         // ctx.redirect('/index.html')
     });
+    router.get('/prepare', async (ctx) => {
+        ctx.response.type = 'html';
+        ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/prepare.html'));
+        // ctx.redirect('/index.html')
+    });
 };

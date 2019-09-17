@@ -30,6 +30,7 @@
     "egg-validate": "^2.0.2",
     "egg-validate-plus": "^1.1.6",
     "egg-view-ejs": "^2.0.0",
+    "egg-logger": "^2.4.1",
     "eslint": "^6.0.1",
     "eslint-config-egg": "^7.1.0",
     "js-base64": "^2.5.1",
@@ -49,7 +50,7 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon",
+    "start": "egg-scripts start --daemon ENABLE_NODE_LOG=YES",
     "stop": "egg-scripts stop",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",

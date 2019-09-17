@@ -27,7 +27,11 @@ class userAccount extends baseController {
         await ctx.service.userService.syncingTasks(userObj);
         let events = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
         this.success(userObj);
-        ctx.logger.error(new Error('whoops'));
+        ctx.logger.error(new Error('哇',{
+            "password":"Abc123",
+                "smsVerifyCode":281105,
+                "tel_number":"15620304099"
+        }),);
     };
 
     async getUserBalanceList(ctx) {

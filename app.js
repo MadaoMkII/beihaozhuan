@@ -1,8 +1,18 @@
 'use strict';
 //const LocalStrategy = require('passport-local').Strategy;
+const Logger = require('egg-logger').Logger;
+const FileTransport = require('egg-logger').FileTransport;
+const ConsoleTransport = require('egg-logger').ConsoleTransport;
 module.exports = app => {
     // 挂载 strategy
 
+    // logger.set('file', new FileTransport({
+    //     file: '/path/to/file',
+    //     level: 'INFO',
+    // }));
+    // logger.set('console', new ConsoleTransport({
+    //     level: 'DEBUG',
+    // }));
     // app.passport.use(new LocalStrategy({
     //     usernameField: 'username',
     //     passwordField: 'password',
