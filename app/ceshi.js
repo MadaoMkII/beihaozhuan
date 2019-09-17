@@ -103,8 +103,26 @@ let {DateTime} = require('luxon');
 let local = DateTime.fromISO(new Date(`2019/01/07`).toISOString());
 let rezoned = local.setZone("Asia/Shanghai");
 
-let a = { x:{name:""}};
+let a = (obj, key) => {
+    let str0 = '';
+    for (let i in obj) {
+        if (i !== 'sign') {
+            let str1 = '';
+            str1 = i + '=' + obj[i];
+            str0 += str1;
+        }
 
-console.log( typeof a.x.name  === `object`)
+    }
+}
+let obj = {
+    appid: '',
+    terminalNumber: '',
+    time: parseInt(new Date().getTime() / 1000)
+};
+var crypto  = require('crypto')
+var fs      = require('fs')
 
+var encrypted = crypto.publicEncrypt(publicKey, Buffer.from('OurJS.com公钥加密私钥解密测试'))
+var decrypted = crypto.privateDecrypt(privateKey, encrypted);
+console.log(decrypted.toString())
 

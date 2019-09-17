@@ -118,6 +118,49 @@ class authController extends Controller {
 
     }
 
+    async register_fake(ctx) {
+        try {
+            const [requestEntity] = await this.cleanupRequestProperty('authRules.loginRule',
+                `smsVerifyCode`, `password`, `tel_number`);
+            if (!requestEntity) {
+                return;
+            }
+            if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
+                String(requestEntity.smsVerifyCode).toLowerCase())) {
+                ctx.throw(400, `VerifyCode verify failed`);
+            }
+            if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
+                String(requestEntity.tel_number).toLowerCase())) {
+                ctx.throw(400, `tel_number doesn't exist`);
+            }
+            ctx.session.tel_number = null;
+            ctx.session.smsVerifyCode = null;
+            let oldUser = await ctx.model.UserAccountFake.findOne({tel_number: requestEntity.tel_number});
+            console.log(oldUser)
+            if (!ctx.helper.isEmpty(oldUser)) {
+                return this.failure(`电话号码已经被注册`, 400);
+            }
+            //const enPassword = ctx.helper.passwordEncrypt(requestEntity.password);
+            let uuid = require('cuid')();
+            const newUser = {
+                password: requestEntity.password,
+                uuid: uuid,
+                tel_number: requestEntity.tel_number,
+            };
+
+            let userNew = new this.ctx.model.UserAccountFake(newUser);
+            userNew.save();
+            this.success();
+        } catch (e) {
+            if (e.message.toString().includes(`E11000`)) {
+                return this.failure(`tel_number is duplicated `, 400);
+            } else {
+                this.failure(e.message, 400);
+            }
+
+        }
+
+    }
 }
 
 module.exports = authController;

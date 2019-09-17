@@ -27,4 +27,8 @@ module.exports = app => {
 
 
     router.get('/user/getInviteLink', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].generatorInviteLink);
+
+
+    router.post('/user/register_test', controller[`authController`].register_fake);
+    router.post('/verify/sendVerifySmsMessage_test', controller[`smsController`].sendVerifySmsMessage_fakes);
 };

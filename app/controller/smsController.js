@@ -15,6 +15,18 @@ class smsController extends baseController {
 
     };
 
+    async sendVerifySmsMessage_fakes(ctx) {
+        const {tel_number} = ctx.request.body;
+        let resultUser = await this.ctx.model.UserAccountFake.findOne({tel_number: this.ctx.request.body.tel_number});
+        if (!this.ctx.helper.isEmpty(resultUser)) {
+            this.failure(`该手机号已注册`, 400);
+            return;
+        }
+        const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
+        ctx.session.smsVerifyCode = text;
+        await this.sendSmsMessage(tel_number, text);
+    };
+
     async sendLoginVerifySmsMessage() {
         let resultUser = await this.ctx.service.userService.getUser({tel_number: this.ctx.request.body.tel_number});
 
@@ -51,12 +63,8 @@ class smsController extends baseController {
     async sendSmsMessage(tel_number, text) {
 
         this.ctx.session.tel_number = tel_number;
-        // let result = await this.ctx.service.smsService.sendSmsMessage(text, tel_number);
-        if (true) {
-            this.success(text);
-        } else {
-            this.failure();
-        }
+        await this.ctx.service.smsService.sendSmsMessage(text, tel_number);
+        this.success();
     };
 }
 

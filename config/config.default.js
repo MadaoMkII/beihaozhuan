@@ -187,10 +187,29 @@ module.exports = appInfo => {
             }
         }
     };
+    // config/config.default.js
+    exports.alinode = {
+        server: 'wss://agentserver.node.aliyun.com:8080',
+        appid: '81576',
+        secret: '660b93ceef24cb6d5621419e16c53d645d1bddd6',
+        logdir: '/logs/',
+        // error_log: [
+        //     '您的应用在业务层面产生的异常日志的路径，数组，可选，可配置多个',
+        //     '例如：/root/.logs/error.#YYYY#-#MM#-#DD#.log',
+        //     '不更改 Egg 默认日志输出路径可不配置本项目',
+        // ],
+        //agentidMode:'IP' '可选，如果设置，则在实例ID中添加部分IP信息，用于多个实例 hostname 相同的场景（以容器为主）'
+    };
+    exports.logger = {
+        appLogName: `${appInfo.name}-web.log`,
+        coreLogName: `${appInfo.name}-egg-web.log`,
+        agentLogName: `${appInfo.name}-egg-agent.log`,
+        errorLogName: `${appInfo.name}-common-error.log`,
+    };
     return {
         ...config,
         ...userConfig,
     };
-}
-;
+};
+
 

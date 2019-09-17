@@ -12,17 +12,22 @@ class userAccount extends baseController {
     };
 
     async getUserInfo(ctx) {
-        console.log(ctx.url)
-        console.log(ctx.host)
-        console.log(ctx.path)
-        console.log(ctx.hostname)
-        console.log(ctx.origin)
-        console.log(ctx.is())
-        console.log(ctx.ips)
+        // console.log(ctx.url)
+        // console.log(ctx.host)
+        // console.log(ctx.path)
+        // console.log(ctx.hostname)
+        // console.log(ctx.origin)
+        // console.log(ctx.is())
+        // console.log(ctx.ips)
+        ctx.logger.debug('debug info');
+        ctx.logger.info('some request data: %j', ctx.request.body);
+        ctx.logger.warn('WARNNING!!!!');
+
         let userObj = ctx.user;
         await ctx.service.userService.syncingTasks(userObj);
         let events = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
         this.success(userObj);
+        ctx.logger.error(new Error('whoops'));
     };
 
     async getUserBalanceList(ctx) {
