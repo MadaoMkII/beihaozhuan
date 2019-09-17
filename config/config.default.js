@@ -87,6 +87,10 @@ module.exports = appInfo => {
     config.cluster = {
         listen: {
             port: 3000,
+            https: {
+                key: '/certificate/2676355__beihaozhuan.com.key',
+                cert: '/certificate/2676355__beihaozhuan.com.pem'
+            }
         }
     };
     //config.domainWhiteList = ['http://localhost:4200', 'http://localhost:8080', 'http://127.0.0.1:3000'];

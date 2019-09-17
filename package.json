@@ -22,7 +22,7 @@
     "egg-aop": "^0.5.3",
     "egg-mock": "^3.21.0",
     "egg-mongoose": "^3.2.0",
-    "egg-alinode": "^2.0.1",
+
     "egg-multipart": "^2.7.1",
     "egg-oss": "^2.0.0",
     "egg-passport": "^2.1.0",

@@ -17,6 +17,7 @@ class smsController extends baseController {
 
     async sendVerifySmsMessage_fakes(ctx) {
         const {tel_number} = ctx.request.body;
+        console.log(ctx.request.body)
         let resultUser = await this.ctx.model.UserAccountFake.findOne({tel_number: this.ctx.request.body.tel_number});
         if (!this.ctx.helper.isEmpty(resultUser)) {
             this.failure(`该手机号已注册`, 400);
