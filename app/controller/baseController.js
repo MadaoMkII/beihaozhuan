@@ -7,7 +7,7 @@ class BaseController extends Controller {
     success(data, msg = "OK", state = 200) {
         const {ctx} = this;
         ctx.body = {
-            code: '0',
+            code: state,
             msg: msg,
         };
         if (!ctx.helper.isEmpty(data)) {
@@ -21,7 +21,7 @@ class BaseController extends Controller {
             }
         }
 
-        ctx.status = state;
+        ctx.status = 200;
     };
 
     failure(msg, state = 503) {

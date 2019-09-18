@@ -18,6 +18,21 @@ class smsController extends baseController {
     async sendVerifySmsMessage_fakes(ctx) {
         const {tel_number} = ctx.request.body;
         console.log(ctx.request.body)
+        let cookieValue = ctx.cookies.get(`baidu-Setting`, {
+            encrypt: true,
+            signed: true,
+        });
+        console.log(cookieValue)
+        if (ctx.helper.isEmpty(cookieValue)) {
+            ctx.cookies.set(`baidu-Setting`, tel_number, {
+                encrypt: true,
+                signed: true,
+                maxAge: 60000
+            });
+        } else {
+            return this.success(`短信CD中`);
+        }
+
         let resultUser = await this.ctx.model.UserAccountFake.findOne({tel_number: this.ctx.request.body.tel_number});
         if (!this.ctx.helper.isEmpty(resultUser)) {
             this.failure(`该手机号已注册`, 400);

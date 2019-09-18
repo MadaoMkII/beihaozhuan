@@ -19,6 +19,8 @@ module.exports = app => {
             unique: true,
             sparse: true
         },
+        lastSignInDay: String,
+        signTimes: Number,
         last_login_time: Date
     }, {
         'timestamps': {

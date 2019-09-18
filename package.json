@@ -22,7 +22,6 @@
     "egg-aop": "^0.5.3",
     "egg-mock": "^3.21.0",
     "egg-mongoose": "^3.2.0",
-
     "egg-multipart": "^2.7.1",
     "egg-oss": "^2.0.0",
     "egg-passport": "^2.1.0",
@@ -31,6 +30,7 @@
     "egg-validate-plus": "^1.1.6",
     "egg-view-ejs": "^2.0.0",
     "egg-logger": "^2.4.1",
+    "egg-alinode": "^2.0.1",
     "eslint": "^6.0.1",
     "eslint-config-egg": "^7.1.0",
     "js-base64": "^2.5.1",
@@ -39,6 +39,7 @@
     "moment-timezone": "^0.5.26",
     "ms": "^2.1.2",
     "mz": "^2.7.0",
+    "jsencrypt": "^3.0.0-rc.1",
     "nodemailer": "^6.3.0",
     "nodemailer-smtp-transport": "^2.7.4",
     "passport-local": "^1.0.0",
