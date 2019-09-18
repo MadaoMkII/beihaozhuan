@@ -27,10 +27,10 @@ class userAccount extends baseController {
         await ctx.service.userService.syncingTasks(userObj);
         let events = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
         this.success(userObj);
-        ctx.logger.error(new Error('哇',{
-            "password":"Abc123",
-                "smsVerifyCode":281105,
-                "tel_number":"15620304099"
+        ctx.logger.error(new Error('哇', {
+            "password": "Abc123",
+            "smsVerifyCode": 281105,
+            "tel_number": "15620304099"
         }),);
     };
 
@@ -74,9 +74,9 @@ class userAccount extends baseController {
         }
         const newUser_result = await this.ctx.service.userService.updateUser(ctx.user.uuid, condition);
         const eventEmitter = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
-        let re = eventEmitter.emit(`完善用户信息`,
+        eventEmitter.emit(`完善用户信息`,
             newUser_result._id);
-        console.log(re)
+
         // Object.keys(newUser_result).forEach((key) => {//注册时候还是得需要一个新的接口，否则会有event错误
         //     if( ctx.helper.isEmpty(newUser_result[key])){
         //     }
