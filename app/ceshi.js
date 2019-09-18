@@ -308,7 +308,7 @@ let compareSign = (obj, signStr) => {
         resultStr = resultStr + `${key}=${obj[key]}&`
     });
     let assert = require('assert');
-    assert.strictEqual(privateDecrypt(signStr), `resultStr`, `解密字符串不匹配`);
+    assert.strictEqual(privateDecrypt(signStr), resultStr, `解密字符串不匹配`);
 };
 let t = publicEncrypt(x)
 compareSign(x, t)
@@ -331,5 +331,23 @@ let requestFun = (JSONObject, method, url) => {
         });
     });
 };
+let urlA= '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE';
 
-console.log()
+let url = require("url");
+let query = url.parse(urlA, true).query;
+console.log(query.code)
+// {
+//     method: 'GET',
+//         url: '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE',
+//     header: {
+//     'x-forwarded-for': '117.13.3.8',
+//         host: 'localhost:3000',
+//         connection: 'close',
+//         'upgrade-insecure-requests': '1',
+//         'user-agent': 'Mozilla/5.0 (Linux; Android 9; G8342 Build/47.2.A.10.80; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/044904 Mobile Safari/537.36 MMWEBID/5109 MicroMessenger/7.0.1380(0x27000034) Process/tools NetType/WIFI Language/zh_CN',
+//         accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,image/wxpic,image/sharpp,image/apng,image/tpg,*/*;q=0.8',
+//         'accept-encoding': 'gzip, deflate, br',
+//         'accept-language': 'zh-CN,zh-CN;q=0.9,en-US;q=0.8',
+//         cookie: 'yhbSen=O5Y6f2-sdk7DI1im9fJH_P59n7BV3DT2AgusYFVLis2oOfJE9ViNSLOi4jOHKDOp04whCzFXWADUZgIp_wiUFURvUJVQ0SLuaKQi9JVLfVmtxaRnvZfRlxKvNaIOEHyuBSgCct4YaCQyMAtuJ296tjD1R2xaJNdPbsVE4dkCaqA_h04Lf53wXtZBbAa2zxBU'
+// }
+// }
