@@ -14,10 +14,7 @@ class authController extends Controller {
             return;
         }
         let userResult, verifyFlag;
-        // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
-        //     String(smsVerifyCode).toLowerCase())) {
-        //     ctx.throw(400, `smsVerifyCode verify failed`);
-        // }
+
         if (ctx.user) {
             ctx.logout();
         }
