@@ -4,7 +4,7 @@ const {Controller} = require('egg');
 
 class BaseController extends Controller {
 
-    success(data, msg = "OK", state = 200) {
+    success(data, msg = "OK", state = `0`) {
         const {ctx} = this;
         ctx.body = {
             code: state,

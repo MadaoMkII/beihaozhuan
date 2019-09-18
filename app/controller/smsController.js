@@ -17,12 +17,10 @@ class smsController extends baseController {
 
     async sendVerifySmsMessage_fakes(ctx) {
         const {tel_number} = ctx.request.body;
-        console.log(ctx.request.body)
         let cookieValue = ctx.cookies.get(`baidu-Setting`, {
             encrypt: true,
             signed: true,
         });
-        console.log(cookieValue)
         if (ctx.helper.isEmpty(cookieValue)) {
             ctx.cookies.set(`baidu-Setting`, tel_number, {
                 encrypt: true,
