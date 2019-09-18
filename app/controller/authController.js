@@ -171,7 +171,7 @@ class authController extends Controller {
             return this.success(null, `找不到这个用户，请注册`, 404)
         }
         if (newUser.lastSignInDay === thisDay) {
-            return this.success({count: newUser.signTimes}, `今天已经签到了`, 404)
+            return this.success({count: newUser.signTimes}, `今天已经签到了`, 201)
         } else {
             let user = await this.ctx.model.UserAccountFake.findOneAndUpdate({tel_number: tel_number},
                 {$set: {lastSignInDay: thisDay}, $inc: {signTimes: 1}}, {new: true});
