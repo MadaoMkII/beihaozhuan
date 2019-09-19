@@ -116,9 +116,7 @@ class authController extends Controller {
             } else {
                 this.failure(e.message, 400);
             }
-
         }
-
     }
 
     async register_fake(ctx) {

@@ -19,19 +19,19 @@ class userAccount extends baseController {
         // console.log(ctx.origin)
         // console.log(ctx.is())
         // console.log(ctx.ips)
-        ctx.logger.debug('debug info');
-        ctx.logger.info('some request data: %j', ctx.request.body);
-        ctx.logger.warn('WARNNING!!!!');
+        // ctx.logger.debug('debug info');
+        // ctx.logger.info('some request data: %j', ctx.request.body);
+        // ctx.logger.warn('WARNNING!!!!');
 
         let userObj = ctx.user;
         await ctx.service.userService.syncingTasks(userObj);
         let events = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
         this.success(userObj);
-        ctx.logger.error(new Error('哇', {
-            "password": "Abc123",
-            "smsVerifyCode": 281105,
-            "tel_number": "15620304099"
-        }),);
+        // ctx.logger.error(new Error('哇', {
+        //     "password": "Abc123",
+        //     "smsVerifyCode": 281105,
+        //     "tel_number": "15620304099"
+        // }),);
     };
 
     async getUserBalanceList(ctx) {

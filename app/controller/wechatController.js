@@ -69,12 +69,11 @@ class wechatController extends baseController {
         console.log(requestObj_2)
         let [result_2,] = await this.requestMethod(requestObj_2,
             `GET`, `https://api.weixin.qq.com/sns/oauth2/access_token`);
-        if (!ctx.helper.isEmpty(result_2.errcode)) {
+        if (!ctx.helper.isEmpty(result_2[`errcode`])) {
             ctx.throw(405, result_2.errmsg)
         }
         const OPENID = result_2[`openid`];
         let user = await this.ctx.service.userService.getUser({OPENID: OPENID});
-
         if (!ctx.helper.isEmpty(user)) {
             let requestObj_3 = {
                 access_token: result_2.access_token,
@@ -94,8 +93,9 @@ class wechatController extends baseController {
             ctx.body = {OPENID: OPENID};
             return await this.controller[`authController`].login(ctx);
         } else {
+            let statusString = ctx.enctype(OPENID);
             ctx.status = 301;
-            ctx.redirect(`/?OPENID=${OPENID}`);
+            ctx.redirect(`/?statusString=${statusString}&jumpTo=register`);
         }
 
     }
