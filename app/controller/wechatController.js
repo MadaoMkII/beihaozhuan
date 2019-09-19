@@ -48,15 +48,25 @@ class wechatController extends baseController {
         const returnUrl = ctx.request.url;
         let urlQuery = url.parse(returnUrl, true).query;
         const {code, state} = urlQuery;
+        console.log(code)
+        console.log(state)
         if (ctx.help.isEmpty(code) || ctx.help.isEmpty(state)) {
             ctx.throw(`空值警告`)
         }
-        let requestObj_1 = {
-            appid:ctx.app.se
-
+        let requestObj_2 = {
+            appid: ctx.app.config[`wechatConfig`].appid,
+            secret: ctx.app.config[`wechatConfig`].secret,
+            grant_type: `authorization_code`
         };
-        this.requestMethod({}, `GET`, `https://api.weixin.qq.com/sns/oauth2/access_token`);
+        let [result, res] = this.requestMethod(requestObj_2, `GET`, `https://api.weixin.qq.com/sns/oauth2/access_token`);
+        console.log(result)
+        let user = await this.ctx.service.userService.getUser({openID: result[`openid`]});
+        let alreadyExistFlag = false;
+        if (!ctx.help.isEmpty(user)) {
 
+            alreadyExistFlag = true;
+        }
+        let access_token = result.access_token;
         switch (urlQuery) {
             case `login`:
 

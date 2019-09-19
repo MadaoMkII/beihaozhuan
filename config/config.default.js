@@ -101,7 +101,7 @@ module.exports = appInfo => {
     const wechatConfig = {
         appid:`wx6da0f69da7e8894c`,
         secret:`b6b0fb92a432acb9963bc4cf54e507fc`,
-        grant_type:`authorization_code`
+
     };
     config.session = {
         key: 'yhbSen',
