@@ -47,7 +47,7 @@ class wechatController extends baseController {
     async callback(ctx) {
         console.log(ctx.request)
         let returnUrl = ctx.request.url; ///wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
-        returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
+        //returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
         let urlQuery = url.parse(returnUrl, true).query;
         const {code, state} = urlQuery;
         console.log(code)
@@ -77,6 +77,7 @@ class wechatController extends baseController {
             alreadyExistFlag = true;
         }
         let access_token = result.access_token;
+        console.log(access_token)
         switch (urlQuery) {
             case `login`:
 

@@ -47,8 +47,7 @@
     "passport-local": "^1.0.0",
     "submail-sms": "^0.1.4",
     "svg-captcha": "^1.4.0",
-    "luxon": "^1.17.2",
-    "jsdom": "^15.1.1"
+    "luxon": "^1.17.2"
   },
   "engines": {
     "node": ">=10.0.0"
