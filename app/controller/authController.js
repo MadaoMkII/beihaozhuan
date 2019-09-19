@@ -9,7 +9,7 @@ class authController extends Controller {
         let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
 
         const [condition] = await this.cleanupRequestProperty('authRules.loginRule',
-            `password`, `tel_number`, `smsLoginVerifyCode`, `rememberMe`);
+            `password`, `tel_number`, `smsLoginVerifyCode`, `rememberMe`, `OPENID`);
         if (!condition) {
             return;
         }
@@ -34,11 +34,17 @@ class authController extends Controller {
                 tel_number: condition.tel_number,
                 password: ctx.helper.passwordEncrypt(condition.password)
             });
+        } else if (!this.ctx.helper.isEmpty(condition.OPENID)) {
+            userResult = await ctx.service.userService.getUser({
+                OPENID: condition.OPENID
+            });
+
+        } else {
+            return this.failure(`denglushibai`, 400);
         }
 
         if (ctx.helper.isEmpty(userResult) || ctx.helper.isEmpty(userResult.uuid)) {
-            this.failure(`该用户未注册`, 400);
-            return;
+            return this.failure(`该用户未注册`, 400);
         }
         if (userResult || verifyFlag) {
             await ctx.service.userService.updateUser_login(userResult.uuid);

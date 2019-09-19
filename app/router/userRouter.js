@@ -33,5 +33,7 @@ module.exports = app => {
     router.post('/verify/sendVerifySmsMessage_test', controller[`smsController`].sendVerifySmsMessage_fakes);
 
     router.get('/wechat/callback', controller[`wechatController`].callback);
+
+    router.get(`/preLogin`, controller[`wechatController`].preLogin);
     router.get('/biefanle', controller[`authController`].biefanle);
 };

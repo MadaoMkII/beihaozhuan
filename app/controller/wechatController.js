@@ -4,9 +4,11 @@ let url = require("url");
 
 class wechatController extends baseController {
 
-    async pre_login(OPENID) {
-
-        await this.ctx.service.userservice.getUser({OPENID: OPENID});
+    async preLogin(ctx) {
+        ctx.status = 301;
+        let OPENID = `oopdjjy12`;
+        let jumpTo = `register `;
+        return ctx.redirect(`/?statusString=${OPENID}&jumpTo=${jumpTo}`);
     };
 
 
@@ -45,6 +47,9 @@ class wechatController extends baseController {
     };
 
     async callback(ctx) {
+        ctx.status = 301;
+        let OPENID2 = `asdad`;
+        return ctx.redirect(`/?OPENID=${OPENID2}`);
         console.log(ctx.request)
         let returnUrl = ctx.request.url; ///wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
         //returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
@@ -62,35 +67,37 @@ class wechatController extends baseController {
             grant_type: `authorization_code`
         };
         console.log(requestObj_2)
-        let [result, ] = await this.requestMethod(requestObj_2, `GET`, `https://api.weixin.qq.com/sns/oauth2/access_token`);
-        console.log(result)
-
-        if(!ctx.helper.isEmpty(result.errcode) ){
-
-            ctx.throw(405,result.errmsg)
-
+        let [result_2,] = await this.requestMethod(requestObj_2,
+            `GET`, `https://api.weixin.qq.com/sns/oauth2/access_token`);
+        if (!ctx.helper.isEmpty(result_2.errcode)) {
+            ctx.throw(405, result_2.errmsg)
         }
-        let user = await this.ctx.service.userService.getUser({openID: result[`openid`]});
-        let alreadyExistFlag = false;
+        const OPENID = result_2[`openid`];
+        let user = await this.ctx.service.userService.getUser({OPENID: OPENID});
+
         if (!ctx.helper.isEmpty(user)) {
-
-            alreadyExistFlag = true;
+            let requestObj_3 = {
+                access_token: result_2.access_token,
+                openid: OPENID,
+                lang: `zh_CN`
+            };
+            let [result_3,] = await this.requestMethod(requestObj_3,
+                `GET`, `https://api.weixin.qq.com/sns/userinfo`);
+            console.log(result_3)
+            if (result_3[`errcode`]) {
+                return
+            }
+            await this.ctx.service.userService.updateUser(user.uuid, {
+                avatar: result_3[`headimgurl`],
+                nickname: result_3.nickName
+            });
+            ctx.body = {OPENID: OPENID};
+            return await this.controller[`authController`].login(ctx);
+        } else {
+            ctx.status = 301;
+            ctx.redirect(`/?OPENID=${OPENID}`);
         }
-        let access_token = result.access_token;
-        console.log(access_token)
-        switch (urlQuery) {
-            case `login`:
 
-                break;
-
-            case `scan`:
-                break;
-
-            default :
-                break;
-        }
-
-        this.success();
     }
 }
 

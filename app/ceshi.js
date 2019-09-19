@@ -253,8 +253,7 @@ function publicEncrypt(obj) {
     }
     let result = Buffer.concat(bufs);
     //密文BASE64编码
-    let base64Str = result.toString("base64");
-    return base64Str;
+    return result.toString("base64");
 }
 
 function privateDecrypt(date) {
@@ -331,16 +330,15 @@ let requestFun = (JSONObject, method, url) => {
         });
     });
 };
-let urlA= '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE';
+let urlA = '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE';
 
 let url = require("url");
 let query = url.parse(urlA, true).query;
 console.log(query.code)
 
 
-
 const myURL = new URL(`https://example.org`);
-Object.keys(x).forEach((key)=>{
+Object.keys(x).forEach((key) => {
     myURL.searchParams.append(key, x[key]);
 });
 
@@ -360,29 +358,26 @@ console.log(myURL.href)
 //         cookie: 'yhbSen=O5Y6f2-sdk7DI1im9fJH_P59n7BV3DT2AgusYFVLis2oOfJE9ViNSLOi4jOHKDOp04whCzFXWADUZgIp_wiUFURvUJVQ0SLuaKQi9JVLfVmtxaRnvZfRlxKvNaIOEHyuBSgCct4YaCQyMAtuJ296tjD1R2xaJNdPbsVE4dkCaqA_h04Lf53wXtZBbAa2zxBU'
 // }
 // }
+const CryptoJS = require('crypto-js');  //引用AES源码js
 
-
-let encrypt= function (plain_text) {
-    if (!isNaN(plain_text)) {
-        plain_text = String(plain_text);
-    }
-    const key = Buffer.from(`9vApcLk5G3PAsJrM`, 'utf8');
-    const iv = Buffer.from(`FnXL7FczjqWjcaY9`, 'utf8');
-    let sign = '';
-    const cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
-    sign += cipher.update(plain_text, 'utf8', 'hex');
-    sign += cipher.final('hex');
-    return sign;
+const key = CryptoJS.enc.Utf8.parse("12gy122414ABdDEF"); //十六位十六进制数作为秘钥
+const iv = CryptoJS.enc.Utf8.parse('AHCdCF12351f3412'); //十六位十六进制数作为秘钥偏移量
+let decrypt = function (word) {
+    let encryptedHexStr = CryptoJS.enc.Hex.parse(word);
+    let srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+    let decrypt = CryptoJS.AES.decrypt(srcs, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
+    let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);//
+    return decryptedStr.toString();
 };
-
-// let decrypt= function (cipher_text) {
-//     const key = Buffer.from(`setting.key`, 'utf8');
-//     const iv = Buffer.from(`setting.iv`, 'utf8');
-//     let src = '';
-//     const cipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
-//     src += cipher.update(cipher_text, 'hex', 'utf8');
-//     src += cipher.final('utf8');
-//     return src;
-// }
-
-encrypt(`dsa`)
+//加密方法
+/**
+ * @return {string}
+ */
+let encrypt = function (word) {
+    let srcs = CryptoJS.enc.Utf8.parse(word);
+    let encrypted = CryptoJS.AES.encrypt(srcs, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
+    return encrypted.ciphertext.toString().toUpperCase();
+};
+let aaa= encrypt(`abcdseerrreeerr`)
+console.log(aaa)
+console.log(decrypt(aaa))

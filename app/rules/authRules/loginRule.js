@@ -1,6 +1,10 @@
 'use strict';
 
 const rule = {
+    OPENID: [
+        {required: false, message: ''},
+        {type: 'string', message: 'OPENID格式不正确'},
+    ],
     inviteCode: [
         {required: false, message: ''},
         {type: 'string', message: '格式不正确'},
