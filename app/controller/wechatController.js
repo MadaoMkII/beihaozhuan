@@ -90,7 +90,7 @@ class wechatController extends baseController {
             ctx.body = {OPENID: OPENID};
             return await this.controller[`authController`].login(ctx);
         } else {
-            let statusString = ctx.enctype(OPENID);
+            let statusString = ctx.encrypt(OPENID);
             ctx.status = 301;
             ctx.redirect(`/?statusString=${statusString}&jumpTo=register`);
         }
