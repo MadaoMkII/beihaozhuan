@@ -11,6 +11,7 @@ class wechatController extends baseController {
 
 
     requestMethod(JSONObject, method, url) {
+        const request_ = require("request");
         let requestObj = {};
         if (method === `GET`) {
             const myURL = new URL(url);
@@ -33,7 +34,7 @@ class wechatController extends baseController {
         }
         return new Promise((resolve, reject) => {
             console.log(requestObj)
-            request(requestObj, (error, response, body) => {
+            request_(requestObj, (error, response, body) => {
                 if (error) {
                     reject(error)
                 } else {
@@ -45,7 +46,8 @@ class wechatController extends baseController {
 
     async callback(ctx) {
         console.log(ctx.request)
-        const returnUrl = ctx.request.url;
+        let returnUrl = ctx.request.url; ///wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
+        returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
         let urlQuery = url.parse(returnUrl, true).query;
         const {code, state} = urlQuery;
         console.log(code)
@@ -54,12 +56,20 @@ class wechatController extends baseController {
             ctx.throw(`空值警告`)
         }
         let requestObj_2 = {
-            appid: ctx.app.config[`wechatConfig`].appid,
-            secret: ctx.app.config[`wechatConfig`].secret,
+            appid: ctx.app.config.wechatConfig.appid,
+            secret: ctx.app.config.wechatConfig.secret,
+            code: code,
             grant_type: `authorization_code`
         };
-        let [result, res] = this.requestMethod(requestObj_2, `GET`, `https://api.weixin.qq.com/sns/oauth2/access_token`);
+        console.log(requestObj_2)
+        let [result, ] = await this.requestMethod(requestObj_2, `GET`, `https://api.weixin.qq.com/sns/oauth2/access_token`);
         console.log(result)
+
+        if(!ctx.helper.isEmpty(result.errcode) ){
+
+            ctx.throw(405,result.errmsg)
+
+        }
         let user = await this.ctx.service.userService.getUser({openID: result[`openid`]});
         let alreadyExistFlag = false;
         if (!ctx.helper.isEmpty(user)) {

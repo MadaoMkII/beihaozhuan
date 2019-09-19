@@ -360,3 +360,29 @@ console.log(myURL.href)
 //         cookie: 'yhbSen=O5Y6f2-sdk7DI1im9fJH_P59n7BV3DT2AgusYFVLis2oOfJE9ViNSLOi4jOHKDOp04whCzFXWADUZgIp_wiUFURvUJVQ0SLuaKQi9JVLfVmtxaRnvZfRlxKvNaIOEHyuBSgCct4YaCQyMAtuJ296tjD1R2xaJNdPbsVE4dkCaqA_h04Lf53wXtZBbAa2zxBU'
 // }
 // }
+
+
+let encrypt= function (plain_text) {
+    if (!isNaN(plain_text)) {
+        plain_text = String(plain_text);
+    }
+    const key = Buffer.from(`9vApcLk5G3PAsJrM`, 'utf8');
+    const iv = Buffer.from(`FnXL7FczjqWjcaY9`, 'utf8');
+    let sign = '';
+    const cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
+    sign += cipher.update(plain_text, 'utf8', 'hex');
+    sign += cipher.final('hex');
+    return sign;
+};
+
+// let decrypt= function (cipher_text) {
+//     const key = Buffer.from(`setting.key`, 'utf8');
+//     const iv = Buffer.from(`setting.iv`, 'utf8');
+//     let src = '';
+//     const cipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
+//     src += cipher.update(cipher_text, 'hex', 'utf8');
+//     src += cipher.final('utf8');
+//     return src;
+// }
+
+encrypt(`dsa`)

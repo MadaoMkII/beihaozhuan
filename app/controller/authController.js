@@ -129,7 +129,7 @@ class authController extends Controller {
             }
             if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
                 String(requestEntity.tel_number).toLowerCase())) {
-               // ctx.throw(402, `tel_number smsVerifyCode doesn't exist`);
+                // ctx.throw(402, `tel_number smsVerifyCode doesn't exist`);
                 return this.failure(`验证码不正确`, 403);
             }
             ctx.session.tel_number = null;
@@ -161,6 +161,10 @@ class authController extends Controller {
 
     }
 
+    async biefanle(ctx) {
+        let users = await ctx.model.UserAccountFake.find();
+        this.success([users, users.length])
+    };
 
     async signIn_fake(ctx) {
         const {tel_number} = ctx.query;
