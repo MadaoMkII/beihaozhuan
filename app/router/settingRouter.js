@@ -21,7 +21,7 @@ module.exports = app => {
 
     router.get('/getSquare', controller[`systemSettingController`].getSquare);
 
-    router.get('/gundam', async (ctx) => {
+    router.get('/', async (ctx) => {
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
         // ctx.redirect('/index.html')
@@ -31,7 +31,7 @@ module.exports = app => {
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/admin.html'));
         // ctx.redirect('/index.html')
     });
-    router.get('/', async (ctx) => {
+    router.get('/gundam', async (ctx) => {
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/prepare.html'));
         // ctx.redirect('/index.html')

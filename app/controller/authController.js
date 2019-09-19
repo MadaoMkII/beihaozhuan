@@ -35,10 +35,10 @@ class authController extends Controller {
                 password: ctx.helper.passwordEncrypt(condition.password)
             });
         } else if (!this.ctx.helper.isEmpty(condition.OPENID)) {
+
             userResult = await ctx.service.userService.getUser({
                 OPENID: condition.OPENID
             });
-
         } else {
             return this.failure(`denglushibai`, 400);
         }
@@ -80,7 +80,7 @@ class authController extends Controller {
     async register(ctx) {
         try {
             const [requestEntity] = await this.cleanupRequestProperty('authRules.loginRule',
-                `smsVerifyCode`, `password`, `tel_number`, `inviteCode`);
+                `smsVerifyCode`, `password`, `tel_number`, `inviteCode`, `statusString`, `head`);
             if (!requestEntity) {
                 return;
             }
@@ -92,6 +92,8 @@ class authController extends Controller {
             //     String(requestEntity.tel_number).toLowerCase())) {
             //     ctx.throw(400, `tel_number doesn't exist`);
             // }
+
+            //let realOPENID = ctx.decrypt(condition.OPENID);
             ctx.session.tel_number = null;
             ctx.session.smsVerifyCode = null;
             let oldUser = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
@@ -100,13 +102,18 @@ class authController extends Controller {
             }
             const enPassword = ctx.helper.passwordEncrypt(requestEntity.password);
             let uuid = require('cuid')();
-            const newUser = {
+            let newUser = {
                 password: enPassword,
                 uuid: uuid,
                 role: 'User',
                 tel_number: requestEntity.tel_number,
                 Bcoins: 1000
             };
+            if (!ctx.helper.isEmpty(requestEntity.statusString)) {
+                newUser.OPENID = ctx.decrypt(requestEntity.statusString);
+                newUser.avatar = ctx.decrypt(requestEntity.head);
+            }
+            console.log(newUser)
             await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
             delete newUser.password;
             this.success(newUser);

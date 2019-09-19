@@ -72,6 +72,14 @@ class wechatController extends baseController {
         const OPENID = result_2[`openid`];
         let user = await this.ctx.service.userService.getUser({OPENID: OPENID});
         if (!ctx.helper.isEmpty(user)) {
+
+            // await this.ctx.service.userService.updateUser(user.uuid, {
+            //     avatar: result_3[`headimgurl`],
+            //     nickname: result_3.nickName
+            // });
+            ctx.body = {OPENID: OPENID};
+            return await this.controller[`authController`].login(ctx);
+        } else {
             let requestObj_3 = {
                 access_token: result_2.access_token,
                 openid: OPENID,
@@ -83,16 +91,12 @@ class wechatController extends baseController {
             if (result_3[`errcode`]) {
                 return
             }
-            await this.ctx.service.userService.updateUser(user.uuid, {
-                avatar: result_3[`headimgurl`],
-                nickname: result_3.nickName
-            });
-            ctx.body = {OPENID: OPENID};
-            return await this.controller[`authController`].login(ctx);
-        } else {
+            //去注册
             let statusString = ctx.encrypt(OPENID);
+            let head = ctx.encrypt(result_3[`headimgurl`]);
+            let nickName = ctx.encrypt(result_3[`nickname`]);
             ctx.status = 301;
-            ctx.redirect(`/?statusString=${statusString}&jumpTo=register`);
+            ctx.redirect(`/?statusString=${statusString}&jumpTo=register&head=${head}&nickName=${nickName}`);
         }
 
     }
