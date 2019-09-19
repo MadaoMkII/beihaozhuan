@@ -3,6 +3,7 @@ module.exports = app => {
     router.post('/user/getManyUser', controller[`userAccount`].getManyUser);
     router.post('/user/updateInfo', app.middleware.authenticatedMiddleware(`User`), controller[`userAccount`].updateUserInfo);
     router.post('/user/register', controller[`authController`].register);
+    router.post('/user/bindWechat', controller[`authController`].bindWechat);
     router.post('/user/login', controller[`authController`].login);
     router.get('/user/logout', controller[`authController`].logout);
     //router.get('/index', controller[`home`].index);

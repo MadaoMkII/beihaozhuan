@@ -22,6 +22,11 @@ module.exports = {
         let srcs = CryptoJS.enc.Utf8.parse(word);
         let encrypted = CryptoJS.AES.encrypt(srcs, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
         return encrypted.ciphertext.toString().toUpperCase();
+    },
+    randomString: function (length) {
+        let chars = '012345678!%^&$#@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let result = '';
+        for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+        return result;
     }
-
 };

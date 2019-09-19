@@ -378,6 +378,16 @@ let encrypt = function (word) {
     let encrypted = CryptoJS.AES.encrypt(srcs, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
     return encrypted.ciphertext.toString().toUpperCase();
 };
-let aaa= encrypt(`abcdseerrreeerr`)
+let aaa = encrypt(`abcdseerrreeerr`)
 console.log(aaa)
 console.log(decrypt(aaa))
+
+function randomString(length) {
+    let chars = '012345678!%^&$#@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let result = '';
+    for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
+}
+
+var rString = randomString(16)
+console.log(rString)

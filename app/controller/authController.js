@@ -93,7 +93,6 @@ class authController extends Controller {
             //     ctx.throw(400, `tel_number doesn't exist`);
             // }
 
-            //let realOPENID = ctx.decrypt(condition.OPENID);
             ctx.session.tel_number = null;
             ctx.session.smsVerifyCode = null;
             let oldUser = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
@@ -109,10 +108,6 @@ class authController extends Controller {
                 tel_number: requestEntity.tel_number,
                 Bcoins: 1000
             };
-            if (!ctx.helper.isEmpty(requestEntity.statusString)) {
-                newUser.OPENID = ctx.decrypt(requestEntity.statusString);
-                newUser.avatar = ctx.decrypt(requestEntity.head);
-            }
             console.log(newUser)
             await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
             delete newUser.password;
@@ -124,7 +119,54 @@ class authController extends Controller {
                 this.failure(e.message, 400);
             }
         }
-    }
+    };
+
+    async bindWechat(ctx) {
+        try {
+            const [requestEntity] = await this.cleanupRequestProperty('authRules.loginRule',
+                `smsVerifyCode`, `tel_number`, `statusString`, `head`, `nickName`);
+            if (!requestEntity) {
+                return;
+            }
+            if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
+                String(requestEntity.smsVerifyCode).toLowerCase())) {
+                ctx.throw(400, `VerifyCode verify failed`);
+            }
+            if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
+                String(requestEntity.tel_number).toLowerCase())) {
+                ctx.throw(400, `tel_number doesn't exist`);
+            }
+
+            ctx.session.tel_number = null;
+            ctx.session.smsVerifyCode = null;
+            let user = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
+            if (!ctx.helper.isEmpty(user)) {
+                //return this.failure(`电话号码已经被注册`, 400);
+                let newUser = {};
+                newUser.OPENID = ctx.decrypt(requestEntity.statusString);
+                newUser.avatar = ctx.decrypt(requestEntity.head);
+                newUser.nickName = ctx.decrypt(requestEntity.nickName);
+                await ctx.service.userService.updateUser(user.uuid, newUser);
+            } else {
+                let newUser = {};
+                let randomPassword = ctx.helper.passwordEncrypt(ctx.randomString);
+                newUser.OPENID = ctx.decrypt(requestEntity.statusString);
+                newUser.avatar = ctx.decrypt(requestEntity.head);
+                newUser.nickName = ctx.decrypt(requestEntity.nickName);
+                newUser.password = randomPassword;
+                await ctx.service.userService.addUser(newUser, null);
+                console.log(newUser)
+                delete newUser.password;
+            }
+            this.success();
+        } catch (e) {
+            if (e.message.toString().includes(`E11000`)) {
+                return this.failure(`tel_number is duplicated `, 400);
+            } else {
+                this.failure(e.message, 503);
+            }
+        }
+    };
 
     async register_fake(ctx) {
         try {
