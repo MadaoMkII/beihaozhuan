@@ -162,6 +162,7 @@ class authController extends Controller {
 
     async signIn_fake(ctx) {
         const {tel_number} = ctx.query;
+
         let thisDay = ctx.app.getFormatDate();
         let newUser = await this.ctx.model.UserAccountFake.findOne({tel_number: tel_number});
         if (ctx.helper.isEmpty(newUser)) {

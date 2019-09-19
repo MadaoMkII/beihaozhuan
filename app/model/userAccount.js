@@ -51,7 +51,7 @@ module.exports = app => {
                 enum: ['enable', 'disable'], default: "disable"
             }
         },
-        //OPENID: {type: String},
+        OPENID: {type: String},
         tel_number: {
             required: true,
             type: String,

@@ -336,6 +336,15 @@ let urlA= '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE';
 let url = require("url");
 let query = url.parse(urlA, true).query;
 console.log(query.code)
+
+
+
+const myURL = new URL(`https://example.org`);
+Object.keys(x).forEach((key)=>{
+    myURL.searchParams.append(key, x[key]);
+});
+
+console.log(myURL.href)
 // {
 //     method: 'GET',
 //         url: '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE',
