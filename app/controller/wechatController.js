@@ -50,7 +50,7 @@ class wechatController extends baseController {
         const {code, state} = urlQuery;
         console.log(code)
         console.log(state)
-        if (ctx.help.isEmpty(code) || ctx.help.isEmpty(state)) {
+        if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
             ctx.throw(`空值警告`)
         }
         let requestObj_2 = {
@@ -62,7 +62,7 @@ class wechatController extends baseController {
         console.log(result)
         let user = await this.ctx.service.userService.getUser({openID: result[`openid`]});
         let alreadyExistFlag = false;
-        if (!ctx.help.isEmpty(user)) {
+        if (!ctx.helper.isEmpty(user)) {
 
             alreadyExistFlag = true;
         }
