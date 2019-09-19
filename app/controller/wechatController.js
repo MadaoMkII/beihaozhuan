@@ -47,9 +47,6 @@ class wechatController extends baseController {
     };
 
     async callback(ctx) {
-        ctx.status = 301;
-        let OPENID2 = `asdad`;
-        return ctx.redirect(`/?OPENID=${OPENID2}`);
         console.log(ctx.request)
         let returnUrl = ctx.request.url; ///wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
         //returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
