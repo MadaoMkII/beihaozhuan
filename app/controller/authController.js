@@ -124,11 +124,13 @@ class authController extends Controller {
             }
             if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
                 String(requestEntity.smsVerifyCode).toLowerCase())) {
-                ctx.throw(400, `VerifyCode verify failed`);
+                //ctx.throw(403, `VerifyCode verify failed`);
+                return this.failure(`验证码不正确`, 403);
             }
             if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
                 String(requestEntity.tel_number).toLowerCase())) {
-                ctx.throw(400, `tel_number doesn't exist`);
+               // ctx.throw(402, `tel_number smsVerifyCode doesn't exist`);
+                return this.failure(`验证码不正确`, 403);
             }
             ctx.session.tel_number = null;
             ctx.session.smsVerifyCode = null;
@@ -152,7 +154,7 @@ class authController extends Controller {
             if (e.message.toString().includes(`E11000`)) {
                 return this.failure(`tel_number is duplicated `, 400);
             } else {
-                this.failure(e.message, 400);
+                this.failure(e.message, 503);
             }
 
         }
