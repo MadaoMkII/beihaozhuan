@@ -391,3 +391,7 @@ function randomString(length) {
 
 var rString = randomString(16)
 console.log(rString)
+const moment = require(`moment`);
+require(`moment-timezone`);
+let x22 =moment.tz(new Date(), "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
+console.log(x22)

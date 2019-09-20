@@ -35,12 +35,12 @@ module.exports = app => {
             delete ret._id;
             delete ret.id;
             delete ret.password;
-            if (doc.updated_at) {
-                ret.updated_at = app.getFormatDateForJSON(doc.updated_at);
-            }
-            if (doc.created_at) {
-                ret.created_at = app.getFormatDateForJSON(doc.created_at);
-            }
+            // if (doc.updated_at) {
+            //     ret.updated_at = app.getFormatDateForJSON(doc.updated_at);
+            // }
+            // if (doc.created_at) {
+            //     ret.created_at = app.getFormatDateForJSON(doc.created_at);
+            // }
         }
     });
     userAccountSchema.set('toObject', {

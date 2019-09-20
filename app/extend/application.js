@@ -28,6 +28,11 @@ module.exports = {
         require(`moment-timezone`);
         return moment.tz(new Date(), "Asia/ShangHai").format(`YYYYMMDD`);
     },
+    getLocalTime: function (date) {
+        const moment = require(`moment`);
+        require(`moment-timezone`);
+        return moment.tz(date, "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
+    },
     getFormatDateForJSON: function (date) {
         let {DateTime} = require('luxon');
         let local = DateTime.fromISO(date.toISOString());

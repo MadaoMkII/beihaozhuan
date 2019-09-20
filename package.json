@@ -48,7 +48,8 @@
     "submail-sms": "^0.1.4",
     "svg-captcha": "^1.4.0",
     "luxon": "^1.17.2",
-    "crypto-js": "^3.1.9-1"
+    "crypto-js": "^3.1.9-1",
+    "excel-export": "^0.5.1"
   },
   "engines": {
     "node": ">=10.0.0"
