@@ -92,9 +92,9 @@ class wechatController extends baseController {
                 return
             }
             //去注册
-            let statusString = ctx.encrypt(OPENID);
-            let head = ctx.encrypt(result_3[`headimgurl`]);
-            let nickName = ctx.encrypt(result_3[`nickname`]);
+            let statusString = ctx.helper.encrypt(OPENID);
+            let head = ctx.helper.encrypt(result_3[`headimgurl`]);
+            let nickName = ctx.helper.encrypt(result_3[`nickname`]);
             ctx.status = 301;
             ctx.redirect(`/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`);
         }

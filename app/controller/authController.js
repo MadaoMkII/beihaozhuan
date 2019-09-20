@@ -144,9 +144,9 @@ class authController extends Controller {
             let newUser = {};
             if (ctx.helper.isEmpty(user)) {
                 let randomPassword = ctx.helper.passwordEncrypt(ctx.randomString);
-                newUser.OPENID = ctx.decrypt(requestEntity.statusString);
-                newUser.avatar = ctx.decrypt(requestEntity.head);
-                newUser.nickName = ctx.decrypt(requestEntity.nickName);
+                newUser.OPENID = ctx.helper.decrypt(requestEntity.statusString);
+                newUser.avatar = ctx.helper.decrypt(requestEntity.head);
+                newUser.nickName = ctx.helper.decrypt(requestEntity.nickName);
                 newUser.password = randomPassword;
                 newUser.uuid = require('cuid')();
                 newUser.role = 'User';
@@ -157,9 +157,9 @@ class authController extends Controller {
                 delete newUser.password;
             } else {
                 // return this.failure(`电话号码已经被注册`, 400);
-                newUser.OPENID = ctx.decrypt(requestEntity.statusString);
-                newUser.avatar = ctx.decrypt(requestEntity.head);
-                newUser.nickName = ctx.decrypt(requestEntity.nickName);
+                newUser.OPENID = ctx.helper.decrypt(requestEntity.statusString);
+                newUser.avatar = ctx.helper.decrypt(requestEntity.head);
+                newUser.nickName = ctx.helper.decrypt(requestEntity.nickName);
                 await ctx.service.userService.updateUser(user.uuid, newUser);
 
             }
