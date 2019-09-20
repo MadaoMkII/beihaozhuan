@@ -138,7 +138,7 @@ class authController extends Controller {
             // }
             // console.log(requestEntity)
             console.log(ctx.session)
-            ctx.session.tel_number = `null`;
+            //ctx.session.tel_number = `null`;
             // ctx.session.smsVerifyCode = `null`;
             let user = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
             let newUser = {};
@@ -256,7 +256,7 @@ class authController extends Controller {
         let result = nodeExcel.execute(conf);
         let data = new Buffer(result, 'binary');
         ctx.set('Content-Type', 'application/vnd.openxmlformats');
-        ctx.set("Content-Disposition", "attachment; filename=" + `用户注册-${app.getLocalTime(new Date())}.xlsx`);
+        ctx.set("Content-Disposition", "attachment; filename=" + `UserRegister-${app.getLocalTime(new Date())}.xlsx`);
         ctx.body = data;
     };
 
