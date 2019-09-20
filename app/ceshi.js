@@ -295,7 +295,7 @@ function privateDecrypt(date) {
         return Buffer.concat(bufs).toString();
 
     } catch (e) {
-        console.log(e);
+
         return false;
     }
     //解密
@@ -334,7 +334,7 @@ let urlA = '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE';
 
 let url = require("url");
 let query = url.parse(urlA, true).query;
-console.log(query.code)
+
 
 
 const myURL = new URL(`https://example.org`);
@@ -342,7 +342,7 @@ Object.keys(x).forEach((key) => {
     myURL.searchParams.append(key, x[key]);
 });
 
-console.log(myURL.href)
+
 // {
 //     method: 'GET',
 //         url: '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE',
@@ -361,7 +361,7 @@ console.log(myURL.href)
 const CryptoJS = require('crypto-js');  //引用AES源码js
 
 const key = CryptoJS.enc.Utf8.parse("12gy122414ABdDEF"); //十六位十六进制数作为秘钥
-const iv = CryptoJS.enc.Utf8.parse('AHCdCF12351f3412'); //十六位十六进制数作为秘钥偏移量
+const iv = CryptoJS.enc.Utf8.parse('AHCdCF12351f3412');
 let decrypt = function (word) {
     let encryptedHexStr = CryptoJS.enc.Hex.parse(word);
     let srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
@@ -378,9 +378,9 @@ let encrypt = function (word) {
     let encrypted = CryptoJS.AES.encrypt(srcs, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
     return encrypted.ciphertext.toString().toUpperCase();
 };
-let aaa = encrypt(`abcdseerrreeerr`)
+let aaa = encrypt(`ABC`)
 
-console.log(decrypt(`e5be85e4bc9ae79c8be68891e884b8e889b2e8a18ce4ba8b`))
+console.log(decrypt(`E6AD23C4C4193C212C34E08A04C63DBF210BCC92DE28D64C3471A736C5FC6CF5`))
 
 function randomString(length) {
     let chars = '012345678!%^&$#@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -390,8 +390,7 @@ function randomString(length) {
 }
 
 var rString = randomString(16)
-console.log(rString)
+
 const moment = require(`moment`);
 require(`moment-timezone`);
 let x22 =moment.tz(new Date(), "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
-console.log(x22)
