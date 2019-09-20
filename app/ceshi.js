@@ -379,8 +379,8 @@ let encrypt = function (word) {
     return encrypted.ciphertext.toString().toUpperCase();
 };
 let aaa = encrypt(`abcdseerrreeerr`)
-console.log(aaa)
-console.log(decrypt(aaa))
+
+console.log(decrypt(`e5be85e4bc9ae79c8be68891e884b8e889b2e8a18ce4ba8b`))
 
 function randomString(length) {
     let chars = '012345678!%^&$#@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

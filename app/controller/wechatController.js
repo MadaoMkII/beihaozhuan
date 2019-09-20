@@ -35,7 +35,7 @@ class wechatController extends baseController {
             }
         }
         return new Promise((resolve, reject) => {
-            console.log(requestObj)
+
             request_(requestObj, (error, response, body) => {
                 if (error) {
                     reject(error)
@@ -47,13 +47,12 @@ class wechatController extends baseController {
     };
 
     async callback(ctx) {
-        console.log(ctx.request)
+
         let returnUrl = ctx.request.url; ///wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
         //returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
         let urlQuery = url.parse(returnUrl, true).query;
         const {code, state} = urlQuery;
-        console.log(code)
-        console.log(state)
+
         if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
             ctx.throw(`空值警告`)
         }
@@ -63,7 +62,7 @@ class wechatController extends baseController {
             code: code,
             grant_type: `authorization_code`
         };
-        console.log(requestObj_2)
+
         let [result_2,] = await this.requestMethod(requestObj_2,
             `GET`, `https://api.weixin.qq.com/sns/oauth2/access_token`);
         if (!ctx.helper.isEmpty(result_2[`errcode`])) {
@@ -95,6 +94,9 @@ class wechatController extends baseController {
             let statusString = ctx.helper.encrypt(OPENID);
             let head = ctx.helper.encrypt(result_3[`headimgurl`]);
             let nickName = ctx.helper.encrypt(result_3[`nickname`]);
+            console.log(statusString)
+            console.log(head)
+            console.log(nickName)
             ctx.status = 301;
             ctx.redirect(`/index?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`);
         }
