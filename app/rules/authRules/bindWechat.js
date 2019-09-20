@@ -6,11 +6,11 @@ const rule = {
         {type: 'string', message: '格式不正确'},
     ],
     head: [
-        {required: false, message: ''},
+        {required: true, message: ''},
         {type: 'string', message: '格式不正确'},
     ],
     nickName: [
-        {required: false, message: ''},
+        {required: true, message: ''},
         {type: 'string', message: '格式不正确'},
     ],
     smsVerifyCode: [
