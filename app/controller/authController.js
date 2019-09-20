@@ -5,8 +5,8 @@ const Controller = require('./baseController');
 class authController extends Controller {
 
     async login(ctx) {
-        let server = ctx.protocol + '://' + ctx.host;
-        let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
+        // let server = ctx.protocol + '://' + ctx.host;
+        // let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
 
         const [condition] = await this.cleanupRequestProperty('authRules.loginRule',
             `password`, `tel_number`, `smsLoginVerifyCode`, `rememberMe`);
@@ -44,7 +44,7 @@ class authController extends Controller {
         if (userResult || verifyFlag) {
             await ctx.service.userService.updateUser_login(userResult.uuid);
 
-            if (condition.rememberMe) {
+            if (condition[`rememberMe`]) {
                 ctx.session.maxAge = ms('7d');
             } else {
                 ctx.session.maxAge = ms('2h');
@@ -103,7 +103,7 @@ class authController extends Controller {
                 tel_number: requestEntity.tel_number,
                 Bcoins: 1000
             };
-            console.log(newUser)
+
             await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
             delete newUser.password;
             this.success(newUser);
@@ -131,12 +131,12 @@ class authController extends Controller {
             //     String(requestEntity.tel_number).toLowerCase())) {
             //     ctx.throw(402, `tel_number doesn't exist`);
             // }
-            // console.log(requestEntity)
-            
+
+
             // ctx.session.tel_number = `null`;
             //  ctx.session.smsVerifyCode = `null`;
             let user = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
-            console.log(user)
+
             let newUser = {};
             if (ctx.helper.isEmpty(user)) {
                 let randomPassword = ctx.helper.passwordEncrypt(ctx.randomString(16));
@@ -148,21 +148,21 @@ class authController extends Controller {
                 newUser.role = 'User';
                 newUser.tel_number = requestEntity.tel_number;
                 newUser.Bcoins = 1100;
-                await ctx.service.userService.addUser(newUser, null);
-                console.log(newUser)
+                let newUser_login = await ctx.service.userService.addUser(newUser, null);
+                ctx.login(newUser_login);
                 delete newUser.password;
             } else {
                 // return this.failure(`电话号码已经被注册`, 400);
                 newUser.OPENID = ctx.helper.decrypt(requestEntity.statusString);
                 newUser.avatar = ctx.helper.decrypt(requestEntity.head);
                 newUser.nickName = ctx.helper.decrypt(requestEntity.nickName);
-                console.log(newUser)
-                await ctx.service.userService.updateUser(user.uuid, newUser);
 
+                let newUser_login = await ctx.service.userService.updateUser(user.uuid, newUser);
+                ctx.login(newUser_login);
             }
-           return  this.success();
+            return this.success();
         } catch (e) {
-            console.log(e)
+
             if (e.message.toString().includes(`E11000`)) {
                 return this.failure(`tel_number is duplicated `, 400);
             } else {
@@ -190,8 +190,8 @@ class authController extends Controller {
             }
             ctx.session.tel_number = null;
             ctx.session.smsVerifyCode = null;
-            let oldUser = await ctx.model.UserAccountFake.findOne({tel_number: requestEntity.tel_number});
-            console.log(oldUser)
+            let oldUser = await ctx.model[`UserAccountFake`].findOne({tel_number: requestEntity.tel_number});
+
             if (!ctx.helper.isEmpty(oldUser)) {
                 return this.failure(`电话号码已经被注册`, 400);
             }
@@ -212,7 +212,6 @@ class authController extends Controller {
             } else {
                 this.failure(e.message, 503);
             }
-
         }
 
     }
@@ -221,7 +220,7 @@ class authController extends Controller {
 
         let app = ctx.app;
         let nodeExcel = require('excel-export');
-        let users = await ctx.model.UserAccountFake.find();
+        let users = await ctx.model[`UserAccountFake`].find();
         let resultData = [];
         users.forEach((user) => {
 
