@@ -35,11 +35,11 @@ class authController extends Controller {
                 password: ctx.helper.passwordEncrypt(condition.password)
             });
         } else {
-            return this.failure(`denglushibai`, 400);
+            return this.failure(`登陆方式失败`, 401);
         }
 
         if (ctx.helper.isEmpty(userResult) || ctx.helper.isEmpty(userResult.uuid)) {
-            return this.failure(`该用户未注册`, 400);
+            return this.failure(`该用户未注册或密码不正确`, 400);
         }
         if (userResult || verifyFlag) {
             await ctx.service.userService.updateUser_login(userResult.uuid);

@@ -82,7 +82,7 @@ class BaseController extends Controller {
         properties.forEach((propertyName) => {
             requestEntity[propertyName] = this.ctx.request.body[propertyName];
         });
-
+console.log(this.ctx.request.body)
         let validateResult = true;
         let option = null;
         if (ruleName) {
@@ -91,7 +91,7 @@ class BaseController extends Controller {
 
         if (properties.includes(`unit`) || properties.includes(`page`)) {
             validateResult = validateResult && await this.ctx.validate(`pageAndUnitRule`, requestEntity);
-            option = this.operatorGenerator(requestEntity[`unit`], requestEntity[`page`]);
+            option = this.operatorGenerator(Number(requestEntity[`unit`]), Number(requestEntity[`page`]));
         }
 
         if (!validateResult) {

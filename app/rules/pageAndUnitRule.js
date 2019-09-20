@@ -3,7 +3,7 @@ const helper = require('../extend/helper');
 const rule = {
     unit: [
         {required: true, message: 'unit不能为空'},
-        {type: 'number', message: '类型不正确或小于1', min: 1},
+        {type: 'string', message: '类型不正确或小于1'},
         {
             validator: function (rule, value, callback, source) {
                 if (source) {
@@ -19,9 +19,10 @@ const rule = {
     ],
     page: [
         {required: true, message: 'page不能为空'},
-        {type: 'number', message: '类型不正确或小于1', min: 1},
+        {type: 'string', message: '类型不正确或小于1'},
         {
             validator: function (rule, value, callback, source) {
+                //min: 1
                 if (source) {
                     if (helper.isEmpty(source.page) || helper.isEmpty(source.unit)) {
                         callback({message: 'page 与 unit 必须不为空'});
