@@ -150,6 +150,7 @@ class authController extends Controller {
                 newUser.Bcoins = 1100;
                 let newUser_login = await ctx.service.userService.addUser(newUser, null);
                 ctx.login(newUser_login);
+                console.log(`shangmian`)
                 delete newUser.password;
             } else {
                 // return this.failure(`电话号码已经被注册`, 400);
@@ -159,9 +160,10 @@ class authController extends Controller {
 
                 let newUser_login = await ctx.service.userService.updateUser(user.uuid, newUser);
                 ctx.login(newUser_login);
-
+                console.log(`xiamian`)
             }
             ctx.status = 301;
+            console.log(`fanhui`)
             return ctx.redirect(`/index`);
         } catch (e) {
 
