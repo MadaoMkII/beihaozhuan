@@ -46,10 +46,6 @@ class wechatController extends baseController {
         });
     };
 
-    async loginByOPENID(ctx) {
-
-    };
-
     async callback(ctx) {
 
         let returnUrl = ctx.request.url; ///wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
@@ -81,7 +77,8 @@ class wechatController extends baseController {
             //     nickname: result_3.nickName
             // });
             ctx.login(user);
-            this.success();
+            ctx.status = 301;
+            return ctx.redirect(`/index`);
         } else {
             let requestObj_3 = {
                 access_token: result_2.access_token,
@@ -90,7 +87,6 @@ class wechatController extends baseController {
             };
             let [result_3,] = await this.requestMethod(requestObj_3,
                 `GET`, `https://api.weixin.qq.com/sns/userinfo`);
-            console.log(result_3)
             if (result_3[`errcode`]) {
                 return
             }
@@ -98,9 +94,6 @@ class wechatController extends baseController {
             let statusString = ctx.helper.encrypt(OPENID);
             let head = ctx.helper.encrypt(result_3[`headimgurl`]);
             let nickName = ctx.helper.encrypt(result_3[`nickname`]);
-            console.log(statusString)
-            console.log(head)
-            console.log(nickName)
             ctx.status = 301;
             ctx.redirect(`/index?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`);
         }
