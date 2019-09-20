@@ -118,7 +118,6 @@ class authController extends Controller {
 
     async bindWechat(ctx) {
         try {
-            ctx.app.controller[`authController`].login(ctx);
             const [requestEntity] = await this.cleanupRequestProperty('authRules.bindWechat',
                 `smsVerifyCode`, `tel_number`, `statusString`, `head`, `nickName`);
             if (!requestEntity) {

@@ -81,6 +81,7 @@ class wechatController extends baseController {
             //     nickname: result_3.nickName
             // });
             ctx.login(user);
+            this.success();
         } else {
             let requestObj_3 = {
                 access_token: result_2.access_token,
