@@ -123,9 +123,11 @@ class authController extends Controller {
 
     async bindWechat(ctx) {
         try {
+            console.log(ctx.body)
             const [requestEntity] = await this.cleanupRequestProperty('authRules.bindWechat',
                 `smsVerifyCode`, `tel_number`, `statusString`, `head`, `nickName`);
             if (!requestEntity) {
+                console.log(ctx.body)
                 return;
             }
             // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
@@ -141,9 +143,10 @@ class authController extends Controller {
             //ctx.session.tel_number = `null`;
             // ctx.session.smsVerifyCode = `null`;
             let user = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
+            console.log(user)
             let newUser = {};
             if (ctx.helper.isEmpty(user)) {
-                let randomPassword = ctx.helper.passwordEncrypt(ctx.randomString);
+                let randomPassword = ctx.helper.passwordEncrypt(ctx.randomString(16));
                 newUser.OPENID = ctx.helper.decrypt(requestEntity.statusString);
                 newUser.avatar = ctx.helper.decrypt(requestEntity.head);
                 newUser.nickName = ctx.helper.decrypt(requestEntity.nickName);
@@ -163,7 +166,7 @@ class authController extends Controller {
                 await ctx.service.userService.updateUser(user.uuid, newUser);
 
             }
-            this.success();
+           return  this.success();
         } catch (e) {
             console.log(e)
             if (e.message.toString().includes(`E11000`)) {
