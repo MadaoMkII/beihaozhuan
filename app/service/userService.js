@@ -77,6 +77,7 @@ class UserService extends Service {
             }
         }
         await userNew.save();
+        return userNew;
     };
 
     async getUser(user, project) {
