@@ -96,7 +96,7 @@ class wechatController extends baseController {
             let head = ctx.helper.encrypt(result_3[`headimgurl`]);
             let nickName = ctx.helper.encrypt(result_3[`nickname`]);
             ctx.status = 301;
-            ctx.redirect(`/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`);
+            ctx.redirect(`/index?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`);
         }
 
     }

@@ -21,7 +21,7 @@ module.exports = app => {
 
     router.get('/getSquare', controller[`systemSettingController`].getSquare);
 
-    router.get('/gundam', async (ctx) => {
+    router.get('/index', async (ctx) => {
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
         // ctx.redirect('/index.html')
