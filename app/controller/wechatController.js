@@ -77,7 +77,7 @@ class wechatController extends baseController {
             //     nickname: result_3.nickName
             // });
             ctx.body = {OPENID: OPENID};
-            return await this.controller[`authController`].login(ctx);
+            return await this.ctx.controller[`authController`].login(ctx);
         } else {
             let requestObj_3 = {
                 access_token: result_2.access_token,
