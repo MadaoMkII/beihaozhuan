@@ -46,6 +46,10 @@ class wechatController extends baseController {
         });
     };
 
+    async loginByOPENID(ctx) {
+
+    };
+
     async callback(ctx) {
 
         let returnUrl = ctx.request.url; ///wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
@@ -76,8 +80,7 @@ class wechatController extends baseController {
             //     avatar: result_3[`headimgurl`],
             //     nickname: result_3.nickName
             // });
-            ctx.body = {OPENID: OPENID};
-            return this.ctx.app.controller[`authController`].login(ctx);
+            ctx.login(user);
         } else {
             let requestObj_3 = {
                 access_token: result_2.access_token,

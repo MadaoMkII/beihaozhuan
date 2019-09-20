@@ -9,7 +9,7 @@ class authController extends Controller {
         let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
 
         const [condition] = await this.cleanupRequestProperty('authRules.loginRule',
-            `password`, `tel_number`, `smsLoginVerifyCode`, `rememberMe`, `OPENID`);
+            `password`, `tel_number`, `smsLoginVerifyCode`, `rememberMe`);
         if (!condition) {
             return;
         }
@@ -33,11 +33,6 @@ class authController extends Controller {
             userResult = await ctx.service.userService.getUser({
                 tel_number: condition.tel_number,
                 password: ctx.helper.passwordEncrypt(condition.password)
-            });
-        } else if (!this.ctx.helper.isEmpty(condition.OPENID)) {
-
-            userResult = await ctx.service.userService.getUser({
-                OPENID: condition.OPENID
             });
         } else {
             return this.failure(`denglushibai`, 400);
@@ -123,6 +118,7 @@ class authController extends Controller {
 
     async bindWechat(ctx) {
         try {
+            ctx.app.controller[`authController`].login(ctx);
             const [requestEntity] = await this.cleanupRequestProperty('authRules.bindWechat',
                 `smsVerifyCode`, `tel_number`, `statusString`, `head`, `nickName`);
             if (!requestEntity) {
@@ -223,6 +219,7 @@ class authController extends Controller {
     }
 
     async biefanle(ctx) {
+
         let app = ctx.app;
         let nodeExcel = require('excel-export');
         let users = await ctx.model.UserAccountFake.find();
