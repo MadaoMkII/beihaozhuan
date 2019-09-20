@@ -151,6 +151,7 @@ class authController extends Controller {
                 let newUser_login = await ctx.service.userService.addUser(newUser, null);
                 ctx.login(newUser_login);
                 delete newUser.password;
+                this.success();
             } else {
                 // return this.failure(`电话号码已经被注册`, 400);
                 newUser.OPENID = ctx.helper.decrypt(requestEntity.statusString);
@@ -159,8 +160,8 @@ class authController extends Controller {
 
                 let newUser_login = await ctx.service.userService.updateUser(user.uuid, newUser);
                 ctx.login(newUser_login);
+                this.success();
             }
-            return this.success();
         } catch (e) {
 
             if (e.message.toString().includes(`E11000`)) {
