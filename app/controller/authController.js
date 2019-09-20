@@ -165,6 +165,7 @@ class authController extends Controller {
             }
             this.success();
         } catch (e) {
+            console.log(e)
             if (e.message.toString().includes(`E11000`)) {
                 return this.failure(`tel_number is duplicated `, 400);
             } else {
