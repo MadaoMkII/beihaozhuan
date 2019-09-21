@@ -162,7 +162,6 @@ class authController extends Controller {
             }
             this.success();
         } catch (e) {
-
             if (e.message.toString().includes(`E11000`)) {
                 return this.failure(`tel_number is duplicated `, 400);
             } else {
@@ -218,15 +217,12 @@ class authController extends Controller {
 
     async biefanle(ctx) {
         try {
-
-
             let app = ctx.app;
             let nodeExcel = require('excel-export');
             let users = await ctx.model[`UserAccountFake`].find();
             let resultData = [];
-            console.log(users)
-            users.forEach((user) => {
 
+            users.forEach((user) => {
                 let tempArray = [];
                 tempArray.push(user.tel_number);
                 tempArray.push(app.getLocalTime(user.created_at));
@@ -234,9 +230,6 @@ class authController extends Controller {
                 resultData.push(tempArray);
             });
             let conf = {};
-            //conf.stylesXmlFile = "styles.xml";
-            // uncomment it for style example
-            // conf.stylesXmlFile = "styles.xml";
             conf.cols = [{
                 caption: '手机号',
                 captionStyleIndex: 1,

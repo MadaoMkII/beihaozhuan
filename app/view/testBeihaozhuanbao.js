@@ -74,15 +74,29 @@ let requestMethod = (JSONObject, method, url, cookie) => {
 
     let getDetailUrl = "https://www.94mxd.com/mxd/channelqrcode/fanslist";
     let workbook = XLSX.utils.book_new();
+    let rowInfo = [
+        {hpx: 30}
+    ];
+
     for (let admin of adminArray) {
         await sleep(300)
         let jsonOfAdmin = await getLoop(admin.id, getDetailUrl, admin.name);
+        let wsCols = [
+            {wch: 25},
+            {wch: 20},
+            {wch: 10},
+            {wch: 10}
+        ];
+        let tempRowInfo = Array.from(rowInfo);
+        tempRowInfo.push({hpx: 20});
         let worksheet = await XLSX.utils.json_to_sheet(jsonOfAdmin);
+        worksheet['!cols'] = wsCols;
+        worksheet['!rows'] = tempRowInfo;
         XLSX.utils.book_append_sheet(workbook, worksheet, admin.name);
     }
 
-
-    XLSX.writeFile(workbook, "eva00.xlsx");
+    XLSX.writeFile(workbook, `文件名老报错你自己改一下吧.xlsx`);
+    console.log(`写入文件成功`);
 })();
 
 function sleep(ms) {
@@ -141,7 +155,11 @@ async function getLoop(qrcodeId, url, name) {
     console.log(`爬 '${name}' 结束, 一共 ${total} 条结果`);
     return tempArray;
 }
-
+let getLocalTimeForFileName = function (date) {
+    const moment = require(`moment`);
+    require(`moment-timezone`);
+    return moment.tz(date, "Asia/ShangHai").format(`YYYY-MM-DD-HH:mm:ss`);
+};
 let getLocalTime = function (date) {
     const moment = require(`moment`);
     require(`moment-timezone`);
@@ -151,4 +169,4 @@ let timeStamp2String = (time) => {
     let datetime = new Date();
     datetime.setTime(time);
     return datetime
-}
+};
