@@ -50,8 +50,7 @@
     "luxon": "^1.17.2",
     "crypto-js": "^3.1.9-1",
     "excel-export": "^0.5.1",
-    "iconv-lite": "^0.5.0",
-    "node-gzip": "^1.1.2"
+    "cookie-parser": "^1.4.4"
   },
   "engines": {
     "node": ">=10.0.0"

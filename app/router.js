@@ -15,4 +15,5 @@ module.exports = app => {
     require('./router/userRouter')(app);
     require('./router/advertisementRouter')(app);
     require('./router/missionRouter')(app);
+    require('./router/maintenanceRouter')(app);
 };

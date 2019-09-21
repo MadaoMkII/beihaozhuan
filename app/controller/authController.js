@@ -217,44 +217,50 @@ class authController extends Controller {
     }
 
     async biefanle(ctx) {
+        try {
 
-        let app = ctx.app;
-        let nodeExcel = require('excel-export');
-        let users = await ctx.model[`UserAccountFake`].find();
-        let resultData = [];
-        users.forEach((user) => {
 
-            let tempArray = [];
-            tempArray.push(user.tel_number);
-            tempArray.push(app.getLocalTime(user.created_at));
-            tempArray.push(ctx.helper.isEmpty(user.signTimes) ? 0 : Number(user.signTimes));
-            resultData.push(tempArray);
-        });
-        let conf = {};
-        conf.stylesXmlFile = "styles.xml";
-        // uncomment it for style example
-        // conf.stylesXmlFile = "styles.xml";
-        conf.cols = [{
-            caption: '手机号',
-            captionStyleIndex: 1,
-            type: 'string',
-            width: 160
-        }, {
-            caption: '注册时间',
-            type: 'string',
-            width: 250
-        }, {
-            caption: '签到次数',
-            type: 'number',
-            width: 360
-        }];
-        conf.rows = resultData;
-        conf.name = `${app.getFormatDate()}`;
-        let result = nodeExcel.execute(conf);
-        let data = new Buffer(result, 'binary');
-        ctx.set('Content-Type', 'application/vnd.openxmlformats');
-        ctx.set("Content-Disposition", "attachment; filename=" + `UserRegister-${app.getLocalTime(new Date())}.xlsx`);
-        ctx.body = data;
+            let app = ctx.app;
+            let nodeExcel = require('excel-export');
+            let users = await ctx.model[`UserAccountFake`].find();
+            let resultData = [];
+            console.log(users)
+            users.forEach((user) => {
+
+                let tempArray = [];
+                tempArray.push(user.tel_number);
+                tempArray.push(app.getLocalTime(user.created_at));
+                tempArray.push(ctx.helper.isEmpty(user.signTimes) ? 0 : Number(user.signTimes));
+                resultData.push(tempArray);
+            });
+            let conf = {};
+            //conf.stylesXmlFile = "styles.xml";
+            // uncomment it for style example
+            // conf.stylesXmlFile = "styles.xml";
+            conf.cols = [{
+                caption: '手机号',
+                captionStyleIndex: 1,
+                type: 'string',
+                width: 160
+            }, {
+                caption: '注册时间',
+                type: 'string',
+                width: 250
+            }, {
+                caption: '签到次数',
+                type: 'number',
+                width: 360
+            }];
+            conf.rows = resultData;
+            conf.name = `${app.getFormatDate()}`;
+            let result = nodeExcel.execute(conf);
+            let data = new Buffer(result, 'binary');
+            ctx.set('Content-Type', 'application/vnd.openxmlformats');
+            ctx.set("Content-Disposition", "attachment; filename=" + `UserRegister-${app.getLocalTime(new Date())}.xlsx`);
+            ctx.body = data;
+        } catch (e) {
+            console.log(e)
+        }
     };
 
     async signIn_fake(ctx) {

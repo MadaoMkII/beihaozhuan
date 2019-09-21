@@ -82,7 +82,7 @@ class BaseController extends Controller {
         properties.forEach((propertyName) => {
             requestEntity[propertyName] = this.ctx.request.body[propertyName];
         });
-console.log(this.ctx.request.body)
+
         let validateResult = true;
         let option = null;
         if (ruleName) {
