@@ -2,14 +2,19 @@ let express = require(`express`);
 let bodyParser = require('body-parser');
 let XLSX = require(`xlsx`);
 let app = express();
-
+let fileName = "none";
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/about', function (req, res) {
-    res.status(200).download(`report.xlsx`);
-    //res.send('你好，我是 Express!')
+    if (fileName === `none`) {
+        res.status(200);
+        return res.json({status: "需要先生成文件"});
+    }
+    res.status(200).download(fileName);
+    fileName = `none`;
 });
+
 app.post('/beginScanning', async function (req, res) {
 
     let {cookieStr} = req.body;
@@ -32,7 +37,7 @@ app.post('/beginScanning', async function (req, res) {
         pageSize = body[`respMsg`][`pagInfo`].pages;
     }
     res.status(200);
-    res.send(`读取成功，请等待30秒后 调用下载接口`);
+    res.send({data: `读取成功，请等待30秒后 调用下载接口`, status: 1});
 
     let getDetailUrl = "https://www.94mxd.com/mxd/channelqrcode/fanslist";
     let workbook = XLSX.utils.book_new();
@@ -58,7 +63,8 @@ app.post('/beginScanning', async function (req, res) {
     }
     await sleep(1000);
     console.log(`全部爬完，开始写入数据.....`);
-    XLSX.writeFile(workbook, `${getLocalTimeForFileName(new Date())}.xlsx`);
+    fileName = `${getLocalTimeForFileName(new Date())}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
     console.log(`写入文件成功`);
 
 });
