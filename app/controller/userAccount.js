@@ -148,7 +148,7 @@ class userAccount extends baseController {
     };
 
     async generatorInviteLink(ctx) {
-        return this.success(`http://${ctx.hostname}/register?inviteCode=${ctx.user.inviteCode}`);
+        return this.success(`https://www.beihaozhuan.com/index?inviteCode=${ctx.user.inviteCode}`);
     };
 
     async getUser(ctx) {
