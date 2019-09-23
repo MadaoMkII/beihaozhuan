@@ -36,4 +36,9 @@ module.exports = app => {
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/prepare.html'));
         // ctx.redirect('/index.html')
     });
+    router.get('/missionSignIn', async (ctx) => {
+        ctx.response.type = 'html';
+        ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/missionSignIn.html'));
+        // ctx.redirect('/index.html')
+    });
 };
