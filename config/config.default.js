@@ -62,7 +62,18 @@ module.exports = appInfo => {
                     useCreateIndex: true,
                     useFindAndModify: false,
                 }
+            },
+            analyze: {
+                url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+                options: {
+                    poolSize: 6,
+                    keepAlive: true,
+                    dbName: `beihaozhuan_analyzeData`,
+                    useCreateIndex: true,
+                    useFindAndModify: false,
+                }
             }
+
         }
     };
     // use for cookie sign key, should change to your own and keep security

@@ -5,21 +5,56 @@ const rule = {
         {required: true, message: '不能为空'},
         {type: 'string', message: '类型不正确'}
     ],
-    channel: [
+    positionName: [
+        {required: true, message: '不能为空'},
+        {type: 'string', message: '类型不正确'}
+    ],
+    source: [
         {required: true, message: '不能为空'},
         {type: 'string', message: '类型不正确'}
     ],
     reward: [
         {required: true, message: '不能为空'},
-        {type: 'number', message: '类型不正确'}
+        {type: 'string', message: '类型不正确'},
+        {
+            validator: function (rule, value, callback) {
+                if (Number(value) >= 1) {
+                    callback(); // 验证通过
+                } else {
+                    callback({message: '不能小于1'}); // 验证不通过}
+                }
+            }
+        }
     ],
-    positionName: [
+    activity: [
         {required: true, message: '不能为空'},
-        {type: 'string', message: '类型不正确'}
+        {type: "enum", enum: ['enable', 'disable']}
     ],
-    category: [
+    length: [
         {required: true, message: '不能为空'},
-        {type: 'string', message: '类型不正确'}
+        {type: 'string', message: '类型不正确'},
+        {
+            validator: function (rule, value, callback) {
+                if (Number(value) >= 1) {
+                    callback(); // 验证通过
+                } else {
+                    callback({message: '不能小于1'}); // 验证不通过}
+                }
+            }
+        }
+    ],
+    width: [
+        {required: true, message: '不能为空'},
+        {type: 'string', message: '类型不正确'},
+        {
+            validator: function (rule, value, callback) {
+                if (Number(value) >= 1) {
+                    callback(); // 验证通过
+                } else {
+                    callback({message: '不能小于1'}); // 验证不通过}
+                }
+            }
+        }
     ]
 };
 

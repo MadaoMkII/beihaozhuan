@@ -3,15 +3,15 @@ module.exports = app => {
     const connection = app.mongooseDB.get('commonConnection');
     let advertisement = new mongoose.Schema({
         title: {type: String, required: true},
-        category: {type: String, required: true},
-        channel: {type: String, required: true},
+        positionName: {type: String, required: true},
+        source: {type: String, required: true},
         reward: {type: String, required: true, default: 0},
         activity: {
             type: String,
             enum: ['enable', 'disable'], default: "disable"
         },
-        advData: {type: mongoose.Schema.Types.Mixed},
-        positionName: {type: String},
+        mainlyShowPicUrl: {type: String},
+        //advData: {type: mongoose.Schema.Types.Mixed},
         length: Number,
         width: Number,
         uuid: {
