@@ -76,7 +76,7 @@ module.exports = appInfo => {
             enable: false,
             ignoreJSON: false
         },
-        domainWhiteList: ['http://localhost:8080', 'http://127.0.0.1:3000']
+        domainWhiteList: ['http://localhost:8080', 'http://127.0.0.1:3000', `http://localhost:3000`]
     };
     config.cors = {
         origin: 'http://localhost:3000',
@@ -99,8 +99,8 @@ module.exports = appInfo => {
         // myAppName: 'egg',
     };
     config.wechatConfig = {
-        appid:`wx6da0f69da7e8894c`,
-        secret:`b6b0fb92a432acb9963bc4cf54e507fc`,
+        appid: `wx6da0f69da7e8894c`,
+        secret: `b6b0fb92a432acb9963bc4cf54e507fc`,
 
     };
     config.session = {
