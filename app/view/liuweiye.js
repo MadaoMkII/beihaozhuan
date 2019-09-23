@@ -5,8 +5,9 @@ let app = express();
 let fileName = "none";
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-
-app.get('/about', function (req, res) {
+const cors = require('cors');
+app.use(cors());
+app.get('/getReport', function (req, res) {
     if (fileName === `none`) {
         res.status(200);
         return res.json({status: "需要先生成文件"});
@@ -16,8 +17,8 @@ app.get('/about', function (req, res) {
 });
 
 app.post('/beginScanning', async function (req, res) {
-
     let {cookieStr} = req.body;
+    console.log(cookieStr)
     let pageSize = 1;
     let adminArray = [];
     let url = `https://www.94mxd.com/mxd/channelqrcode/list`;
@@ -30,14 +31,14 @@ app.post('/beginScanning', async function (req, res) {
         }, `GET`, url, cookie);
         if (body.description === `login expired`) {
             res.status(200);
-            return res.send(`Cookie 过期了，请重新复制`);
+            return res.json({result: `Cookie 过期或者不正确，请重新复制`, status: 200});
 
         }
         adminArray.push.apply(adminArray, body[`respMsg`].list);
         pageSize = body[`respMsg`][`pagInfo`].pages;
     }
     res.status(200);
-    res.send({data: `读取成功，请等待30秒后 调用下载接口`, status: 1});
+    res.json({result: `读取成功，请等待120秒后 调用下载接口`, status: 201});
 
     let getDetailUrl = "https://www.94mxd.com/mxd/channelqrcode/fanslist";
     let workbook = XLSX.utils.book_new();
@@ -70,8 +71,8 @@ app.post('/beginScanning', async function (req, res) {
 });
 
 // 4 .启动服务
-app.listen(3000, function () {
-    console.log('app is running at port 3000.')
+app.listen(3100, function () {
+    console.log('app is running at port 3000.');
 });
 
 let requestMethod = (JSONObject, method, url, cookie) => {
