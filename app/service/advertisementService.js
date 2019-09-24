@@ -13,9 +13,11 @@ class advertisementService extends Service {
         delete advertising.uuid;
         return this.ctx.model.Advertisement.findOneAndUpdate({uuid: uuid}, {$set: advertising});
     };
+
     async deleteAdvertisement(uuid,) {
         return this.ctx.model.Advertisement.deleteOne({uuid: uuid});
     };
+
     async getAdvertisement(advertising, options) {
         return this.ctx.model.Advertisement.find(advertising, {}, options);
     };
@@ -31,7 +33,9 @@ class advertisementService extends Service {
                 $group:
                     {
                         _id: "$positionName",
-                        advertisements: {$push: {carouselUrl: "$carouselUrl", source: "$source"}}
+                        advertisements: {$push: {carouselUrl: "$carouselUrl", source: "$source"}},
+                        length: {$avg: "$length"},
+                        width: {$avg: "$width"}
                     }
             }
         ]);

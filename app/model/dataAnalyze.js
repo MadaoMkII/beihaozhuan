@@ -2,12 +2,8 @@ module.exports = app => {
     const mongoose = app.mongoose;
     const connection = app.mongooseDB.get('analyze');
     let analyzeData = new mongoose.Schema({
-
-        userID: {
-            required: true,
-            type: String
-        },
-        last_login_time: Date
+        absoluteDate: Date,
+        amount: Number,
     }, {
         'timestamps': {
             'createdAt': 'created_at', 'updatedAt': 'updated_at'
@@ -34,7 +30,6 @@ module.exports = app => {
         virtuals: true,
         transform: (doc, ret) => {
             delete ret.__v;
-            ret.Bcoins = doc.Bcoins;
         }
     });
 

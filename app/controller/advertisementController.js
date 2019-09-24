@@ -96,13 +96,16 @@ class advertisementController extends Controller {
     }
 
     async getAdvertisementByPosition(ctx) {
-        const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.getAdvertisementRule',
-            `positionName`);
-        let result = await ctx.service.advertisementService.getAdvertisementByPosition(advertisement.positionName);
+        const {positionName} = ctx.request.body;
+        if (ctx.helper.isEmpty(positionName)) {
+            return this.failure(`positionName必须不为空`, 400);
+        }
+        let result = await ctx.service.advertisementService.getAdvertisementByPosition(positionName);
+        console.log(result)
         if (result.length <= 0) {
             return this.success();
         }
-        this.success(result[0].advertisements);
+        this.success({advertisements: result[0].advertisements, length: result[0].length, width: result[0].width});
     }
 }
 
