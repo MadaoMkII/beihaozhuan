@@ -10,4 +10,8 @@ module.exports = app => {
         app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].getAdvertisementByPosition);
     router.post('/advertisement/updateAdvertisementList',
         app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].updateAdvertisementList);
+    router.post('/advertisement/setAdvertisementActivity',
+        app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].setAdvertisementActivity);
+    router.post('/advertisement/deleteAdvertisement',
+        app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].deleteAdvertisement);
 };

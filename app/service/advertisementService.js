@@ -11,9 +11,11 @@ class advertisementService extends Service {
 
     async updateAdvertisement(uuid, advertising) {
         delete advertising.uuid;
-        return this.ctx.model.Advertisement.findOne({uuid: uuid}, {$set: advertising});
+        return this.ctx.model.Advertisement.findOneAndUpdate({uuid: uuid}, {$set: advertising});
     };
-
+    async deleteAdvertisement(uuid,) {
+        return this.ctx.model.Advertisement.deleteOne({uuid: uuid});
+    };
     async getAdvertisement(advertising, options) {
         return this.ctx.model.Advertisement.find(advertising, {}, options);
     };

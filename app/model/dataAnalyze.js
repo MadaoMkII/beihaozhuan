@@ -2,11 +2,10 @@ module.exports = app => {
     const mongoose = app.mongoose;
     const connection = app.mongooseDB.get('analyze');
     let analyzeData = new mongoose.Schema({
-        uuid: {
+
+        userID: {
             required: true,
-            type: String,
-            unique: true,
-            sparse: true
+            type: String
         },
         last_login_time: Date
     }, {
@@ -19,6 +18,7 @@ module.exports = app => {
         virtuals: true,
         transform: (doc, ret) => {
             delete ret.__v;
+
             delete ret._id;
             delete ret.id;
             delete ret.password;

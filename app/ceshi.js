@@ -313,23 +313,23 @@ let t = publicEncrypt(x)
 compareSign(x, t)
 
 
-const request = require('request');
-let requestFun = (JSONObject, method, url) => {
-    return new Promise((resolve, reject) => {
-        request({
-            url: url,
-            method: method,
-            json: true,   // <--Very important!!!
-            body: JSONObject
-        }, (error, response, body) => {
-            if (error) {
-                reject(error)
-            } else {
-                resolve([response, body]);
-            }
-        });
-    });
-};
+// const request = require('request');
+// let requestFun = (JSONObject, method, url) => {
+//     return new Promise((resolve, reject) => {
+//         request({
+//             url: url,
+//             method: method,
+//             json: true,   // <--Very important!!!
+//             body: JSONObject
+//         }, (error, response, body) => {
+//             if (error) {
+//                 reject(error)
+//             } else {
+//                 resolve([response, body]);
+//             }
+//         });
+//     });
+// };
 let urlA = '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE';
 
 let url = require("url");
@@ -393,4 +393,9 @@ var rString = randomString(16)
 
 const moment = require(`moment`);
 require(`moment-timezone`);
-let x22 =moment.tz(new Date(), "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
+let date = new Date();
+date.setHours(0);
+date.setMinutes(0,0,0);
+console.log(date)
+let x22 =moment.tz(date, "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
+console.log(x22)

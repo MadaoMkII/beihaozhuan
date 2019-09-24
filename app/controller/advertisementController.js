@@ -30,6 +30,16 @@ class advertisementController extends Controller {
 
     }
 
+    async deleteAdvertisement(ctx) {
+        const {uuid} = ctx.request.body;
+        if (ctx.helper.isEmpty(uuid)) {
+            return this.success({object: `uuid 必须填写`}, 200);
+        }
+        let result = ctx.service.advertisementService.deleteAdvertisement(uuid);
+        this.success(result);
+        await result;
+    };
+
     async createAdvertisement(ctx) {
 
         const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.createAdvertisementRule',
@@ -59,7 +69,7 @@ class advertisementController extends Controller {
     }
 
     async updateAdvertisementList(ctx) {
-        const [advertisement, options] = await this.cleanupRequestProperty('advertisementRules.getAdvertisementRule',
+        const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.getAdvertisementRule',
             `title`, `positionName`, `source`, `activity`, "length", "width", "uuid");
         if (!advertisement) {
             return;
@@ -69,8 +79,20 @@ class advertisementController extends Controller {
             let ossUrl = await ctx.service.picService.putImgs(files[0]);
             advertisement.carouselUrl = (ossUrl);
         }
+        let service = ctx.service.advertisementService.updateAdvertisement(advertisement.uuid, advertisement);
         this.success();
-        return ctx.service.advertisementService.updateAdvertisement(advertisement.uuid, advertisement);
+        await service;
+    }
+
+    async setAdvertisementActivity(ctx) {
+        const [condition,] = await this.cleanupRequestProperty('advertisementRules.updateAdvertisementRule',
+            `activity`, "uuid");
+        if (!condition) {
+            return;
+        }
+        let service = ctx.service.advertisementService.updateAdvertisement(condition.uuid, condition);
+        this.success();
+        await service;
     }
 
     async getAdvertisementByPosition(ctx) {

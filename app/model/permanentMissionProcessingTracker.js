@@ -4,7 +4,7 @@ module.exports = app => {
     // mongoose.set('useFindAndModify', false);
     const connection = app.mongooseDB.get('missionTracker');
     let structure = {
-        userID: {type: app.mongoose.Schema.Types.ObjectId, ref: 'UserAccount'},
+        userID: {type: app.mongoose.Schema.Types.ObjectId, ref: 'UserAccount'}, //者ref会不会有问题
         missionID: {type: app.mongoose.Schema.Types.ObjectId},
         missionEventName: {type: String, required: true},
         recentAmount: {type: Number, default: 0},

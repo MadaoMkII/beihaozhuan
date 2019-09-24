@@ -5,15 +5,13 @@ module.exports = app => {
         userID: {
             required: true,
             type: app.mongoose.Schema.Types.ObjectId,
-            unique: true,
-            sparse: true
         },
+        absoluteDate: Date,
         amount: Number,
-        reason: String,
-        last_login_time: Date
+        reason: String
     }, {
         'timestamps': {
-            'createdAt': 'created_at'
+            'createdAt': 'created_at', 'updatedAt': 'updated_at'
         }
     });
 
@@ -22,8 +20,6 @@ module.exports = app => {
         transform: (doc, ret) => {
             delete ret.__v;
             delete ret._id;
-            delete ret.id;
-            delete ret.password;
             if (doc.updated_at) {
                 ret.updated_at = app.getFormatDateForJSON(doc.updated_at);
             }
@@ -36,9 +32,7 @@ module.exports = app => {
         virtuals: true,
         transform: (doc, ret) => {
             delete ret.__v;
-            ret.Bcoins = doc.Bcoins;
         }
     });
-
     return connection.model('UsersBcoinRecord', usersBcoinRecord, 'UsersBcoinRecord');
 };
