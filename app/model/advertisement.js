@@ -10,10 +10,11 @@ module.exports = app => {
             type: String,
             enum: ['enable', 'disable'], default: "disable"
         },
-        mainlyShowPicUrl: {type: String},
+        carouselUrl: {type: String},
         //advData: {type: mongoose.Schema.Types.Mixed},
         length: Number,
         width: Number,
+        amount: Number,
         uuid: {
             required: true,
             type: String,

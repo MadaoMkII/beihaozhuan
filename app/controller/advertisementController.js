@@ -33,17 +33,54 @@ class advertisementController extends Controller {
     async createAdvertisement(ctx) {
 
         const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.createAdvertisementRule',
-            `title`, `positionName`, `source`, `reward`, `activity`, "length", "width");
+            `title`, `positionName`, `source`, `reward`, `activity`, "length", "width", "amount");
         if (!advertisement) {
             return;
         }
         const files = ctx.request.files;
-        if (!ctx.helper.isEmpty(files)) {
-            advertisement.mainlyShowPicUrl = await ctx.service.picService.putImgs(files[0]);
+        if (!ctx.helper.isEmpty(files) && !ctx.helper.isEmpty(files[0])) {
+            let ossUrl = await ctx.service.picService.putImgs(files[0]);
+            advertisement.carouselUrl = (ossUrl);
         }
         let result = ctx.service.advertisementService.createAdvertisement(advertisement);
         this.success(result);
         await result;
+    }
+
+    async getAdvertisementList(ctx) {
+        const [advertisement, options] = await this.cleanupRequestProperty('advertisementRules.getAdvertisementRule',
+            `title`, `positionName`, `source`, `activity`, 'unit', 'page');
+        if (!advertisement) {
+            return;
+        }
+        let result = await ctx.service.advertisementService.getAdvertisement(advertisement, options);
+        let count = await this.getFindModelCount(`Advertisement`, advertisement);
+        return this.success([result, count]);
+    }
+
+    async updateAdvertisementList(ctx) {
+        const [advertisement, options] = await this.cleanupRequestProperty('advertisementRules.getAdvertisementRule',
+            `title`, `positionName`, `source`, `activity`, "length", "width", "uuid");
+        if (!advertisement) {
+            return;
+        }
+        const files = ctx.request.files;
+        if (!ctx.helper.isEmpty(files) && !ctx.helper.isEmpty(files[0])) {
+            let ossUrl = await ctx.service.picService.putImgs(files[0]);
+            advertisement.carouselUrl = (ossUrl);
+        }
+        this.success();
+        return ctx.service.advertisementService.updateAdvertisement(advertisement.uuid, advertisement);
+    }
+
+    async getAdvertisementByPosition(ctx) {
+        const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.getAdvertisementRule',
+            `positionName`);
+        let result = await ctx.service.advertisementService.getAdvertisementByPosition(advertisement.positionName);
+        if (result.length <= 0) {
+            return this.success();
+        }
+        this.success(result[0].advertisements);
     }
 }
 

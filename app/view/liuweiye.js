@@ -2,6 +2,8 @@ let express = require(`express`);
 let bodyParser = require('body-parser');
 let XLSX = require(`xlsx`);
 let app = express();
+const fs = require('fs');
+const path = require('path');
 let fileName = "none";
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -15,7 +17,12 @@ app.get('/getReport', function (req, res) {
     res.status(200).download(fileName);
     fileName = `none`;
 });
-
+app.get('/', async (req,res) => {
+    res.type("html");
+     let html= fs.readFileSync(path.resolve(__dirname, './getCookie.html'));
+    res.send(html)
+    // ctx.redirect('/index.html')
+});
 app.post('/beginScanning', async function (req, res) {
     let {cookieStr} = req.body;
     console.log(cookieStr)

@@ -9,9 +9,31 @@ class advertisementService extends Service {
         advertisingObj.save();
     };
 
+    async updateAdvertisement(uuid, advertising) {
+        delete advertising.uuid;
+        return this.ctx.model.Advertisement.findOne({uuid: uuid}, {$set: advertising});
+    };
 
+    async getAdvertisement(advertising, options) {
+        return this.ctx.model.Advertisement.find(advertising, {}, options);
+    };
 
-
+    async getAdvertisementByPosition(positionName) {
+        return this.ctx.model.Advertisement.aggregate([{
+            $match: {
+                positionName: positionName,
+                activity: "enable"
+            }
+        },
+            {
+                $group:
+                    {
+                        _id: "$positionName",
+                        advertisements: {$push: {carouselUrl: "$carouselUrl", source: "$source"}}
+                    }
+            }
+        ]);
+    };
 
 }
 

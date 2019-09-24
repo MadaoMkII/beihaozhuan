@@ -52,7 +52,8 @@
     "excel-export": "^0.5.1",
     "body-parser": "^1.4.4",
     "express": "^4.17.1",
-    "xlsx": "^0.15.1"
+    "xlsx": "^0.15.1",
+    "cors": "^2.8.5"
   },
   "engines": {
     "node": ">=10.0.0"
