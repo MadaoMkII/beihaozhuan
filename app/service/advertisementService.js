@@ -33,7 +33,7 @@ class advertisementService extends Service {
                 $group:
                     {
                         _id: "$positionName",
-                        advertisements: {$push: {carouselUrl: "$carouselUrl", source: "$source"}},
+                        advertisements: {$push: {carouselUrl: "$carouselUrl", source: "$source", uuid: "$uuid"}},
                         length: {$avg: "$length"},
                         width: {$avg: "$width"}
                     }

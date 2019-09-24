@@ -1,12 +1,13 @@
-
-
-
 module.exports = {
     //解密方法
     /**
-     * @return {string}
+     * @return {Date}
      */
-
+    getAbsoluteDate: function (date = new Date()) {
+        date.setHours(0);
+        date.setMinutes(0, 0, 0);
+        return date;
+    },
     randomString: function (length) {
         let chars = '012345678!%^&$#@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let result = '';

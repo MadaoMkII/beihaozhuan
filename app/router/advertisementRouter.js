@@ -1,7 +1,7 @@
 `use strict`;
 module.exports = app => {
     const {router, controller} = app;
-    router.get('/checkAD', app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].checkAD);
+    router.post('/advertisement/checkAdvertisement', app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].checkAdvertisement);
     router.post('/advertisement/getAdvertisement',
         app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].getAdvertisementList);
     router.post('/advertisement/createAdvertisement',
@@ -14,4 +14,8 @@ module.exports = app => {
         app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].setAdvertisementActivity);
     router.post('/advertisement/deleteAdvertisement',
         app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].deleteAdvertisement);
+
+    router.post('/advertisement/deleteAdvertisement',
+        app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].deleteAdvertisement);
+
 };

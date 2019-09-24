@@ -4,10 +4,7 @@ const {Service} = require('egg');
 class analyzeService extends Service {
 
     async recordBcoinChange(userID, amount, reason) {
-        let date = new Date();
-        date.setHours(0);
-        date.setMinutes(0, 0, 0);
-
+        let date = this.ctx.getAbsoluteDate();
         let bcoinRecordObj = {
             userID: userID,
             amount: amount,
@@ -23,10 +20,10 @@ class analyzeService extends Service {
         }
     };
 
-    async getAdvertisement(advertising, options) {
-        return this.ctx.model.Advertisement.find(advertising, {}, options);
+    async userIncrementRecord() {
+        let date = this.ctx.getAbsoluteDate();
+        this.ctx.model.DataAnalyze.findOneAndUpdate({absoluteDate:date},{$set:{}});
     };
-
 
 
 }

@@ -336,7 +336,6 @@ let url = require("url");
 let query = url.parse(urlA, true).query;
 
 
-
 const myURL = new URL(`https://example.org`);
 Object.keys(x).forEach((key) => {
     myURL.searchParams.append(key, x[key]);
@@ -373,14 +372,20 @@ let decrypt = function (word) {
 /**
  * @return {string}
  */
-let encrypt = function (word) {
-    let srcs = CryptoJS.enc.Utf8.parse(word);
-    let encrypted = CryptoJS.AES.encrypt(srcs, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
+let encryptSign = (obj) => {
+    const key = CryptoJS.enc.Utf8.parse("12gy122414ABdDEF"); //十六位十六进制数作为秘钥
+    const iv = CryptoJS.enc.Utf8.parse('AHCdCF12351f3412');
+    let resultStr = ``;
+    Object.keys(obj).sort().forEach((key) => {
+        resultStr = resultStr + `${key}=${obj[key]}&`
+    });
+    let src = CryptoJS.enc.Utf8.parse(resultStr);
+    let encrypted = CryptoJS.AES.encrypt(src, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
     return encrypted.ciphertext.toString().toUpperCase();
 };
-let aaa = encrypt(`ABC`)
+let aaa = encryptSign(`ABC`)
 
-console.log(decrypt(`E6AD23C4C4193C212C34E08A04C63DBF210BCC92DE28D64C3471A736C5FC6CF5`))
+console.log(decrypt(`CD17A9E2F180A9E0DC08F4B1AF833898BCAA879B8E603A880F9967911C30A276D84095C1C4A8E251A4D0C6D963B632FBEC2257A334FE907A3E0CF3B9AFBC81355DE6015D3F3DB030C9FAC8CD851BD601689E3DF8E26BFF1CF0C067D5EB2BE88D`))
 
 function randomString(length) {
     let chars = '012345678!%^&$#@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -389,13 +394,15 @@ function randomString(length) {
     return result;
 }
 
+let aac = encryptSign({name: 12})
+console.log(aac)
 var rString = randomString(16)
 
 const moment = require(`moment`);
 require(`moment-timezone`);
 let date = new Date();
 date.setHours(0);
-date.setMinutes(0,0,0);
+date.setMinutes(0, 0, 0);
 console.log(date)
-let x22 =moment.tz(date, "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
+let x22 = moment.tz(date, "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
 console.log(x22)
