@@ -26,6 +26,12 @@ class analyzeService extends Service {
         const resultArray = [];
         let matcher = {content: condition};
 
+        let start = DateTime.fromISO('2019-06-18');
+        let end = DateTime.fromISO(this.ctx.getAbsoluteDate().toISOString());
+        let diffInMonths = end.diff(start, 'months').months;
+        diffInMonths = Math.abs(diffInMonths);
+        diffInMonths = Math.ceil(diffInMonths);
+
         let aggregateResult = await this.ctx.model.DataAnalyze.aggregate([
             {
                 "$project": {
@@ -46,19 +52,27 @@ class analyzeService extends Service {
         let categories = [];
         let innerIndex = 0;
         let total = 0;
-        let daysOfMonth = 12;
         aggregateResult = aggregateResult.sort((a, b) => {
-            return a._id - b._id;
+            let aDate = DateTime.local(a._id.year, a._id.month, 1);
+            let bDate = DateTime.local(b._id.year, b._id.month, 1);
+            return aDate.diff(bDate, "months");
         });
-        for (let index = 1; index <= daysOfMonth; index++) {
-            if (!this.ctx.helper.isEmpty(aggregateResult[innerIndex]) && index === aggregateResult[innerIndex]._id) {
+
+        console.log(aggregateResult)
+        let dateTime = start;
+        for (let index = 0; index <= diffInMonths; index++) {
+
+            if (!this.ctx.helper.isEmpty(aggregateResult[innerIndex]) &&
+                dateTime.month === aggregateResult[innerIndex]._id.month &&
+                dateTime.year === aggregateResult[innerIndex]._id.year) {
                 resultArray.push(aggregateResult[innerIndex].total);
                 total += aggregateResult[innerIndex].total;
-                innerIndex++;
+                innerIndex = innerIndex < aggregateResult.length - 1 ? innerIndex + 1 : innerIndex;
             } else {
                 resultArray.push(0);
             }
-            categories.push(`${index}x`);
+            categories.push(`${dateTime.year}/${dateTime.month}`);
+            dateTime = dateTime.plus({months: 1});
         }
         console.log(resultArray)
         return {
@@ -71,13 +85,11 @@ class analyzeService extends Service {
     }
 
     async countByDays(condition) {
-
         const resultArray = [];
         let local = DateTime.fromISO(new Date().toISOString());
         let rezoned = local.setZone("Asia/Shanghai");
         let matcher = {MonthNew: rezoned.month};
         matcher.content = condition;
-        console.log(matcher)
         let aggregateResult = await this.ctx.model.DataAnalyze.aggregate([
             {
                 "$project": {
@@ -94,7 +106,6 @@ class analyzeService extends Service {
                     "total": {"$sum": "$amount"}
                 }
             }]);
-        console.log(aggregateResult)
         aggregateResult = aggregateResult.sort((a, b) => {
             return a._id - b._id;
         });
@@ -112,7 +123,6 @@ class analyzeService extends Service {
             }
             categories.push(`${index}号`);
         }
-        console.log(resultArray)
         return {
             total: total,
             categories: categories,
@@ -124,13 +134,17 @@ class analyzeService extends Service {
 
     async countByHours(condition) {
         const resultArray = [];
-        let matcher = {content: condition};
-
-        let aggregateResult = await ctx.model.DataAnalyze.aggregate([
+        let local = DateTime.fromISO(new Date().toISOString());
+        let rezoned = local.setZone("Asia/Shanghai");
+        let matcher = {DogDay: rezoned.day};
+        matcher.content = condition;
+        let aggregateResult = await this.ctx.model.DataAnalyze.aggregate([
             {
                 "$project": {
+                    "DogDay": {"$dayOfMonth": {date: "$absoluteDate", timezone: "+0700"}},
                     "hourNew": {"$hour": {date: "$absoluteDate", timezone: "+0700"}},
-                    "amount": 1
+                    "amount": 1,
+                    content: 1,
                 }
             },
             {$match: matcher},
@@ -143,11 +157,12 @@ class analyzeService extends Service {
         aggregateResult = aggregateResult.sort((a, b) => {
             return a._id - b._id;
         });
+        console.log(aggregateResult)
         let innerIndex = 0;
         let total = 0;
         let categories = [];
         for (let index = 0; index < 24; index++) {
-            if (index === aggregateResult[innerIndex]._id) {
+            if (!this.ctx.helper.isEmpty(aggregateResult[innerIndex]) && index === aggregateResult[innerIndex]._id) {
                 resultArray.push(aggregateResult[innerIndex].total);
                 total += aggregateResult[innerIndex].total;
                 innerIndex++;

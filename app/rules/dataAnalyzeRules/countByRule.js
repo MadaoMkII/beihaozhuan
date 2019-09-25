@@ -14,7 +14,7 @@ const rule = {
         {
             type: "enum",
             enum: ['month', 'day', `full`],
-            message: 'month  / day / full'
+            message: '数值仅可为month  / day / full'
         }
     ]
 };
