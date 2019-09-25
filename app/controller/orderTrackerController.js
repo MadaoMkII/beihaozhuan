@@ -36,6 +36,18 @@ class orderTrackerController extends baseController {
         }
     };
 
+    async getMyOrders(ctx) {
+        const [condition, option] = await this.cleanupRequestProperty('pageAndUnitRule',
+            `unit`, `page`);
+        if (!condition) {
+            return;
+        }
+        condition.userUUid = ctx.user.uuid;
+        let count = await this.getFindModelCount(`OrderTracker`, condition);
+        let result = await ctx.service.orderTrackerService.findOrder(condition, option);
+        return this.success([result, count]);
+    };
+
 
     async findOrder() {
         const [condition, option] = await this.cleanupRequestProperty('orderTrackerRules.findGoodRule',

@@ -8,7 +8,7 @@ class MissionEventManager extends Service {
         this.eventEmitter = new EventEmitter();
     };
 
-    async setMissions(missions, missionName) {
+    async setMissions(missions, missionModelName) {
         for (const mission of missions) {
             if (mission.completed) {
                 continue;
@@ -20,7 +20,7 @@ class MissionEventManager extends Service {
                     effectDay: mission.effectDay,
                     missionEventName: mission.missionEventName
                 };
-                let res = await this.ctx.model[missionName].findOneAndUpdate(missionSearcher,
+                let res = await this.ctx.model[missionModelName].findOneAndUpdate(missionSearcher,
                     {$inc: {recentAmount: 1}},
                     {new: true});
                 if (!res) {
@@ -31,7 +31,7 @@ class MissionEventManager extends Service {
 
     };
 
-    async getAndInitMissionEvent(user) {
+    async getAndInitMissionEvent(user, type) {
         if (this.ctx.helper.isEmpty(this.eventEmitter.eventNames()) || this.eventEmitter.eventNames().length === 0) {
             let dailyMissions = await this.ctx.service.missionProcessingTrackerService.getUserDailyMissionProcessing(user._id);
             await this.setMissions(dailyMissions, `DailyMissionProcessingTracker`);

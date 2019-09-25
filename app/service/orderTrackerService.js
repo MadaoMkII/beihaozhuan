@@ -12,6 +12,7 @@ class orderTrackerService extends Service {
                 searcher[key] = conditions[key];
             }
         });
+        console.log(searcher)//.populate({path: `goodUUid`, model: this.ctx.model.Good})
         return this.ctx.model.OrderTracker.find(searcher, {}, option);
     };
 
@@ -34,6 +35,8 @@ class orderTrackerService extends Service {
         order.goodCategory = good.category;
         order.goodPrice = good.price;
         order.title = good.title;
+        order.goodID = good._id;
+        order.mainlyShowPicUrl = good.mainlyShowPicUrl;
         order.orderUUid = `ORD` + require('cuid')();
         let consumerTracker = new this.ctx.model.OrderTracker(order);
         consumerTracker.save();

@@ -4,6 +4,11 @@ module.exports = app => {
     let analyzeData = new mongoose.Schema({
         absoluteDate: Date,
         amount: Number,
+        content: {
+            type: String,
+            enum: ['increaseBcoin', 'userRegister', `consumeBcoin`], default: "consumeBcoin"
+        },
+        type: String
     }, {
         'timestamps': {
             'createdAt': 'created_at', 'updatedAt': 'updated_at'

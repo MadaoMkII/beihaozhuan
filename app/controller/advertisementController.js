@@ -25,13 +25,15 @@ class advertisementController extends Controller {
 //     timeStamp: '1569324531534'
 // }
     async checkAdvertisement(ctx) {
-
+        let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`increaseBcoin`, 200, `bcoin`);
         this.success();
-        const eventEmitter = await ctx.service.missionEventManager.getEventEmitter(ctx.user);
-        eventEmitter.emit("看一个广告",
-            ctx.user._id);//如果状态为conplete 那么就删除监听器
-        console.log(eventEmitter.eventNames())
-
+        // const eventEmitter = await ctx.service.missionEventManager.getEventEmitter(ctx.user);
+        // eventEmitter.emit("看一个广告",
+        //     ctx.user._id);//如果状态为conplete 那么就删除监听器
+        // console.log(eventEmitter.eventNames())
+        Promise.all([ promise_2]).catch((error) => {
+            console.log(error)
+        });
     }
 
     async deleteAdvertisement(ctx) {

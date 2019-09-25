@@ -1,6 +1,6 @@
 `use strict`;
 module.exports = app => {
     const {router, controller} = app;
-    // router.post('/getData',
-    //     app.middleware.authenticatedMiddleware(`User`), controller[`dataAnalyzeController`].getData);
+    router.get('/chart/countByFall',
+        app.middleware.authenticatedMiddleware(`User`), controller[`dataAnalyzeController`].countByFall);
 };

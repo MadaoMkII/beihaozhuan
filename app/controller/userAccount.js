@@ -4,14 +4,19 @@ const baseController = require(`../controller/baseController`);
 class userAccount extends baseController {
     async isLogin(ctx) {
         let userObj = ctx.user;
-        if (!ctx.helper.isEmpty(ctx.user)) {
-            let syncingTasksPromise =  ctx.service.userService.syncingTasks(userObj);
-             this.success(`用户已经登录`, 200);
-             Promise.all([syncingTasksPromise]).then();
+        let absoluteDate = ctx.getAbsoluteDate();
+        let promiseArray = [];
+        if (!ctx.helper.isEmpty(userObj)) {
+            if ((userObj.last_login_time).toString() !== absoluteDate.toString()) {
+                let syncingTasksPromise = ctx.service.userService.syncingTasks(userObj);
+                let updateUser = ctx.service.userService.updateUser(userObj.uuid, {last_login_time: absoluteDate});
+                promiseArray.push(syncingTasksPromise, updateUser);
+            }
+            this.success(`用户已经登录`, 200);
+            Promise.all(promiseArray).then();
         } else {
             return this.success(`用户尚未登录`, 200);
         }
-
     };
 
     async getUserInfo(ctx) {
@@ -27,16 +32,8 @@ class userAccount extends baseController {
         // ctx.logger.warn('WARNNING!!!!');
         let promiseArray = [];
         let userObj = ctx.user;
-        let absoluteDate = ctx.getAbsoluteDate();
-        if ((userObj.last_login_time).toString() === absoluteDate.toString()) {
-
-            let sleep = ctx.sleep(2000);
-            let updateUser = ctx.service.userService.updateUser(userObj.uuid, {last_login_time: absoluteDate});
-            let events = ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
-            promiseArray = [sleep, updateUser, events];
-        }
-
-
+        let events = ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
+        promiseArray.push(events);
         this.success(userObj);
         // ctx.logger.error(new Error('哇', {
         //     "password": "Abc123",

@@ -3,8 +3,10 @@ module.exports = {
     /**
      * @return {Date}
      */
-    getAbsoluteDate: function (date = new Date()) {
-        date.setHours(0);
+    getAbsoluteDate: function (useHour = false, date = new Date()) {
+        if (!useHour) {
+            date.setHours(0);
+        }
         date.setMinutes(0, 0, 0);
         return date;
     },

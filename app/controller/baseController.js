@@ -80,7 +80,11 @@ class BaseController extends Controller {
         let requestEntity = {};
 
         properties.forEach((propertyName) => {
-            requestEntity[propertyName] = this.ctx.request.body[propertyName];
+            if (this.ctx.request.method === "GET") {
+                requestEntity[propertyName] = this.ctx.request.query[propertyName];
+            } else {
+                requestEntity[propertyName] = this.ctx.request.body[propertyName];
+            }
         });
 
         let validateResult = true;

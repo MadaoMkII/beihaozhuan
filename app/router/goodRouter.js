@@ -6,6 +6,8 @@ module.exports = app => {
     router.post('/good/updateGood', app.middleware.authenticatedMiddleware(`User`), controller[`goodController`].updateGood);
     router.post('/order/makeOrder', app.middleware.authenticatedMiddleware(`User`), controller[`orderTrackerController`].createOrder);
     router.post('/order/findOrder', app.middleware.authenticatedMiddleware(`User`), controller[`orderTrackerController`].findOrder);
+    router.post('/order/getMyOrders', app.middleware.authenticatedMiddleware(`User`), controller[`orderTrackerController`].getMyOrders);
+
     router.post('/order/findOrderByUser', app.middleware.authenticatedMiddleware(`User`), controller[`orderTrackerController`].findOrderByUser);
     router.post('/good/getManyGoods', controller[`goodController`].getManyGoods);
     router.get('/good/getRecommendGood', controller[`goodController`].getRecommendGood);

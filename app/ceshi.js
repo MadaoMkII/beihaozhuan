@@ -406,3 +406,7 @@ date.setMinutes(0, 0, 0);
 console.log(date)
 let x22 = moment.tz(date, "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
 console.log(x22)
+
+let array= [];
+array.push(`1`,`2`,`3`)
+console.log(array)
