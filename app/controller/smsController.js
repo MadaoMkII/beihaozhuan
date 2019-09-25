@@ -57,7 +57,6 @@ class smsController extends baseController {
 
     async sendfindPasswordBackSmsMessage(ctx) {
         const {tel_number} = ctx.request.body;
-        console.log(ctx.request)
         const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
         ctx.session.fdbsmsVerifyCode = text;
         ctx.session.tel_number = tel_number;

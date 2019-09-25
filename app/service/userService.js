@@ -31,12 +31,13 @@ class UserService extends Service {
                     }
                     let missionTracker = await this.ctx.model[modelName].findOne(conditions);
                     if (this.ctx.helper.isEmpty(missionTracker)) {
-                        let missionTracker = new this.ctx.model[modelName](conditions);
-                        missionTracker.save();
+                        let newMissionTracker = new this.ctx.model[modelName](conditions);
+                         newMissionTracker.save();
                     }
                 });
             }
         });
+        return requireMissionResult;
     };
 
     async updateUser(user_uuid, userObj) {

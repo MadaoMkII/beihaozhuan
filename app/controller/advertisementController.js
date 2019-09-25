@@ -105,7 +105,7 @@ class advertisementController extends Controller {
             return this.failure(`positionName必须不为空`, 400);
         }
         let result = await ctx.service.advertisementService.getAdvertisementByPosition(positionName);
-        console.log(result)
+
         if (result.length <= 0) {
             return this.success();
         }

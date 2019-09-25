@@ -3,8 +3,11 @@ const baseController = require(`../controller/baseController`);
 
 class userAccount extends baseController {
     async isLogin(ctx) {
+        let userObj = ctx.user;
         if (!ctx.helper.isEmpty(ctx.user)) {
-            return this.success(`用户已经登录`, 200);
+            let syncingTasksPromise =  ctx.service.userService.syncingTasks(userObj);
+             this.success(`用户已经登录`, 200);
+             Promise.all([syncingTasksPromise]).then();
         } else {
             return this.success(`用户尚未登录`, 200);
         }
@@ -25,14 +28,14 @@ class userAccount extends baseController {
         let promiseArray = [];
         let userObj = ctx.user;
         let absoluteDate = ctx.getAbsoluteDate();
-        if ((userObj.last_login_time).toString() !== absoluteDate.toString()) {
-            let syncingTasksPromise = ctx.service.userService.syncingTasks(userObj);
-            let events = ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
+        if ((userObj.last_login_time).toString() === absoluteDate.toString()) {
+
+            let sleep = ctx.sleep(2000);
             let updateUser = ctx.service.userService.updateUser(userObj.uuid, {last_login_time: absoluteDate});
-            promiseArray.push(syncingTasksPromise);
-            promiseArray.push(events);
-            promiseArray.push(updateUser);
+            let events = ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
+            promiseArray = [sleep, updateUser, events];
         }
+
 
         this.success(userObj);
         // ctx.logger.error(new Error('哇', {
@@ -41,7 +44,7 @@ class userAccount extends baseController {
         //     "tel_number": "15620304099"
         // }),);
         Promise.all(promiseArray).then(function (values) {
-            console.log('all promise are resolved')
+            console.log('all promise are resolved', values)
         }).catch(function (reason) {
             console.log('promise reject failed reason')
         })

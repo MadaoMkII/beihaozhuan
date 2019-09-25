@@ -8,6 +8,9 @@ module.exports = {
         date.setMinutes(0, 0, 0);
         return date;
     },
+    sleep: (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    },
     randomString: function (length) {
         let chars = '012345678!%^&$#@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let result = '';
