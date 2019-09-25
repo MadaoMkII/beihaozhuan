@@ -18,7 +18,7 @@ class picService extends Service {
         let ossFilePath = this.app.config.oss.client.bucketUrl;
         let deleteUrlArray = [];
         fileUrlArray.forEach((fileUrl) => {
-           let newUrl= fileUrl.replace(ossFilePath, ``);
+            let newUrl = fileUrl.replace(ossFilePath, ``);
             deleteUrlArray.push(newUrl)
         });
 

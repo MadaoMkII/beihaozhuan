@@ -81,6 +81,7 @@ module.exports = app => {
         balanceList: [balanceRecord],
         referrer: {type: mongoose.Schema.Types.Mixed},//上线
         referrals: [{type: mongoose.Schema.Types.Mixed}],//xia线
+        //asyncEventFlag: {type: Boolean, default: false},
         last_login_time: Date
     }, {
         'timestamps': {

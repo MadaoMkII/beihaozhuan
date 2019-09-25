@@ -22,7 +22,7 @@ class SystemSettingController extends baseController {
 
     async getSquare(ctx) {
         let result = await ctx.service.systemSettingService.getSetting();
-        console.log(result)
+
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/square.html'));
     };

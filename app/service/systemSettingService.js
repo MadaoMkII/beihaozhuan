@@ -52,7 +52,7 @@ class SystemSettingService extends Service {
         delete settingObj._id;
         delete settingObj.created_at;
         delete settingObj.updated_at;
-        console.log(settingObj)
+
 
         //settingObj.advertisementSetting = {square: fs.readFileSync(path.resolve(__dirname, '../public/admin.html'))};
         let systemSettingObj = new this.ctx.model.SystemSetting(

@@ -60,7 +60,7 @@ class missionController extends Controller {
 
     async getMissions(ctx) {
         const [condition, option] = await this.cleanupRequestProperty('missionRules.getMissionRule',
-            `title`, `missionType`,`unit`,`page`);//`unit`, `page`,
+            `title`, `missionType`, `unit`, `page`);//`unit`, `page`,
         if (condition !== false) {
             if (!ctx.helper.isEmpty(condition.title)) {
                 condition.title = {$regex: `.*${condition.title}.*`};

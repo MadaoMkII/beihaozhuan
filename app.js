@@ -48,7 +48,7 @@ module.exports = app => {
     });
     app.passport.deserializeUser(async (ctx, user) => {
         //console.log('deserializeUser', user);
-        return  ctx.model.UserAccount.findOne(user).populate(`dailyMissionTrackers`);
+        return ctx.model.UserAccount.findOne(user).populate(`dailyMissionTrackers`);
     });
 
 };

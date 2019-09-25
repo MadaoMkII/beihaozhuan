@@ -6,7 +6,7 @@ require(`moment-timezone`);
 class UserService extends Service {
 
     async syncingTasks(user) {
-        let requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack(user._id);
+        let requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack();
         requireMissionResult.find((missionArray) => {
             if ([`Weekly`, `Daily`, `Permanent`].includes(missionArray._id)) {
                 missionArray.missions.forEach(async (mission) => {
@@ -49,9 +49,11 @@ class UserService extends Service {
             {$set: {password: newPassword}}, {new: true});
     };
 
-    async updateUser_login(user_uuid) {
-        return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {
-            $set: {last_login_time: moment()},
+    async updateUser_login(user) {
+        let absoluteDate = this.ctx.getAbsoluteDate();
+
+        return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user.uuid}, {
+            $set: {last_login_time: absoluteDate},
             $inc: {loginTimes: 1}
         }, {new: true});
     };

@@ -22,7 +22,7 @@ class analyzeService extends Service {
 
     async userIncrementRecord() {
         let date = this.ctx.getAbsoluteDate();
-        this.ctx.model.DataAnalyze.findOneAndUpdate({absoluteDate:date},{$set:{}});
+        this.ctx.model.DataAnalyze.findOneAndUpdate({absoluteDate: date}, {$set: {}});
     };
 
 

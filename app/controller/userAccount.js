@@ -22,16 +22,29 @@ class userAccount extends baseController {
         // ctx.logger.debug('debug info');
         // ctx.logger.info('some request data: %j', ctx.request.body);
         // ctx.logger.warn('WARNNING!!!!');
-
+        let promiseArray = [];
         let userObj = ctx.user;
-        await ctx.service.userService.syncingTasks(userObj);
-        let events = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
+        let absoluteDate = ctx.getAbsoluteDate();
+        if ((userObj.last_login_time).toString() !== absoluteDate.toString()) {
+            let syncingTasksPromise = ctx.service.userService.syncingTasks(userObj);
+            let events = ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
+            let updateUser = ctx.service.userService.updateUser(userObj.uuid, {last_login_time: absoluteDate});
+            promiseArray.push(syncingTasksPromise);
+            promiseArray.push(events);
+            promiseArray.push(updateUser);
+        }
+
         this.success(userObj);
         // ctx.logger.error(new Error('哇', {
         //     "password": "Abc123",
         //     "smsVerifyCode": 281105,
         //     "tel_number": "15620304099"
         // }),);
+        Promise.all(promiseArray).then(function (values) {
+            console.log('all promise are resolved')
+        }).catch(function (reason) {
+            console.log('promise reject failed reason')
+        })
     };
 
     async getUserBalanceList(ctx) {
@@ -104,7 +117,7 @@ class userAccount extends baseController {
             return;
         }
         if (ctx.helper.isEmpty(role)) {
-            condition = {role: {$in: [`Super_Admin`, `Admin`]}};
+            condition = {role: {$in: [`客服`, `超管`, `运营`, `用户`]}};
         }
         let newUser = await ctx.service.userService.getManyUser(condition, option, {
             role: 1,

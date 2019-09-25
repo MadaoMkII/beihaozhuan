@@ -17,9 +17,9 @@ app.get('/getReport', function (req, res) {
     res.status(200).download(fileName);
     fileName = `none`;
 });
-app.get('/', async (req,res) => {
+app.get('/', async (req, res) => {
     res.type("html");
-     let html= fs.readFileSync(path.resolve(__dirname, './getCookie.html'));
+    let html = fs.readFileSync(path.resolve(__dirname, './getCookie.html'));
     res.send(html)
     // ctx.redirect('/index.html')
 });

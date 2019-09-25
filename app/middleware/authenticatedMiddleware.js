@@ -23,9 +23,9 @@ let getPrivilege = (privilegeName) => {
 };
 module.exports = (options) => {
 
-    return async function authenticated(ctx,next) {
+    return async function authenticated(ctx, next) {
 
-        if (ctx.helper.isEmpty(ctx.user)|| getPrivilege(options)>getPrivilege(ctx.user.role)) {
+        if (ctx.helper.isEmpty(ctx.user) || getPrivilege(options) > getPrivilege(ctx.user.role)) {
             ctx.response.body = {
                 code: 403,
                 msg: "Insufficient privilege"

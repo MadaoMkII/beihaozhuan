@@ -32,7 +32,7 @@ class MissionEventManager extends Service {
     };
 
     async getAndInitMissionEvent(user) {
-console.log(this.eventEmitter.eventNames().length === 0)
+        console.log(this.eventEmitter.eventNames().length === 0)
         console.log(this.ctx.helper.isEmpty(this.eventEmitter.eventNames()))
         if (this.ctx.helper.isEmpty(this.eventEmitter.eventNames()) || this.eventEmitter.eventNames().length === 0) {
             let dailyMissions = await this.ctx.service.missionProcessingTrackerService.getUserDailyMissionProcessing(user._id);

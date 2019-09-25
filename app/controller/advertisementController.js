@@ -25,10 +25,9 @@ class advertisementController extends Controller {
 //     timeStamp: '1569324531534'
 // }
     async checkAdvertisement(ctx) {
-console.log(ctx.request.body)
 
         this.success();
-        const eventEmitter = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
+        const eventEmitter = await ctx.service.missionEventManager.getEventEmitter(ctx.user);
         eventEmitter.emit("看一个广告",
             ctx.user._id);//如果状态为conplete 那么就删除监听器
         console.log(eventEmitter.eventNames())

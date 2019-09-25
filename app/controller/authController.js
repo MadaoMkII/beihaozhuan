@@ -42,7 +42,7 @@ class authController extends Controller {
             return this.failure(`该用户未注册或密码不正确`, 400);
         }
         if (userResult || verifyFlag) {
-            await ctx.service.userService.updateUser_login(userResult.uuid);
+            await ctx.service.userService.updateUser_login(userResult);
 
             if (condition[`rememberMe`]) {
                 ctx.session.maxAge = ms('7d');
