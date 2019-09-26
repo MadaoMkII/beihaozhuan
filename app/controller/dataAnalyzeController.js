@@ -18,13 +18,13 @@ class dataAnalyzeController extends Controller {
         let result;
         switch (condition.period) {
             case `day`:
-                result = await ctx.service.analyzeService.countByHours(condition.by);
+                result = await ctx.service[`analyzeService`].countByHours(condition.by);
                 break;
             case `month`:
-                result = await ctx.service.analyzeService.countByDays(condition.by);
+                result = await ctx.service[`analyzeService`].countByDays(condition.by);
                 break;
             case `full`:
-                result = await ctx.service.analyzeService.countByMonth(condition.by);
+                result = await ctx.service[`analyzeService`].countByMonth(condition.by);
                 break;
         }
 

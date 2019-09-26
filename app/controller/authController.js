@@ -260,6 +260,24 @@ class authController extends Controller {
         }
     };
 
+    async lottery(ctx) {
+        const {tel_number} = ctx.request.query;
+        if (ctx.helper.isEmpty(tel_number)) {
+            return this.success(`该手机号没有填写`, 404)
+        }
+        let newUser = await this.ctx.model.UserAccountFake.findOne({tel_number: tel_number});
+        if (ctx.helper.isEmpty(newUser)) {
+            return this.success(null, `找不到这个用户，请注册`, 404)
+        }
+        if (newUser.lottery >= 2) {
+            return this.success({count: newUser.lottery}, `您的抽奖机会已经耗尽`, 201)
+        } else {
+            let user = await this.ctx.model.UserAccountFake.findOneAndUpdate({tel_number: tel_number},
+                {$inc: {lottery: 1}}, {new: true});
+            return this.success({count: user.lottery}, `抽奖成功`)
+        }
+    }
+
     async signIn_fake(ctx) {
         const {tel_number} = ctx.query;
 

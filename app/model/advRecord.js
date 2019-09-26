@@ -1,21 +1,26 @@
 module.exports = app => {
     const mongoose = app.mongoose;
     const connection = app.mongooseDB.get('analyze');
-    let usersBcoinRecord = new mongoose.Schema({
+    let advRecord = new mongoose.Schema({
         userID: {
+            required: true,
+            type: app.mongoose.Schema.Types.ObjectId,
+        },
+        advertisementID: {
             required: true,
             type: app.mongoose.Schema.Types.ObjectId,
         },
         absoluteDate: Date,
         amount: Number,
-        reason: String
+        type: String
+
     }, {
         'timestamps': {
             'createdAt': 'created_at', 'updatedAt': 'updated_at'
         }
     });
 
-    usersBcoinRecord.set('toJSON', {
+    advRecord.set('toJSON', {
         virtuals: true,
         transform: (doc, ret) => {
             delete ret.__v;
@@ -28,11 +33,11 @@ module.exports = app => {
             }
         }
     });
-    usersBcoinRecord.set('toObject', {
+    advRecord.set('toObject', {
         virtuals: true,
         transform: (doc, ret) => {
             delete ret.__v;
         }
     });
-    return connection.model('UsersBcoinRecord', usersBcoinRecord, 'UsersBcoinRecord');
+    return connection.model('AdvRecord', advRecord, 'AdvRecord');
 };

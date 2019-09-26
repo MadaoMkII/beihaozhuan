@@ -23,22 +23,28 @@ class advertisementService extends Service {
     };
 
     async getAdvertisementByPosition(positionName) {
-        return this.ctx.model.Advertisement.aggregate([{
-            $match: {
-                positionName: positionName,
-                activity: "enable"
-            }
-        },
-            {
-                $group:
-                    {
-                        _id: "$positionName",
-                        advertisements: {$push: {carouselUrl: "$carouselUrl", source: "$source", uuid: "$uuid"}},
-                        length: {$avg: "$length"},
-                        width: {$avg: "$width"}
-                    }
-            }
-        ]);
+
+        if (positionName === `任务频道`) {
+            return this.ctx.model.Advertisement.find({positionName: positionName});
+        } else {
+            return this.ctx.model.Advertisement.aggregate([{
+                $match: {
+                    positionName: positionName,
+                    activity: "enable"
+                }
+            },
+                {
+                    $group:
+                        {
+                            _id: "$positionName",
+                            advertisements: {$push: {carouselUrl: "$carouselUrl", source: "$source", uuid: "$uuid"}},
+                            length: {$avg: "$length"},
+                            width: {$avg: "$width"}
+                        }
+                }
+            ]);
+        }
+
     };
 
 }

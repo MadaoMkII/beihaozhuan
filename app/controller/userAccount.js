@@ -164,6 +164,11 @@ class userAccount extends baseController {
         return this.success(`https://www.beihaozhuan.com/index?inviteCode=${ctx.user.inviteCode}`);
     };
 
+    async getMyTeam(ctx) {
+        let result = await ctx.service.userService.getMyTeam( ctx.user.uuid);
+        this.success(result);
+    };
+
     async getUser(ctx) {
         const {uuid} = ctx.request.body;
         // let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',

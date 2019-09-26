@@ -12,7 +12,7 @@ module.exports = app => {
         },
         carouselUrl: {type: String},
         //advData: {type: mongoose.Schema.Types.Mixed},
-        length: Number,
+        height: Number,
         width: Number,
         amount: Number,
         uuid: {

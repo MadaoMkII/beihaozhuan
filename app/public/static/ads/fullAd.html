@@ -5,29 +5,26 @@
     <title>Title</title>
 </head>
 <body>
-<script appid="118856" onload="Vijs.init(this);" sign="fe0957f687afc0fabade21937de9e4bc"
-        src="//vijs.rayjump.com/bin/vijs.js" type="text/javascript"></script>
+<script type="text/javascript" src="//vijs.rayjump.com/bin/vijs.js" onload="Vijs.init(this);" sign="fe0957f687afc0fabade21937de9e4bc" appid="118856"></script>
 <script type="text/javascript">
-    if (window.Vijs) {
-        window.myAd148330 = Vijs.setAD({
-            unitid: 148330,
-            loadedCallback: function () {
-                console.log('load success');
-            },
-            rewardedCallback: function (reward_name, reward_amount) {
-                console.log(reward_amount);
-                parent.checkAdvertisement();
-            }
-        });
-    }
-
-    function showAd148330() {
-        window.myAd148330 && window.myAd148330.show();
-    }
-
-    setTimeout(function () {
-        showAd148330();
-    }, 1000)
+  if (window.Vijs) {
+    window.myAd148330 = Vijs.setAD({
+      unitid: 148330,
+      loadedCallback: function() {
+        console.log('load success');
+        },
+      rewardedCallback: function(reward_name, reward_amount) {
+        console.log(reward_amount);
+        parent.checkAdvertisement();
+      }
+    });
+  }
+  function showAd148330() {
+    window.myAd148330 && window.myAd148330.show();
+  }
+  setTimeout(function(){
+    showAd148330();
+  },1000)
 </script>
 </body>
 </html>

@@ -24,9 +24,18 @@ class missionProcessingTrackerController extends baseController {
             if (!condition) {
                 return;
             }
-            await this.service[`missionProcessingTrackerService`].completeMission(condition.modelName,
+
+            let promise_1 = this.ctx.service[`missionProcessingTrackerService`].completeMission(condition.modelName,
                 ctx.user._id, condition.missionEventName);
+            let amount = this.ctx.service[`missionService`].getMission({title: condition.missionEventName});
+            let promise_3 = this.ctx.service[`userService`].setUserBcionChange(ctx.user.uuid, condition.missionEventName, `获得`, amount);
             this.success();
+
+            Promise.all([promise_1, amount, promise_3]).then(function (values) {
+console.log(values)
+            }).catch(function (reason) {
+
+            })
         } catch (e) {
             this.failure(e.message);
         }

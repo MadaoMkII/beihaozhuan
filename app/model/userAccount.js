@@ -7,11 +7,11 @@ module.exports = app => {
         category: {type: String, required: true},
         income: {
             type: String,
-            enum: ['enable', 'disable'], default: "disable"
+            enum: ['消费', '获得'], default: "获得'"
         },
         amount: {type: Number, default: 0},
         createTime: Date,
-        status: {type: String, enum: [`success`, `failed`, `pending`], default: `pending`}
+        // status: {type: String, enum: [`success`, `failed`, `pending`], default: `pending`}
     }, {});
 
     balanceRecord.set('toJSON', {
@@ -77,7 +77,7 @@ module.exports = app => {
         job: String,
         educationLevel: String,
         loginTimes: {type: Number},
-        //dailyMissionTrackers: [{type: mongoose.Schema.Types.ObjectId, ref: 'MissionProcessingTracker'}],
+
         balanceList: [balanceRecord],
         referrer: {type: mongoose.Schema.Types.Mixed},//上线
         referrals: [{type: mongoose.Schema.Types.Mixed}],//xia线
@@ -102,7 +102,10 @@ module.exports = app => {
             if (doc.created_at) {
                 ret.created_at = app.getFormatDateForJSON(doc.created_at);
             }
-            ret.Bcoins = doc.Bcoins;
+            if (doc.Bcoins) {
+                ret.Bcoins = doc.Bcoins;
+            }
+
             if (doc.birthday) {
                 ret.birthday = app.getFormatDateForJSON(doc.birthday);
             }
@@ -115,7 +118,10 @@ module.exports = app => {
             delete ret.__v;
             //delete ret._id;
             //delete ret.password;
-            ret.Bcoins = doc.Bcoins;
+            if (doc.Bcoins) {
+                ret.Bcoins = doc.Bcoins;
+            }
+
 
         }
     });

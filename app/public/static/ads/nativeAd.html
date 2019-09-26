@@ -5,36 +5,34 @@
     <title>Title</title>
 </head>
 <body>
-<script id="ad_placeholder_148333" type="text/html">
+  <script type="text/html" id="ad_placeholder_148333">
     <a>
-        <div style="overflow: hidden">
-            <div style="float: left">
-                <img src="<%=data.icon_url%>" alt="<%=data.title%>">
-            </div>
-            <div style="float: left">
-                <h1 style="color: #fff"><%=data.title%></h1>
-                <p style="color: #fff;font-size: 30px;"><%=data.desc%></p>
-            </div>
+      <div style="overflow: hidden">
+        <div style="float: left">
+          <img src="<%=data.icon_url%>" alt="<%=data.title%>">
         </div>
-        <video style="width: 100%" x5-playsinline="true" playsinline="true" webkit-playsinline="true" muted autoplay
-               loop src="<%=data.video_url%>" poster="<%=data.image_url%>"></video>
-    </a>
-</script>
-<script appid="118856" onload="Vijs.init(this);" sign="fe0957f687afc0fabade21937de9e4bc"
-        src="//vijs.rayjump.com/bin/vijs.js" type="text/javascript"></script>
-<script type="text/javascript">
+        <div style="float: left">
+          <h1 style="color: #fff"><%=data.title%></h1>
+          <p style="color: #fff;font-size: 30px;"><%=data.desc%></p>
+        </div>
+      </div>
+      <video style="width: 100%" x5-playsinline="true" playsinline="true" webkit-playsinline="true" muted autoplay loop src="<%=data.video_url%>" poster="<%=data.image_url%>"></video>
+    </a >
+  </script>
+  <script type="text/javascript" src="//vijs.rayjump.com/bin/vijs.js" onload="Vijs.init(this);" sign="fe0957f687afc0fabade21937de9e4bc" appid="118856"></script>
+  <script type="text/javascript">
     if (window.Vijs) {
-        var myAd148333 = Vijs.setAD({
-            unitid: 148333,
-            view: 285,
-            placeholderid: 'ad_placeholder_148333',
-            loadedCallback: function () {
-                console.log('success');
-                parent.checkAdvertisement();
-            }
-        });
+      var myAd148333 = Vijs.setAD({
+        unitid: 148333,
+        view: 285,
+        placeholderid: 'ad_placeholder_148333',
+        loadedCallback: function() {
+          console.log('success');
+          parent.checkAdvertisement();
+        }
+      });
     }
-</script>
+  </script>
 
 </body>
 </html>

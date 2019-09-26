@@ -5,6 +5,18 @@ require(`moment-timezone`);
 
 class UserService extends Service {
 
+    async setUserBcionChange(user_uuid, category, income, amount) {
+        let newBcionChange = {
+            category: category,
+            income: income,
+            amount: amount,
+            createTime: new Date(),
+        };
+        return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid},
+            {$push: {balanceList: newBcionChange}}, {new: true});
+
+    };
+
     async syncingTasks(user) {
         let requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack();
         requireMissionResult.find((missionArray) => {
@@ -32,7 +44,7 @@ class UserService extends Service {
                     let missionTracker = await this.ctx.model[modelName].findOne(conditions);
                     if (this.ctx.helper.isEmpty(missionTracker)) {
                         let newMissionTracker = new this.ctx.model[modelName](conditions);
-                         newMissionTracker.save();
+                        newMissionTracker.save();
                     }
                 });
             }
@@ -85,6 +97,15 @@ class UserService extends Service {
 
     async getUser(user, project) {
         return this.ctx.model.UserAccount.findOne(user, project);
+    };
+
+    async getMyTeam(user_uuid) {
+        let result = await this.ctx.model.UserAccount.findOne({uuid: user_uuid}, {referrals: 1}).populate({
+            path: `referrals`,
+            model: this.ctx.model.UserAccount,
+            select: 'nickName -_id created_at avatar',
+        });
+        return result["referrals"];
     };
 
     async getManyUser(conditions, option, project = {}) {

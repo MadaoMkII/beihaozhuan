@@ -30,7 +30,7 @@ const rule = {
         {required: true, message: '不能为空'},
         {type: "enum", enum: ['enable', 'disable']}
     ],
-    length: [
+    height: [
         {required: false, message: '不能为空'},
         {type: 'string', message: '类型不正确'},
         {

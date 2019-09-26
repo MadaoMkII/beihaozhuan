@@ -25,13 +25,23 @@ class advertisementController extends Controller {
 //     timeStamp: '1569324531534'
 // }
     async checkAdvertisement(ctx) {
-        let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`increaseBcoin`, 200, `bcoin`);
+        const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.checkAdvRule',
+            `sign`, `uuid`, `userUUid`, `timeStamp`);
+        if (!advertisement) {
+            return;
+        }
+        console.log(advertisement)
+        let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(ctx.user._id, ctx.user._id, 1);
+
+        let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`看广告`, 200, `bcoin`);
+
+        let promise_3 = ctx.service[`userService`].setUserBcionChange(ctx.user.uuid, `观看广告`, `获得`, 1110);
         this.success();
         // const eventEmitter = await ctx.service.missionEventManager.getEventEmitter(ctx.user);
         // eventEmitter.emit("看一个广告",
         //     ctx.user._id);//如果状态为conplete 那么就删除监听器
         // console.log(eventEmitter.eventNames())
-        Promise.all([ promise_2]).catch((error) => {
+        Promise.all([promise_1, promise_2, promise_3]).catch((error) => {
             console.log(error)
         });
     }
@@ -49,7 +59,7 @@ class advertisementController extends Controller {
     async createAdvertisement(ctx) {
 
         const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.createAdvertisementRule',
-            `title`, `positionName`, `source`, `reward`, `activity`, "length", "width", "amount");
+            `title`, `positionName`, `source`, `reward`, `activity`, "height", "width", "amount");
         if (!advertisement) {
             return;
         }
@@ -76,7 +86,7 @@ class advertisementController extends Controller {
 
     async updateAdvertisementList(ctx) {
         const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.getAdvertisementRule',
-            `title`, `positionName`, `source`, `activity`, "length", "width", "uuid");
+            `title`, `positionName`, `source`, `activity`, "height", "width", "uuid");
         if (!advertisement) {
             return;
         }
@@ -106,12 +116,17 @@ class advertisementController extends Controller {
         if (ctx.helper.isEmpty(positionName)) {
             return this.failure(`positionName必须不为空`, 400);
         }
-        let result = await ctx.service.advertisementService.getAdvertisementByPosition(positionName);
+        let result = await ctx.service[`advertisementService`].getAdvertisementByPosition(positionName);
 
         if (result.length <= 0) {
             return this.success();
         }
-        this.success({advertisements: result[0].advertisements, length: result[0].length, width: result[0].width});
+        if (positionName === `任务频道`) {
+            return this.success(result);
+        } else {
+            this.success({advertisements: result[0].advertisements, height: result[0].height, width: result[0].width});
+        }
+
     }
 }
 

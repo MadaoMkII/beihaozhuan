@@ -4,21 +4,16 @@ let {DateTime} = require('luxon');
 
 class analyzeService extends Service {
 
-    async recordBcoinChange(userID, amount, reason) {
+    async recordAdvIncrease(advID, userID, amount, type = "click") {
         let date = this.ctx.getAbsoluteDate();
-        let bcoinRecordObj = {
+        await this.ctx.model.AdvRecord.findOneAndUpdate({
+            advertisementID: advID,
+            absoluteDate: date,
             userID: userID,
-            amount: amount,
-            reason: reason
-        };
-        if (reason === `广告收益`) {
-            await this.ctx.model.UsersBcoinRecord.findOneAndUpdate({absoluteDate: date},
-                {$set: {userID: userID, reason: reason}, $inc: {amount: amount}}, {upsert: true});
-        } else {
-            bcoinRecordObj.absoluteDate = date;
-            let bcoinRecord = new this.ctx.model.UsersBcoinRecord(bcoinRecordObj);
-            bcoinRecord.save();
-        }
+            type: type
+        }, {
+            $inc: {amount: amount}
+        }, {upsert: true});
     };
 
     async countByMonth(condition) {

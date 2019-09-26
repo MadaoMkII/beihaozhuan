@@ -19,6 +19,7 @@ module.exports = app => {
             unique: true,
             sparse: true
         },
+        lottery: Number,
         lastSignInDay: String,
         signTimes: Number,
         last_login_time: Date

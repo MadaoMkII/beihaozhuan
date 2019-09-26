@@ -32,9 +32,9 @@ class SystemSettingController extends baseController {
         this.success(result);
     };
 
-    async getMemberNumber(ctx) {
-
-        this.success({count: 1024});
+    async getMemberNumber() {
+        let count = await this.getFindModelCount(`UserAccount`);
+        this.success({count: count});
     };
 }
 

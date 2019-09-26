@@ -6,6 +6,8 @@ module.exports = app => {
     router.post('/user/bindWechat', controller[`authController`].bindWechat);
     router.post('/user/login', controller[`authController`].login);
     router.get('/user/logout', controller[`authController`].logout);
+    router.get('/user/lottery', controller[`authController`].lottery);
+    router.get('/user/getMyTeam', controller[`userAccount`].getMyTeam);
     //router.get('/index', controller[`home`].index);
     router.get('/checkHealth', (ctx) => {
         ctx.response.body = {
