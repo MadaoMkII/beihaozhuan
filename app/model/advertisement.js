@@ -1,6 +1,6 @@
 module.exports = app => {
     const mongoose = app.mongoose;
-    const connection = app.mongooseDB.get('commonConnection');
+    const connection = app.mongooseDB.get('analyze');
     let advertisement = new mongoose.Schema({
         title: {type: String, required: true},
         positionName: {type: String, required: true},

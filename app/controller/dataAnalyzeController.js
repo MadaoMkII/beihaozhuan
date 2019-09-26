@@ -8,6 +8,11 @@ class dataAnalyzeController extends Controller {
         let result = await ctx.service.analyzeService.recordBcoinChange(ctx.user._id, amount, reason);
         this.success(result);
     }
+    async countAdv(ctx) {
+
+        let result = await ctx.service.analyzeService.countAdv();
+        this.success();
+    }
 
     async countByFall(ctx) {
         const [condition,] = await this.cleanupRequestProperty('dataAnalyzeRules.countByRule',

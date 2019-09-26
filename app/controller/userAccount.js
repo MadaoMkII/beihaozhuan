@@ -1,5 +1,6 @@
 `use strict`;
 const baseController = require(`../controller/baseController`);
+let {DateTime} = require('luxon');
 
 class userAccount extends baseController {
     async isLogin(ctx) {
@@ -49,9 +50,26 @@ class userAccount extends baseController {
 
     async getUserBalanceList(ctx) {
         const [condition, option] = await this.cleanupRequestProperty('userAccountController.getUserBalanceListRule',
-            `unit`, `page`, `userUUid`);
+            `unit`, `page`, "period");
         if (condition !== false) {
-            let result = await ctx.service.userService.getUserBalanceListRule(condition, option);
+            let end = DateTime.fromISO(ctx.getAbsoluteDate().toISOString());
+
+            switch (condition.period) {
+
+                case `month`:
+                    option.beginDate = end.plus({months: -1}).toJSDate();
+
+                    break;
+                case `week`:
+                    option.beginDate = end.plus({week: -1}).toJSDate();
+
+                    break;
+                case `full`:
+                    option.beginDate = undefined;
+                    break;
+            }
+
+            let result = await ctx.service.userService.getUserBalanceListRule(ctx.user.uuid, option);
             this.success(result);
         }
     };
@@ -165,7 +183,7 @@ class userAccount extends baseController {
     };
 
     async getMyTeam(ctx) {
-        let result = await ctx.service.userService.getMyTeam( ctx.user.uuid);
+        let result = await ctx.service.userService.getMyTeam(ctx.user.uuid);
         this.success(result);
     };
 

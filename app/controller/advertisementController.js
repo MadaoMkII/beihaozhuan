@@ -30,17 +30,35 @@ class advertisementController extends Controller {
         if (!advertisement) {
             return;
         }
-        console.log(advertisement)
+
+        let advertisementObj = await ctx.service[`advertisementService`].getOneAdvertisement({uuid: advertisement.uuid});
+
+        let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(ctx.user._id, ctx.user._id, 1);
+        let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`看广告`, advertisementObj.reward, `bcoin`);
+        let promise_3 = ctx.service[`userService`].setUserBcionChange(ctx.user.uuid, `观看广告`, `获得`, advertisementObj.reward);
+
+        this.success();
+        Promise.all([promise_1, promise_2, promise_3]).catch((error) => {
+            console.log(error)
+        });
+    }
+
+    async checkFinishAdvertisement(ctx) {
+        const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.checkAdvRule',
+            `sign`, `uuid`, `userUUid`, `timeStamp`);
+        if (!advertisement) {
+            return;
+        }
+        let advertisementObj = await ctx.service[`advertisementService`].getOneAdvertisement({uuid: advertisement.uuid});
+
         let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(ctx.user._id, ctx.user._id, 1);
 
-        let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`看广告`, 200, `bcoin`);
+        let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`广告视频播放完成`,
+            advertisementObj.reward, `bcoin`);
 
-        let promise_3 = ctx.service[`userService`].setUserBcionChange(ctx.user.uuid, `观看广告`, `获得`, 1110);
+        let promise_3 = ctx.service[`userService`].setUserBcionChange(ctx.user.uuid, `观看广告视频完成`,
+            `获得`, advertisementObj.reward);
         this.success();
-        // const eventEmitter = await ctx.service.missionEventManager.getEventEmitter(ctx.user);
-        // eventEmitter.emit("看一个广告",
-        //     ctx.user._id);//如果状态为conplete 那么就删除监听器
-        // console.log(eventEmitter.eventNames())
         Promise.all([promise_1, promise_2, promise_3]).catch((error) => {
             console.log(error)
         });

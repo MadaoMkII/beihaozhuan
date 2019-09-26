@@ -16,7 +16,7 @@ module.exports = app => {
         };
         ctx.status = 200;
     });
-    router.post('/user/getUserBalanceList', controller[`userAccount`].getUserBalanceList);
+    router.post('/user/getUserBalanceList', app.middleware.authenticatedMiddleware(`User`),controller[`userAccount`].getUserBalanceList);
     router.post('/user/getUser', controller[`userAccount`].getUser);
     router.get('/user/isLogin', controller[`userAccount`].isLogin);
     router.get('/user/updateUserPassword', controller[`userAccount`].updateUserPassword);

@@ -12,13 +12,17 @@ module.exports = app => {
         amount: {type: Number, default: 0},
         createTime: Date,
         // status: {type: String, enum: [`success`, `failed`, `pending`], default: `pending`}
-    }, {});
+    }, {
+        'timestamps': {
+            'createdAt': 'created_at', 'updatedAt': 'updated_at'
+        }
+    });
 
     balanceRecord.set('toJSON', {
         transform: (origin, show) => {
             delete show.__v;
             delete show._id;
-            show.createTime = origin.createTime.getTime();
+            show.createTime = app.getFormatDateForJSON(origin.createTime);
             // if (doc.created_at && doc.updated_at) {
             //     ret.created_at = new Date(doc.created_at).getTime();
             //     ret.updated_at = new Date(doc.updated_at).getTime();

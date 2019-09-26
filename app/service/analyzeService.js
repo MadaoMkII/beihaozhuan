@@ -177,17 +177,60 @@ class analyzeService extends Service {
         };
     }
 
+
+    async countAdv(condition) {
+
+        let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
+            {
+                $lookup:
+                    {
+                        from: "Advertisement",
+                        localField: "advertisementID",
+                        foreignField: "_id",
+                        as: "AdvertisementObj"
+                    }
+            },
+            {
+                $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$AdvertisementObj", 0]}, "$$ROOT"]}}
+            },
+            {
+                $project:
+                    {positionName: 1, type: 1, advertisementID: 1, amount: 1, source: 1, updated_at: 1}
+            },
+            // {
+            //     "$project": {
+            //         // "DogDay": {"$dayOfMonth": {date: "$absoluteDate", timezone: "+0700"}},
+            //         // "hourNew": {"$hour": {date: "$absoluteDate", timezone: "+0700"}},
+            //         // "amount": 1,
+            //         advertisementID: 1,
+            //         type: 1,
+            //         inventory_docs:1
+            //     }
+            // },
+
+            {
+                "$group": {
+                    "_id": {advertisementID: "$advertisementID"},//type: "$type" 这件事得问问前端
+                    "total": {"$sum": "$amount"},
+                    "positionName": {$first: "$positionName"},
+                    "source": {$first: "$source"},
+                    "updated_at": {$first: "$updated_at"}
+                }
+            }
+        ]);
+
+        console.log(aggregateResult)
+    }
+
+
     async dataIncrementRecord(content, amount, type) {
         let date = this.ctx.getAbsoluteDate(true);
-        let x = await this.ctx.model.DataAnalyze.findOneAndUpdate({
+        await this.ctx.model.DataAnalyze.findOneAndUpdate({
             absoluteDate: date,
             content: content,
             type: type
         }, {$inc: {amount: amount}}, {upsert: true, new: true});
-        console.log(x)
     };
-
-
 }
 
 module.exports = analyzeService;

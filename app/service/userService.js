@@ -117,23 +117,32 @@ class UserService extends Service {
         return [data, count];
     };
 
-    async getUserBalanceListRule(conditions, option) {
-        let searcher = {};
-        searcher.uuid = conditions.userUUid;
-        let userObj = {
-            "avatar": false,
-            "gender": false,
-            "birthday": false,
-            "dailyMissionTrackers": false,
-            "uuid": false,
-            "role": false,
-            "last_login_time": false,
-            "loginTimes": false
-        };
+    async getUserBalanceListRule(userUUid, option) {
 
-        userObj.balanceList = {$slice: [option.skip, option.limit]};
-        return this.ctx.model.UserAccount.findOne(searcher, userObj);
+        let result = await this.ctx.model.UserAccount.aggregate([{
+            $match: {
+                "uuid": userUUid,
+                "balanceList.createTime": {
+                    $lte: new Date(option.beginDate)
+                }
+            }
 
+        },
+            {$sort: {"balanceList.createTime": -1}},
+            // {$limit: option.limit},
+            // {$skip: option.skip},
+            {
+                $project: {
+                    balanceList: {
+                        $slice: ["$balanceList", option.skip, option.limit]
+                    }
+                }
+            }
+        ]);
+        if (result.length > 0) {
+            return result[0].balanceList;
+        }
+        return [];
     };
 
     async changeBcoin(_id, newBasin_unencrypted, balanceRecord) {

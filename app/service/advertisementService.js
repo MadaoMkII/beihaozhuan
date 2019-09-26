@@ -21,6 +21,9 @@ class advertisementService extends Service {
     async getAdvertisement(advertising, options) {
         return this.ctx.model.Advertisement.find(advertising, {}, options);
     };
+    async getOneAdvertisement(advertising, options) {
+        return this.ctx.model.Advertisement.findOne(advertising, {}, options);
+    };
 
     async getAdvertisementByPosition(positionName) {
 

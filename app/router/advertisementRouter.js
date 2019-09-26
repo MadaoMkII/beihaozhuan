@@ -2,6 +2,10 @@
 module.exports = app => {
     const {router, controller} = app;
     router.post('/advertisement/checkAdvertisement', app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].checkAdvertisement);
+
+    router.post('/advertisement/checkFinishAdvertisement', app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].checkFinishAdvertisement);
+
+
     router.post('/advertisement/getAdvertisement',
         app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].getAdvertisementList);
     router.post('/advertisement/createAdvertisement',

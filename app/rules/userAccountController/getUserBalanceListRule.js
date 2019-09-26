@@ -1,8 +1,10 @@
+'use strict';
+const pageAndUnitRules = require(`../pageAndUnitRule`);
 const rule = {
-    userUUid: [
-        {required: false, message: '可以能为空'},
-        {type: 'string', message: 'userUUid必须为字符串'}
+    period: [
+        {required: true, message: '可以能为空'},
+        {type: "enum", enum: ['month', 'week', 'full']}
     ]
 };
-
+Object.assign(rule, pageAndUnitRules);
 module.exports = rule;
