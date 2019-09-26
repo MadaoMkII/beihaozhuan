@@ -216,6 +216,10 @@ class analyzeService extends Service {
                     "source": {$first: "$source"},
                     "updated_at": {$first: "$updated_at"}
                 }
+            },
+            {
+                $project:
+                    {_id: 0,name: "$positionName", totalAmount: { $multiply: [ "$total", 2 ] }, type: 1, advertisementID: 1, total: 1, source: 1, updated_at: 1}
             }
         ]);
 
