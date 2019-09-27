@@ -8,10 +8,25 @@ class dataAnalyzeController extends Controller {
         let result = await ctx.service.analyzeService.recordBcoinChange(ctx.user._id, amount, reason);
         this.success(result);
     }
-    async countAdv(ctx) {
 
-        let result = await ctx.service.analyzeService.countAdv();
-        this.success();
+    async advDetail(ctx) {
+        const [condition, option] = await this.cleanupRequestProperty('pageAndUnitRule',
+            `source`, `page`, 'unit', `title`);
+        if (!condition) {
+            return;
+        }
+        let result = await ctx.service.analyzeService.getAdvDetail(condition, option);
+        this.success(result);
+    };
+
+    async countAdv(ctx) {
+        const [condition, option] = await this.cleanupRequestProperty('pageAndUnitRule',
+            `unit`, `page`);
+        if (!condition) {
+            return;
+        }
+        let result = await ctx.service.analyzeService.countAdv(option);
+        this.success(result);
     }
 
     async countByFall(ctx) {

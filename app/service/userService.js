@@ -137,7 +137,14 @@ class UserService extends Service {
                         $slice: ["$balanceList", option.skip, option.limit]
                     }
                 }
+            }, {
+                $project: {
+                    balanceList: {
+                        _id: 0
+                    }
+                }
             }
+
         ]);
         if (result.length > 0) {
             return result[0].balanceList;

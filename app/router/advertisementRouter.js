@@ -21,5 +21,6 @@ module.exports = app => {
 
     router.post('/advertisement/deleteAdvertisement',
         app.middleware.authenticatedMiddleware(`User`), controller[`advertisementController`].deleteAdvertisement);
-
+    router.get('/advertisement/countAdv',
+        app.middleware.authenticatedMiddleware(`User`), controller[`dataAnalyzeController`].countAdv);
 };

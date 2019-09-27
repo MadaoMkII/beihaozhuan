@@ -25,6 +25,19 @@ module.exports = app => {
         transform: (doc, ret) => {
             delete ret.__v;
             delete ret._id;
+            delete ret.id;
+            if (typeof doc.advertisementID === "object" && doc.advertisementID.reward) {
+                ret.totalReword = doc.advertisementID.reward * doc.amount;
+                ret.RMBReword = doc.advertisementID.reward * doc.amount/100;
+                delete doc.advertisementID.reward;
+                ret.advertisement = doc.advertisementID;
+                delete ret.advertisementID;
+            }
+            if (typeof doc.userID === "object") {
+                ret.user = doc.userID;
+                delete ret.userID;
+            }
+
             if (doc.updated_at) {
                 ret.updated_at = app.getFormatDateForJSON(doc.updated_at);
             }

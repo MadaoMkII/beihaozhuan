@@ -177,8 +177,34 @@ class analyzeService extends Service {
         };
     }
 
+    async getAdvDetail(conditions, option) {
 
-    async countAdv(condition) {
+        if (!this.ctx.helper.isEmpty(conditions.title)) {
+            conditions.title = {$regex: `.*${conditions.title}.*`};
+        }
+
+        let advertisementArray = await this.ctx.model.Advertisement.find(conditions);
+
+        let result = [];
+        for (const advertisement of advertisementArray) {
+            let aggregateResult = await this.ctx.model.AdvRecord.find({advertisementID: advertisement._id},
+                {_id: 0}).populate([{
+                path: `userID`,
+                model: this.ctx.model.UserAccount,
+                select: '-_id tel_number avatar'
+            }, {
+                path: `advertisementID`,
+                model: this.ctx.model.Advertisement,
+                select: '-_id title source reward positionName activity'
+            }]);
+            result.push(...aggregateResult)
+        }
+//不用aggregate 很难分页
+        let endIndex = (option.skip + option.limit) > result.length ? result.length : (option.skip + option.limit);
+        return [result.slice(option.skip, endIndex), result.length];
+    };
+
+    async countAdv(option) {
 
         let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
             {
@@ -219,11 +245,16 @@ class analyzeService extends Service {
             },
             {
                 $project:
-                    {_id: 0,name: "$positionName", totalAmount: { $multiply: [ "$total", 2 ] }, type: 1, advertisementID: 1, total: 1, source: 1, updated_at: 1}
+                    {
+                        _id: 0, name: "$positionName", totalAmount: {$multiply: ["$total", 2]},
+                        type: 1, advertisementID: 1, total: 1, source: 1, updated_at: 1
+                    }
             }
         ]);
-
         console.log(aggregateResult)
+        let count = aggregateResult.length;
+        let result = aggregateResult.slice(option.skip, option.skip + option.limit);
+        return [result, count]
     }
 
 
@@ -234,7 +265,8 @@ class analyzeService extends Service {
             content: content,
             type: type
         }, {$inc: {amount: amount}}, {upsert: true, new: true});
-    };
+    }
+    ;
 }
 
 module.exports = analyzeService;

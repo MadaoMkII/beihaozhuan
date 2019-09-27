@@ -1,3 +1,5 @@
+let {DateTime} = require('luxon');
+
 let express = require(`express`);
 let bodyParser = require('body-parser');
 let XLSX = require(`xlsx`);
@@ -129,6 +131,12 @@ let getLoop = async (qrcodeId, url, name, cookie) => {
     for (let index = 1; index <= pageSize; index++) {
         console.log(`开始爬 ${name}  第 ${index} 页`);
         await sleep(100);
+        //
+        // if ([` `].includes(name)) {
+        //
+        //     continue;
+        // }
+        //
 
         let [adminBody,] = await requestMethod({
             subscribe: -1,
@@ -140,6 +148,9 @@ let getLoop = async (qrcodeId, url, name, cookie) => {
             let tempDocument = {};
             tempDocument.粉丝 = document[`nickname`];
             tempDocument.扫码时间 = getLocalTime(timeStamp2String(document[`scandate`]));
+            // if (new DateTime(tempDocument.扫码时间).day === new DateTime(new Date()).day) {
+            //     continue;
+            // }
             switch (document.subscribe) {
                 case 1:
                     tempDocument.关注状态 = `关注中`;
