@@ -3,10 +3,6 @@ const Service = require('egg').Service;
 
 
 class picService extends Service {
-    async postBook() {
-
-        return {name: "helloworld"}
-    }
 
     async deleteImg(fileUrl) {
         let ossFilePath = this.app.config.oss.client.bucketUrl;

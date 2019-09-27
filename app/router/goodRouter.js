@@ -2,6 +2,9 @@
 module.exports = app => {
     const {router, controller} = app;
     //router.get('/good/getBannerGood', controller[`goodController`].getBannerGood);
+
+    router.get('/excel/getExcel',controller[`orderTrackerController`].getExcel);
+
     router.post('/good/createGood', app.middleware.authenticatedMiddleware(`User`), controller[`goodController`].createGood);
     router.post('/good/updateGood', app.middleware.authenticatedMiddleware(`User`), controller[`goodController`].updateGood);
     router.post('/order/makeOrder', app.middleware.authenticatedMiddleware(`User`), controller[`orderTrackerController`].createOrder);

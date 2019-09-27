@@ -1,7 +1,30 @@
 `use strict`;
 const baseController = require(`../controller/baseController`);
+const fs = require('fs');
+const path = require('path');
 
 class orderTrackerController extends baseController {
+
+    async getExcel(ctx) {
+        let orderArray = await this.ctx.model.OrderTracker.find().populate({
+            path: "customer_ID",
+            model: this.ctx.model.UserAccount,
+            select: "-_id nickName tel_number"
+        });
+        let fileName = await ctx.service.excelService.createExcel(orderArray);
+        //请求返回，生成的xlsx文件
+        console.log(fileName)
+        // let promise = fs.unlink(fileName, () => {
+        //     console.log(1)
+        // });
+        ctx.status = 200;
+        await ctx.downloader(fileName);
+        fs.unlinkSync(fileName);
+        // //请求返回后，删除生成的xlsx文件，不删除也行，下次请求回覆盖
+        // await promise;
+        //this.success();
+    };
+
     async createOrder(ctx) {
         try {
             const [requestEntity] = await this.cleanupRequestProperty('orderTrackerRules.createInsuranceRule',
@@ -12,7 +35,6 @@ class orderTrackerController extends baseController {
             }
             let orderTracker = {
                 customer_ID: ctx.user._id,
-                userUUid: ctx.user.uuid,
                 goodUUid: requestEntity.goodUUid,
                 additionalInformation: requestEntity.additionalInformation,
                 realName: requestEntity.realName,
@@ -42,7 +64,7 @@ class orderTrackerController extends baseController {
         if (!condition) {
             return;
         }
-        condition.userUUid = ctx.user.uuid;
+        condition.customer_ID = ctx.user._id;
         let count = await this.getFindModelCount(`OrderTracker`, condition);
         let result = await ctx.service.orderTrackerService.findOrder(condition, option);
         return this.success([result, count]);
@@ -59,6 +81,7 @@ class orderTrackerController extends baseController {
         let count = await this.getFindModelCount(`OrderTracker`, condition);
         this.success([result, count]);
     }
+
 }
 
 module.exports = orderTrackerController;

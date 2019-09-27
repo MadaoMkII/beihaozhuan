@@ -221,33 +221,45 @@ class analyzeService extends Service {
             },
             {
                 $project:
-                    {positionName: 1, type: 1, advertisementID: 1, amount: 1, source: 1, updated_at: 1}
+                    {
+                        positionName: 1,
+                        type: 1,
+                        advertisementID: 1,
+                        amount: 1,
+                        source: 1,
+                        updated_at: 1,
+                        reward: 1,activity: 1, uuid: 1
+                    }
             },
-            // {
-            //     "$project": {
-            //         // "DogDay": {"$dayOfMonth": {date: "$absoluteDate", timezone: "+0700"}},
-            //         // "hourNew": {"$hour": {date: "$absoluteDate", timezone: "+0700"}},
-            //         // "amount": 1,
-            //         advertisementID: 1,
-            //         type: 1,
-            //         inventory_docs:1
-            //     }
-            // },
-
             {
                 "$group": {
                     "_id": {advertisementID: "$advertisementID"},//type: "$type" 这件事得问问前端
                     "total": {"$sum": "$amount"},
                     "positionName": {$first: "$positionName"},
                     "source": {$first: "$source"},
-                    "updated_at": {$first: "$updated_at"}
+                    "updated_at": {$first: "$updated_at"},
+                    "reward": {$first: "$reward"},
+                    "activity": {$first: "$activity"},
+                    "uuid": {$first: "$uuid"}
+                }
+            },
+            {
+                $addFields: {
+                    rewardInt: {$toInt: "$reward"},
                 }
             },
             {
                 $project:
                     {
-                        _id: 0, name: "$positionName", totalAmount: {$multiply: ["$total", 2]},
-                        type: 1, advertisementID: 1, total: 1, source: 1, updated_at: 1
+                        _id: 0,
+                        positionName: "$positionName",
+                        totalAmount: {$multiply: ["$total", "$rewardInt"]},
+                        commission: {$multiply: ["$total", "$rewardInt", 0.01]},
+                        type: 1,
+                        advertisementID: 1,
+                        total: 1,
+                        source: 1,
+                        updated_at: 1, activity: 1, uuid: 1
                     }
             }
         ]);

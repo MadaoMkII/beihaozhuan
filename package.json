@@ -31,6 +31,7 @@
     "egg-view-ejs": "^2.0.0",
     "egg-logger": "^2.4.1",
     "egg-alinode": "^2.0.1",
+    "egg-downloader": "^1.0.5",
     "eslint": "^6.0.1",
     "eslint-config-egg": "^7.1.0",
     "js-base64": "^2.5.1",

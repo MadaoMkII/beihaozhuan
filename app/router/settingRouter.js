@@ -15,6 +15,7 @@ module.exports = app => {
 
     router.post('/setting/getSetting', app.middleware.authenticatedMiddleware(`User`),
         controller[`systemSettingController`].getSetting);
+
     router.get('/callback', controller[`callBackController`].getCallBackInfo);
 
     router.get('/setting/getMemberNumber', controller[`systemSettingController`].getMemberNumber);
@@ -39,6 +40,11 @@ module.exports = app => {
     router.get('/missionSignIn', async (ctx) => {
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/missionSignIn.html'));
+        // ctx.redirect('/index.html')
+    });
+    router.get('/missionAward', async (ctx) => {
+        ctx.response.type = 'html';
+        ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/missionAward.html'));
         // ctx.redirect('/index.html')
     });
 };

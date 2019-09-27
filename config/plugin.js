@@ -42,3 +42,7 @@ exports.alinode = {
     enable: true,
     package: 'egg-alinode'
 };
+exports.downloader = {
+    enable: true,
+    package: 'egg-downloader'
+};

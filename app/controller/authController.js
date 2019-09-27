@@ -14,7 +14,6 @@ class authController extends Controller {
             return;
         }
         let userResult, verifyFlag;
-
         if (ctx.user) {
             ctx.logout();
         }

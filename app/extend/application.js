@@ -51,6 +51,11 @@ module.exports = {
         let rezoned = local.setZone("Asia/Shanghai");
         return rezoned.weekYear + `/` + rezoned.weekNumber;
     },
+    getLocalTimeForFileName: function (date) {
+        const moment = require(`moment`);
+        require(`moment-timezone`);
+        return moment.tz(date, "Asia/ShangHai").format(`YYYY年MM月DD日 HH时mm分ss秒`);
+    },
     getInviteCode: function () {
         return (Math.random() / 100000 * Date.now() * 3.1415926).toFixed(0)
     }

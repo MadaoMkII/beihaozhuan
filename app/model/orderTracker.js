@@ -5,7 +5,6 @@ module.exports = app => {
         customer_ID: {type: mongoose.Schema.Types.ObjectId, required: true},
         goodID: {type: mongoose.Schema.Types.ObjectId, required: true},
         orderUUid: {type: String, required: true},
-        userUUid: {type: String, required: true},
         redeemCode: String,
         orderStatus: {
             type: String,

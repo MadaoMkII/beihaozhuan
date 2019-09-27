@@ -3,6 +3,20 @@ const {Service} = require('egg');
 
 class orderTrackerService extends Service {
 
+
+    async getExcel(conditions, option) {
+        let searcher = {};
+        Object.keys(conditions).forEach((key) => {
+            if (key === `title`) {
+                searcher.title = {$regex: `.*${conditions.title}.*`}
+            } else {
+                searcher[key] = conditions[key];
+            }
+        });
+        //.populate({path: `goodUUid`, model: this.ctx.model.Good})
+        let allData = this.ctx.model.OrderTracker.find({}, {_id: 0});
+    };
+
     async findOrder(conditions, option) {
         let searcher = {};
         Object.keys(conditions).forEach((key) => {
@@ -12,7 +26,7 @@ class orderTrackerService extends Service {
                 searcher[key] = conditions[key];
             }
         });
-        console.log(searcher)//.populate({path: `goodUUid`, model: this.ctx.model.Good})
+        //.populate({path: `goodUUid`, model: this.ctx.model.Good})
         return this.ctx.model.OrderTracker.find(searcher, {}, option);
     };
 
