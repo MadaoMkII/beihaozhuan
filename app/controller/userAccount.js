@@ -13,11 +13,9 @@ class userAccount extends baseController {
                 let updateUser = ctx.service.userService.updateUser(userObj.uuid, {last_login_time: absoluteDate});
                 promiseArray.push(syncingTasksPromise, updateUser);
             }
-            this.success(`用户已经登录`, 200);
             Promise.all(promiseArray).then();
-        } else {
-            return this.success(`用户尚未登录`, 200);
         }
+        return this.success(`用户已经登录`, 200);
     };
 
     async getUserInfo(ctx) {
