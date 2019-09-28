@@ -7,12 +7,12 @@ class userAccount extends baseController {
         let userObj = ctx.user;
         let absoluteDate = ctx.getAbsoluteDate();
         let promiseArray = [];
-        if (!ctx.helper.isEmpty(userObj)) {
-            // if ((userObj.last_login_time).toISOString() !== absoluteDate.toISOString()) {
-            let syncingTasksPromise = ctx.service.userService.syncingTasks(userObj);
-            let updateUser = ctx.service.userService.updateUser(userObj.uuid, {last_login_time: absoluteDate});
-            promiseArray.push(syncingTasksPromise, updateUser);
-            //}
+        if (!ctx.helper.isEmpty(userObj) && !ctx.helper.isEmpty(userObj.last_login_time)) {
+            if ((userObj.last_login_time).toString() !== absoluteDate.toString()) {
+                let syncingTasksPromise = ctx.service.userService.syncingTasks(userObj);
+                let updateUser = ctx.service.userService.updateUser(userObj.uuid, {last_login_time: absoluteDate});
+                promiseArray.push(syncingTasksPromise, updateUser);
+            }
             this.success(`用户已经登录`, 200);
             Promise.all(promiseArray).then();
         } else {
