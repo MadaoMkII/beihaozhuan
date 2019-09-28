@@ -1,7 +1,6 @@
 class AppBootHook {
     constructor(app) {
         this.app = app;
-        this.eventEmitter = new EventEmitter();
     }
 
     configWillLoad() {
