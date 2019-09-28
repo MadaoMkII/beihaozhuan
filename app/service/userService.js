@@ -1,5 +1,4 @@
 'use strict';
-const moment = require('moment');
 const Service = require('egg').Service;
 require(`moment-timezone`);
 
@@ -12,13 +11,13 @@ class UserService extends Service {
             amount: amount,
             createTime: new Date(), //必须加入那些代码
         };
-        return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid},
+        return this.ctx.model[`UserAccount`].findOneAndUpdate({uuid: user_uuid},
             {$push: {balanceList: newBcionChange}}, {new: true});
 
     };
 
     async syncingTasks(user) { //把mission同步为missionTracker
-        let requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack();
+        let requireMissionResult = await this.ctx.service[`missionProcessingTrackerService`].requireMissionToTrack();
         requireMissionResult.find((missionArray) => {
             if ([`Weekly`, `Daily`, `Permanent`].includes(missionArray._id)) {
                 missionArray.missions.forEach(async (mission) => {
@@ -54,18 +53,18 @@ class UserService extends Service {
 
     async updateUser(user_uuid, userObj) {
         delete userObj.uuid;
-        return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid}, {$set: userObj}, {new: true});
+        return this.ctx.model[`UserAccount`].findOneAndUpdate({uuid: user_uuid}, {$set: userObj}, {new: true});
     };
 
     async updateUserPassword(tel_number, newPassword) {
-        return this.ctx.model.UserAccount.findOneAndUpdate({tel_number: tel_number},
+        return this.ctx.model[`UserAccount`].findOneAndUpdate({tel_number: tel_number},
             {$set: {password: newPassword}}, {new: true});
     };
 
     async updateUser_login(user) {
         let absoluteDate = this.ctx.getAbsoluteDate();
 
-        return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user.uuid}, {
+        return this.ctx.model[`UserAccount`].findOneAndUpdate({uuid: user.uuid}, {
             $set: {last_login_time: absoluteDate},
             $inc: {loginTimes: 1}
         }, {new: true});
@@ -74,7 +73,7 @@ class UserService extends Service {
     async getReferrerID(inviteCode) {
 
         if (!this.ctx.helper.isEmpty(inviteCode)) {
-            let userResult = await this.ctx.model.UserAccount.findOne({
+            let userResult = await this.ctx.model[`UserAccount`].findOne({
                 inviteCode: inviteCode
             });
             return userResult._id;
@@ -82,11 +81,11 @@ class UserService extends Service {
     };
 
     async addUser(user, inviteCode) {
-        let userNew = this.ctx.model.UserAccount(user);
+        let userNew = this.ctx.model[`UserAccount`](user);
         if (!this.ctx.helper.isEmpty(inviteCode)) {
             userNew.referrer = await this.getReferrerID(inviteCode);
             if (!this.ctx.helper.isEmpty(user.referrer)) {
-                let superiorUser = await this.ctx.model.UserAccount.findOneAndUpdate({
+                await this.ctx.model[`UserAccount`].findOneAndUpdate({
                     _id: user.referrer
                 }, {$push: {referrals: userNew._id}});
             }
@@ -96,13 +95,13 @@ class UserService extends Service {
     };
 
     async getUser(user, project) {
-        return this.ctx.model.UserAccount.findOne(user, project);
+        return this.ctx.model[`UserAccount`].findOne(user, project);
     };
 
     async getMyTeam(user_uuid) {
-        let result = await this.ctx.model.UserAccount.findOne({uuid: user_uuid}, {referrals: 1}).populate({
+        let result = await this.ctx.model[`UserAccount`].findOne({uuid: user_uuid}, {referrals: 1}).populate({
             path: `referrals`,
-            model: this.ctx.model.UserAccount,
+            model: this.ctx.model[`UserAccount`],
             select: 'nickName -_id created_at avatar',
         });
         return result["referrals"];
@@ -112,14 +111,14 @@ class UserService extends Service {
         if (!this.ctx.helper.isEmpty(conditions.nickName)) {
             conditions.nickName = {$regex: `.*${conditions.nickName}.*`};
         }
-        let count = await this.ctx.model.UserAccount.countDocuments(conditions);
-        let data = await this.ctx.model.UserAccount.find(conditions, project, option);
+        let count = await this.ctx.model[`UserAccount`].countDocuments(conditions);
+        let data = await this.ctx.model[`UserAccount`].find(conditions, project, option);
         return [data, count];
     };
 
     async getUserBalanceListRule(userUUid, option) {
 
-        let result = await this.ctx.model.UserAccount.aggregate([{
+        let result = await this.ctx.model[`UserAccount`].aggregate([{
             $match: {
                 "uuid": userUUid,
                 "balanceList.createTime": {
@@ -165,12 +164,12 @@ class UserService extends Service {
 //         this.setUser(_id, {Bcoins: newBasin_unencrypted}, {missionTrackers: missionEvent})
 //     }
     async setUserStatus(id, setObj, pushObj) {
-        return this.ctx.model.UserAccount.findOneAndUpdate({_id: id},
+        return this.ctx.model[`UserAccount`].findOneAndUpdate({_id: id},
             {$set: setObj, $push: pushObj}, {new: true});
     };
 
     async setUser(id, setObj, pushObj) {
-        return this.ctx.model.UserAccount.findOneAndUpdate({_id: id},
+        return this.ctx.model[`UserAccount`].findOneAndUpdate({_id: id},
             {$set: setObj, $push: pushObj}, {new: true});
     }
 }

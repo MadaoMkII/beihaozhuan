@@ -29,10 +29,10 @@ module.exports = {
         src += cipher.final('utf8');
         return src;
     },
-    getFormatDate: function () {
+    getFormatDate: function (date = new Date()) {
         const moment = require(`moment`);
         require(`moment-timezone`);
-        return moment.tz(new Date(), "Asia/ShangHai").format(`YYYYMMDD`);
+        return moment.tz(date, "Asia/ShangHai").format(`YYYYMMDD`);
     },
     getLocalTime: function (date) {
         const moment = require(`moment`);
@@ -45,9 +45,9 @@ module.exports = {
         let rezoned = local.setZone("Asia/Shanghai");
         return rezoned.toFormat(`yyyy-MM-dd`);
     },
-    getFormatWeek: function () {
+    getFormatWeek: function (date = new Date()) {
         let {DateTime} = require('luxon');
-        let local = DateTime.fromISO(new Date().toISOString());
+        let local = DateTime.fromISO(date.toISOString());
         let rezoned = local.setZone("Asia/Shanghai");
         return rezoned.weekYear + `/` + rezoned.weekNumber;
     },

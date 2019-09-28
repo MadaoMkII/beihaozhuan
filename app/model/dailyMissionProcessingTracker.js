@@ -21,9 +21,8 @@ module.exports = app => {
         transform: (doc, ret) => {
             delete ret.__v;
             delete ret._id;
-            delete ret.good_id;
-            delete ret.password;
             delete ret[`updated_at`];
+            ret.recentAmount = doc.recentAmount > doc.requireAmount ? doc.requireAmount : doc.recentAmount;
             //delete ret.password;
             // ret.VIPLevel = vipCoculart(doc.growthPoints);
             // if (doc.created_at && doc.updated_at) {

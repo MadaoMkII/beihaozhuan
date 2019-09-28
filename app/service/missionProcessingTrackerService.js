@@ -3,6 +3,7 @@ const Service = require('egg').Service;
 require(`../model/mission`);
 
 class MissionEventManager extends Service {
+
     async completeMission(modelName, userID, missionEventName) {
         let effectDay = {};
         switch (modelName) {
