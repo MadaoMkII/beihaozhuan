@@ -3,16 +3,10 @@
 const Controller = require('./baseController');
 
 class HomeController extends Controller {
-    async index() {
-        const ctx = this.ctx;
-        let result = await ctx.oss.list({
-            prefix: `images/`
-        });
-        delete result.objects[0];
-        await this.ctx.render('index.ejs', {
-            files: result.objects
-        })
-
+    async test(ctx) {
+        ctx.app.eventEmitter.emit(`play`, `test`);
+        console.log(this.ctx.app.xplay)
+        ctx.status=200
     };
 
     //

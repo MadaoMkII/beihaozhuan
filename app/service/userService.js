@@ -10,14 +10,14 @@ class UserService extends Service {
             category: category,
             income: income,
             amount: amount,
-            createTime: new Date(),
+            createTime: new Date(), //必须加入那些代码
         };
         return this.ctx.model.UserAccount.findOneAndUpdate({uuid: user_uuid},
             {$push: {balanceList: newBcionChange}}, {new: true});
 
     };
 
-    async syncingTasks(user) {
+    async syncingTasks(user) { //把mission同步为missionTracker
         let requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack();
         requireMissionResult.find((missionArray) => {
             if ([`Weekly`, `Daily`, `Permanent`].includes(missionArray._id)) {

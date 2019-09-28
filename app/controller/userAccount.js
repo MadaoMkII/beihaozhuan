@@ -5,25 +5,27 @@ let {DateTime} = require('luxon');
 class userAccount extends baseController {
     async isLogin(ctx) {
         let userObj = ctx.user;
-        if (userObj) {
+        let absoluteDate = ctx.getAbsoluteDate();
+        let promiseArray = [];
+
+        if (!ctx.helper.isEmpty(userObj)) {
+            if (!ctx.helper.isEmpty(userObj.last_login_time) &&
+                (userObj.last_login_time).toString() !== absoluteDate.toString()) {
+
+                let syncingTasksPromise = ctx.service.userService.syncingTasks(userObj);
+                let updateUser = ctx.service.userService.updateUser(userObj.uuid, {last_login_time: absoluteDate});
+                promiseArray.push(syncingTasksPromise);
+                promiseArray.push(updateUser);
+
+            }
             this.success(`用户已经登录`, 200);
+            Promise.all(promiseArray).then();
         } else {
             return this.success(`用户尚未登录`, 200);
         }
-        // let absoluteDate = ctx.getAbsoluteDate();
-        // let promiseArray = [];
-        // if (!ctx.helper.isEmpty(userObj) && !ctx.helper.isEmpty(userObj.last_login_time)) {
-        //     if ((userObj.last_login_time).toString() !== absoluteDate.toString()) {
-        //         let syncingTasksPromise = ctx.service.userService.syncingTasks(userObj);
-        //         let updateUser = ctx.service.userService.updateUser(userObj.uuid, {last_login_time: absoluteDate});
-        //         promiseArray.push(syncingTasksPromise, updateUser);
-        //     }
-        //     this.success(`用户已经登录`, 200);
-        //     Promise.all(promiseArray).then();
-        // } else {
-        //
-        // }
+
     };
+
 
     async getUserInfo(ctx) {
         // console.log(ctx.url)
