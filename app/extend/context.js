@@ -1,3 +1,4 @@
+let {DateTime} = require('luxon');
 module.exports = {
     //解密方法
     /**
@@ -18,5 +19,24 @@ module.exports = {
         let result = '';
         for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
         return result;
+    },
+    getDateByPeriod: function (period) {
+        let beginDate;
+        let end = DateTime.fromISO(this.getAbsoluteDate().toISOString());
+        switch (period) {
+
+            case `month`:
+                beginDate = end.plus({months: -1}).toJSDate();
+
+                break;
+            case `week`:
+                beginDate = end.plus({week: -1}).toJSDate();
+
+                break;
+            case `full`:
+                beginDate = undefined;
+                break;
+        }
+        return beginDate;
     }
 };

@@ -13,7 +13,7 @@ class orderTrackerController extends baseController {
         });
         let fileName = await ctx.service.excelService.createExcel(orderArray);
         //请求返回，生成的xlsx文件
-        console.log(fileName)
+
         // let promise = fs.unlink(fileName, () => {
         //     console.log(1)
         // });

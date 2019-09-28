@@ -51,6 +51,19 @@ class dataAnalyzeController extends Controller {
         this.success(result)
     };
 
+    async countAdvForChart(ctx) {
+        let beginDate = {};
+        const {period} = ctx.request.query;
+        if (!ctx.helper.isEmpty(period)) {
+            beginDate = ctx.getDateByPeriod(period);
+        }else {
+            beginDate = new Date(`2019-08-09`);
+        }
+
+        let result = await ctx.service[`analyzeService`].countAdvForChart(beginDate);
+        this.success(result)
+
+    }
 
 }
 
