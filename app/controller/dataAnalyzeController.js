@@ -20,12 +20,12 @@ class dataAnalyzeController extends Controller {
     };
 
     async countAdv(ctx) {
-        const [condition, option] = await this.cleanupRequestProperty('pageAndUnitRule',
-            `unit`, `page`);
+        const [condition, option] = await this.cleanupRequestProperty('dataAnalyzeRules.advDetailRule',
+            `unit`, `page`, `source`);
         if (!condition) {
             return;
         }
-        let result = await ctx.service.analyzeService.countAdv(option);
+        let result = await ctx.service.analyzeService.countAdv(option, condition.source);
         this.success(result);
     }
 

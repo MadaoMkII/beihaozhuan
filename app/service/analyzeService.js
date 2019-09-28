@@ -204,7 +204,7 @@ class analyzeService extends Service {
         return [result.slice(option.skip, endIndex), result.length];
     };
 
-    async countAdv(option) {
+    async countAdv(option, source) {
 
         let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
             {
@@ -228,9 +228,10 @@ class analyzeService extends Service {
                         amount: 1,
                         source: 1,
                         updated_at: 1,
-                        reward: 1,activity: 1, uuid: 1
+                        reward: 1, activity: 1, uuid: 1
                     }
             },
+
             {
                 "$group": {
                     "_id": {advertisementID: "$advertisementID"},//type: "$type" 这件事得问问前端
@@ -242,6 +243,9 @@ class analyzeService extends Service {
                     "activity": {$first: "$activity"},
                     "uuid": {$first: "$uuid"}
                 }
+            },
+            {
+                $match: {source: source}
             },
             {
                 $addFields: {
