@@ -77,13 +77,13 @@ class wechatController extends baseController {
         let user = await this.ctx.service.userService.getUser({OPENID: OPENID});
         if (!ctx.helper.isEmpty(user)) {
 
-            // await this.ctx.service.userService.updateUser(user.uuid, {
-            //     avatar: result_3[`headimgurl`],
-            //     nickname: result_3.nickName
-            // });
+
             ctx.login(user);
             ctx.status = 301;
-            return ctx.redirect(`/index`);
+            ctx.redirect(`/index`);
+            await this.ctx.service.userService.updateUser(user.uuid, {
+                "userStatus.hasVerifyWechat": true
+            });
         } else {
             let requestObj_3 = {
                 access_token: result_2.access_token,

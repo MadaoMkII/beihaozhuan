@@ -156,9 +156,11 @@ class authController extends Controller {
                 newUser.nickName = ctx.helper.decrypt(requestEntity.nickName);
                 newUser.password = randomPassword;
                 newUser.uuid = require('cuid')();
-                newUser.role = 'User';
+                newUser.role = '用户';
                 newUser.tel_number = requestEntity.tel_number;
                 newUser.Bcoins = 1100;
+                newUser.userStatus = {};
+                newUser.userStatus.hasVerifyWechat = true;
                 let newUser_login = await ctx.service.userService.addUser(newUser, null);
                 ctx.login(newUser_login);
                 delete newUser.password;
@@ -167,7 +169,8 @@ class authController extends Controller {
                 newUser.OPENID = ctx.helper.decrypt(requestEntity.statusString);
                 newUser.avatar = ctx.helper.decrypt(requestEntity.head);
                 newUser.nickName = ctx.helper.decrypt(requestEntity.nickName);
-
+                newUser.userStatus = {};
+                newUser.userStatus.hasVerifyWechat = true;
                 let newUser_login = await ctx.service.userService.updateUser(user.uuid, newUser);
                 ctx.login(newUser_login);
             }

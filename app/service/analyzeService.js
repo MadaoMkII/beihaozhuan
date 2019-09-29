@@ -53,7 +53,6 @@ class analyzeService extends Service {
             return aDate.diff(bDate, "months");
         });
 
-        console.log(aggregateResult)
         let dateTime = start;
         for (let index = 0; index <= diffInMonths; index++) {
 
@@ -69,7 +68,7 @@ class analyzeService extends Service {
             categories.push(`${dateTime.year}/${dateTime.month}`);
             dateTime = dateTime.plus({months: 1});
         }
-        console.log(resultArray)
+
         return {
             total: total,
             categories: categories,
@@ -152,7 +151,7 @@ class analyzeService extends Service {
         aggregateResult = aggregateResult.sort((a, b) => {
             return a._id - b._id;
         });
-        console.log(aggregateResult)
+
         let innerIndex = 0;
         let total = 0;
         let categories = [];
@@ -267,7 +266,7 @@ class analyzeService extends Service {
                     }
             }
         ]);
-        console.log(aggregateResult)
+
         let count = aggregateResult.length;
         let result = aggregateResult.slice(option.skip, option.skip + option.limit);
         return [result, count]
@@ -309,7 +308,7 @@ class analyzeService extends Service {
                     }
             }
         ]);
-        console.log(aggregateResult)
+
         aggregateResult = aggregateResult.sort((a, b) => {
             return a.type - b.type;
         });
@@ -346,6 +345,15 @@ class analyzeService extends Service {
         };
         return finalResult
     };
+    async countFavoriteGoodForChart(beginDate = new Date(`2019-08-30`)) {
+
+
+    };
+
+
+
+
+
 
     async dataIncrementRecord(content, amount, type) {
         let date = this.ctx.getAbsoluteDate(true);

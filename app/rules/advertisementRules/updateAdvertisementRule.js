@@ -19,6 +19,14 @@ const rule = {
     uuid: [
         {required: false, message: '不能为空'},
         {type: 'string', message: '类型不正确'}
+    ],
+    height: [
+        {required: false, message: '不能为空'},
+        {type: 'string', message: '类型不正确'}
+    ],
+    width: [
+        {required: false, message: '不能为空'},
+        {type: 'string', message: '类型不正确'}
     ]
 };
 module.exports = rule;

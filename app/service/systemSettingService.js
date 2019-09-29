@@ -5,11 +5,16 @@ require(`moment-timezone`);
 class SystemSettingService extends Service {
 
     async setRecommendGood(uuid, status) {
-        let good = await this.ctx.model.Good.findOneAndUpdate({uuid: uuid}, {$set: {isRecommend: status}});
+        await this.ctx.model.Good.updateMany({ isRecommend:true },{$set:{isRecommend:false }});
+
+        let good = await this.ctx.model.Good.findOneAndUpdate({uuid: uuid},
+            {$set: {isRecommend: status}}, {new: true});
+
         if (!good) {
             this.ctx.throw(`zhaobu dao`)
         }
         if (status) {
+            console.log(good)
             await this.setSetting({recommendGood: good._id});
         } else {
             await this.setSetting({recommendGood: undefined});
@@ -47,6 +52,11 @@ class SystemSettingService extends Service {
                         settingObj[key][subKey] = this.setValue(lastSettingObj[`_doc`][key], settingEntity[key], subKey);
                     }
                 });
+            }
+        });
+        Object.keys(settingEntity).forEach((key) => {
+            if (!Object.keys(settingObj).includes(key)) {
+                settingObj[key] = settingEntity[key];
             }
         });
         delete settingObj._id;

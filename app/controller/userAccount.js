@@ -123,7 +123,16 @@ class userAccount extends baseController {
         if (condition !== false) {
             this.deepCleanUp(condition, `userStatus`, `activity`, `hasPaid`, `hasVerifyWechat`);
             let [result, count] = await this.ctx.service[`userService`].getManyUser(condition,
-                option, {Bcoins: 1, tel_number: 1, loginTimes: 1, nickName: 1, avatar: 1, userStatus: 1, uuid: 1});
+                option, {
+                    created_at: 1,
+                    Bcoins: 1,
+                    tel_number: 1,
+                    loginTimes: 1,
+                    nickName: 1,
+                    avatar: 1,
+                    userStatus: 1,
+                    uuid: 1
+                });
             this.success([result, count]);
         }
     };
@@ -146,6 +155,7 @@ class userAccount extends baseController {
             userStatus: 1,
             Bcoins: 1, uuid: 1, realName: 1
         });
+
         this.success(newUser);
     };
 

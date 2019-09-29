@@ -104,7 +104,8 @@ class advertisementController extends Controller {
     }
 
     async updateAdvertisementList(ctx) {
-        const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.getAdvertisementRule',
+        console.log(ctx.request.body)
+        const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.updateAdvertisementRule',
             `title`, `positionName`, `source`, `activity`, "height", "width", "uuid");
         if (!advertisement) {
             return;
@@ -114,6 +115,7 @@ class advertisementController extends Controller {
             let ossUrl = await ctx.service.picService.putImgs(files[0]);
             advertisement.carouselUrl = (ossUrl);
         }
+        console.log(advertisement)
         let service = ctx.service.advertisementService.updateAdvertisement(advertisement.uuid, advertisement);
         this.success();
         await service;
