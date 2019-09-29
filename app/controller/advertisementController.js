@@ -49,14 +49,15 @@ class advertisementController extends Controller {
         if (!advertisement) {
             return;
         }
+        let userObj = ctx.user;
         let advertisementObj = await ctx.service[`advertisementService`].getOneAdvertisement({uuid: advertisement.uuid});
 
-        let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(ctx.user._id, ctx.user._id, 1);
+        let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(advertisementObj._id, userObj._id, 1);
 
         let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`广告视频播放完成`,
             advertisementObj.reward, `bcoin`);
 
-        let promise_3 = ctx.service[`userService`].setUserBcionChange(ctx.user.uuid, `观看广告视频完成`,
+        let promise_3 = ctx.service[`userService`].setUserBcionChange(userObj.uuid, `观看广告视频完成`,
             `获得`, advertisementObj.reward);
         this.success();
         Promise.all([promise_1, promise_2, promise_3]).catch((error) => {

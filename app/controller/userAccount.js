@@ -13,8 +13,8 @@ class userAccount extends baseController {
             if (ctx.helper.isEmpty(userObj.last_login_time) ||
                 (userObj.last_login_time).toString() !== absoluteDate.toString()) {
 
-                let syncingTasksPromise = ctx.service.userService.syncingTasks(userObj);
-                let updateUser = ctx.service.userService.updateUser(userObj.uuid, {last_login_time: absoluteDate});
+                let syncingTasksPromise = ctx.service[`userService`].syncingTasks(userObj);
+                let updateUser = ctx.service[`userService`].updateUser(userObj.uuid, {last_login_time: absoluteDate});
                 promiseArray.push(syncingTasksPromise);
                 promiseArray.push(updateUser);
             }
@@ -38,21 +38,21 @@ class userAccount extends baseController {
         // ctx.logger.debug('debug info');
         // ctx.logger.info('some request data: %j', ctx.request.body);
         // ctx.logger.warn('WARNNING!!!!');
-        let promiseArray = [];
+        //let promiseArray = [];
         let userObj = ctx.user;
-        let events = ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
-        promiseArray.push(events);
+        // let events = ctx.service[`missionEventManager`].getAndInitMissionEvent(ctx.user);
+        // promiseArray.push(events);
         this.success(userObj);
-        // ctx.logger.error(new Error('哇', {
-        //     "password": "Abc123",
-        //     "smsVerifyCode": 281105,
-        //     "tel_number": "15620304099"
-        // }),);
-        Promise.all(promiseArray).then(function (values) {
-            console.log('all promise are resolved', values)
-        }).catch(function (reason) {
-            console.log('promise reject failed reason')
-        })
+        // // ctx.logger.error(new Error('哇', {
+        // //     "password": "Abc123",
+        // //     "smsVerifyCode": 281105,
+        // //     "tel_number": "15620304099"
+        // // }),);
+        // Promise.all(promiseArray).then(function (values) {
+        //     console.log('all promise are resolved', values)
+        // }).catch(function (reason) {
+        //     console.log('promise reject failed reason')
+        // })
     };
 
     async getUserBalanceList(ctx) {
@@ -76,7 +76,7 @@ class userAccount extends baseController {
                     break;
             }
 
-            let result = await ctx.service.userService.getUserBalanceListRule(ctx.user.uuid, option);
+            let result = await ctx.service[`userService`].getUserBalanceListRule(ctx.user.uuid, option);
             this.success(result);
         }
     };
@@ -91,7 +91,7 @@ class userAccount extends baseController {
         const validateResult = await ctx.validate('authRules.loginRule', {tel_number, password});
         if (!validateResult) return;
         let encryptedPassword = ctx.helper.passwordEncrypt(password);
-        await ctx.service.userService.updateUserPassword(tel_number, encryptedPassword);
+        await ctx.service[`userService`].updateUserPassword(tel_number, encryptedPassword);
         ctx.session.tel_number = null;
         this.success();
     };
@@ -107,28 +107,22 @@ class userAccount extends baseController {
         let ossUrl;
         if (!this.ctx.helper.isEmpty(ctx.request.files)) {
             const file = ctx.request.files[0];
-            ossUrl = await ctx.service.picService.putImgs(file);
+            ossUrl = await ctx.service[`picService`].putImgs(file);
             condition.avatar = ossUrl;
         }
-        const newUser_result = await this.ctx.service.userService.updateUser(ctx.user.uuid, condition);
-        const eventEmitter = await ctx.service.missionEventManager.getAndInitMissionEvent(ctx.user);
-        eventEmitter.emit(`完善用户信息`,
-            newUser_result._id);
+        const newUser_result = await this.ctx.service[`userService`].updateUser(ctx.user.uuid, condition);
+        ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `完善用户信息`);
 
-        // Object.keys(newUser_result).forEach((key) => {//注册时候还是得需要一个新的接口，否则会有event错误
-        //     if( ctx.helper.isEmpty(newUser_result[key])){
-        //     }
-        // });
         this.success(newUser_result);
     };
 
     async getManyUser() {
-        //let result = await ctx.service.userService.getManyUser(condition, option);
+        //let result = await ctx.service[`userService`].getManyUser(condition, option);
         const [condition, option] = await this.cleanupRequestProperty('userAccountController.findUsersRule',
             `tel_number`, `hasPaid`, `nickName`, `activity`, `hasVerifyWechat`, 'unit', 'page');
         if (condition !== false) {
             this.deepCleanUp(condition, `userStatus`, `activity`, `hasPaid`, `hasVerifyWechat`);
-            let [result, count] = await this.ctx.service.userService.getManyUser(condition,
+            let [result, count] = await this.ctx.service[`userService`].getManyUser(condition,
                 option, {Bcoins: 1, tel_number: 1, loginTimes: 1, nickName: 1, avatar: 1, userStatus: 1, uuid: 1});
             this.success([result, count]);
         }
@@ -144,7 +138,7 @@ class userAccount extends baseController {
         if (ctx.helper.isEmpty(role)) {
             condition = {role: {$in: [`客服`, `超管`, `运营`, `用户`]}};
         }
-        let newUser = await ctx.service.userService.getManyUser(condition, option, {
+        let newUser = await ctx.service[`userService`].getManyUser(condition, option, {
             role: 1,
             tel_number: 1,
             nickName: 1,
@@ -161,7 +155,7 @@ class userAccount extends baseController {
         if (!condition) {
             return;
         }
-        await ctx.service.userService.updateUser(condition.uuid, {role: `User`});
+        await ctx.service[`userService`].updateUser(condition.uuid, {role: `User`});
         this.success();
     };
 
@@ -169,7 +163,7 @@ class userAccount extends baseController {
         let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
             'role', 'uuid');
 
-        await ctx.service.userService.updateUser(condition.uuid, condition.role);
+        await ctx.service[`userService`].updateUser(condition.uuid, condition.role);
         this.success();
     };
 
@@ -179,18 +173,19 @@ class userAccount extends baseController {
         if (!condition) {
             return;
         }
-        let user = await ctx.service.userService.getUser({tel_number: condition.tel_number});
+        let user = await ctx.service[`userService`].getUser({tel_number: condition.tel_number});
         delete condition.tel_number;
-        await ctx.service.userService.updateUser(user.uuid, condition, {new: true});
+        await ctx.service[`userService`].updateUser(user.uuid, condition, {new: true});
         this.success(user);
     };
 
     async generatorInviteLink(ctx) {
-        return this.success(`https://www.beihaozhuan.com/index?inviteCode=${ctx.user.inviteCode}`);
+        this.success(`https://www.beihaozhuan.com/index?inviteCode=${ctx.user.inviteCode}`);
+        ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `邀请新人加入`);
     };
 
     async getMyTeam(ctx) {
-        let result = await ctx.service.userService.getMyTeam(ctx.user.uuid);
+        let result = await ctx.service[`userService`].getMyTeam(ctx.user.uuid);
         this.success(result);
     };
 
@@ -201,7 +196,7 @@ class userAccount extends baseController {
         // if (!condition) {
         //     return;
         // }
-        let result = await ctx.service.userService.getUser({uuid: uuid}, {uuid: 0, password: 0});
+        let result = await ctx.service[`userService`].getUser({uuid: uuid}, {uuid: 0, password: 0});
         this.success(result);
     };
 
@@ -212,7 +207,7 @@ class userAccount extends baseController {
             if (!condition) {
                 return;
             }
-            let user = await ctx.service.userService.updateUser(condition.uuid, condition);
+            let user = await ctx.service[`userService`].updateUser(condition.uuid, condition);
             if (ctx.helper.isEmpty(user)) {
                 return this.failure(`找不到这个用户`, 404);
             }
