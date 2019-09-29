@@ -50,6 +50,8 @@ class wechatController extends baseController {
 
         let returnUrl = ctx.request.url; ///wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
         //returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
+
+        console.log(returnUrl)
         let urlQuery = url.parse(returnUrl, true).query;
         const {code, state} = urlQuery;
 
