@@ -86,6 +86,7 @@ class authController extends Controller {
             if (!requestEntity) {
                 return;
             }
+
             // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
             //     String(requestEntity.smsVerifyCode).toLowerCase())) {
             //     ctx.throw(400, `VerifyCode verify failed`);
@@ -119,7 +120,7 @@ class authController extends Controller {
                 uuid: uuid,
                 role: '用户',
                 tel_number: requestEntity.tel_number,
-                Bcoins: 0
+                Bcoins: initialBcoin
             };
 
             await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
@@ -158,7 +159,7 @@ class authController extends Controller {
             //     ctx.throw(402, `tel_number doesn't exist`);
             // }
 
-
+            let promise = {};
             // ctx.session.tel_number = `null`;
             //  ctx.session.smsVerifyCode = `null`;
             let user = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
@@ -183,6 +184,9 @@ class authController extends Controller {
                 newUser.userStatus = {};
                 newUser.userStatus.hasVerifyWechat = 'enable';
                 let newUser_login = await ctx.service.userService.addUser(newUser, null);
+                if (bcoin !== 0) {
+                    promise = ctx.service.userService.setUserBcionChange(newUser.uuid, `注册奖励`, `获得`, bcoin);
+                }
                 ctx.login(newUser_login);
                 delete newUser.password;
             } else {
@@ -196,6 +200,7 @@ class authController extends Controller {
                 ctx.login(newUser_login);
             }
             this.success();
+            await promise;
         } catch (e) {
             if (e.message.toString().includes(`E11000`)) {
                 return this.failure(`tel_number is duplicated `, 400);

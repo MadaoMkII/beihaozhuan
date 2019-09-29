@@ -96,14 +96,18 @@ class UserService extends Service {
     };
 
     async addUser(user, inviteCode) {
+        console.log(inviteCode)
         let userNew = this.ctx.model[`UserAccount`](user);
         if (!this.ctx.helper.isEmpty(inviteCode)) {
             userNew.referrer = await this.getReferrerID(inviteCode);
-            if (!this.ctx.helper.isEmpty(user.referrer)) {
-                await this.ctx.model[`UserAccount`].findOneAndUpdate({
-                    _id: user.referrer
+            console.log(userNew.referrer)
+            if (!this.ctx.helper.isEmpty(userNew.referrer)) {
+               let userx= await this.ctx.model[`UserAccount`].findOneAndUpdate({
+                    _id: userNew.referrer
                 }, {$push: {referrals: userNew._id}});
+               console.log(userx)
             }
+
         }
         await userNew.save();
         return userNew;

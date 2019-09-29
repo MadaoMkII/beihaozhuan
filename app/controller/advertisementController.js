@@ -106,7 +106,7 @@ class advertisementController extends Controller {
     async updateAdvertisementList(ctx) {
 
         const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.updateAdvertisementRule',
-            `title`, `positionName`, `source`, `activity`, "height", "width", "uuid");
+            `title`, `positionName`, `source`, `activity`, "height", "width", "uuid", `reward`);
         if (!advertisement) {
             return;
         }
