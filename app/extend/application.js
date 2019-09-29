@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const setting = require(process.cwd() + `/config/cryptoConfig`)();
 module.exports = {
     encrypt: function (plain_text) {
-        if (!plain_text || plain_text === "") {
+        if (plain_text === undefined || plain_text === "") {
             return;
         }
         if (!isNaN(plain_text)) {
@@ -18,7 +18,7 @@ module.exports = {
     },
 
     decrypt: function (cipher_text) {
-        if (!cipher_text || cipher_text === "") {
+        if (cipher_text === undefined || cipher_text === "") {
             return;
         }
         const key = Buffer.from(setting.key, 'utf8');

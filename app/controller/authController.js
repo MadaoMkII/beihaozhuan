@@ -119,7 +119,7 @@ class authController extends Controller {
                 uuid: uuid,
                 role: '用户',
                 tel_number: requestEntity.tel_number,
-                Bcoins: result.registerMission.reward
+                Bcoins: 0
             };
 
             await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);

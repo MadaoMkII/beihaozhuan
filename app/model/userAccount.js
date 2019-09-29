@@ -72,7 +72,7 @@ module.exports = app => {
         inviteCode: {type: String, default: app.getInviteCode},
         avatar: {type: String, default: 'https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/none.gif'},
         gender: {type: String, required: true, default: `male`},
-        Bcoins: {type: String, required: false, set: app.encrypt, get: app.decrypt},
+        Bcoins: {type: String, required: true, set: app.encrypt, get: app.decrypt},
         birthday: {
             type: Date, default: `1990-01-01`, min: '1940-01-01',
             max: Date.now
