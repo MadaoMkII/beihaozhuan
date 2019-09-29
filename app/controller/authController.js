@@ -119,20 +119,24 @@ class authController extends Controller {
                 uuid: uuid,
                 role: '用户',
                 tel_number: requestEntity.tel_number,
-                Bcoins: initialBcoin
+                Bcoins: result.registerMission.reward
             };
 
-            let promise_1 = ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
-            let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`userRegister`, 1, `user`);
+            await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
+            let promise_1 = ctx.service[`analyzeService`].dataIncrementRecord(`userRegister`, 1, `user`);
+            // let promise_2 = ctx.service.userService.setUserBcionChange(newUser.uuid,
+            //     `注册奖励`, `获得`, initialBcoin);
             delete newUser.password;
-            this.success(newUser);
-            Promise.all([promise_1, promise_2]).catch((error) => {
+
+            Promise.all([promise_1]).catch((error) => {
                 console.log(error)
             });
+            this.success()
         } catch (e) {
             if (e.message.toString().includes(`E11000`)) {
                 return this.failure(`tel_number is duplicated `, 400);
             } else {
+                console.log(e)
                 this.failure(e.message, 400);
             }
         }

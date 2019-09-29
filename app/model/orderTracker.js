@@ -9,7 +9,7 @@ module.exports = app => {
         redeemCode: String,
         orderStatus: {
             type: String,
-            enum: ['Close', 'Pending', `Complete`], default: "Pending"
+            enum: ['Close', 'Pending', `Complete`], default: "Complete"
         },
         mainlyShowPicUrl: String,
         title: {type: String, required: true},
