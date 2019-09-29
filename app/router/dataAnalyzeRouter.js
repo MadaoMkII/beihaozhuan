@@ -7,5 +7,6 @@ module.exports = app => {
     router.post('/advertisement/getAdvDetail',
         app.middleware.authenticatedMiddleware(`客服`), controller[`dataAnalyzeController`].advDetail);
 
-    router.get('/chart/getAdvCompare', controller[`dataAnalyzeController`].countAdvForChart);
+    router.get('/chart/getAdvCompare', app.middleware.authenticatedMiddleware(`客服`),
+        controller[`dataAnalyzeController`].countAdvForChart);
 };

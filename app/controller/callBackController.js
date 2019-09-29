@@ -3,9 +3,7 @@
 const Controller = require('./baseController');
 
 class callBackController extends Controller {
-    async getCallBackInfo(ctx) {
-        this.success();
-    }
+
 }
 
 let sha1 = (str) => {

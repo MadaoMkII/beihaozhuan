@@ -4,14 +4,6 @@ let url = require("url");
 
 class wechatController extends baseController {
 
-    async preLogin(ctx) {
-        ctx.status = 301;
-        let OPENID = `oopdjjy12`;
-        let jumpTo = `register `;
-        return ctx.redirect(`/?statusString=${OPENID}&jumpTo=${jumpTo}`);
-    };
-
-
     requestMethod(JSONObject, method, url) {
         const request_ = require("request");
         let requestObj = {};

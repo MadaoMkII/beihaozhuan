@@ -9,18 +9,18 @@ module.exports = app => {
     router.post('/advertisement/getAdvertisement',
         app.middleware.authenticatedMiddleware(`客服`), controller[`advertisementController`].getAdvertisementList);
     router.post('/advertisement/createAdvertisement',
-        app.middleware.authenticatedMiddleware(`客服`), controller[`advertisementController`].createAdvertisement);
+        app.middleware.authenticatedMiddleware(`运营`), controller[`advertisementController`].createAdvertisement);
     router.post('/advertisement/getAdvertisementByPosition',
         app.middleware.authenticatedMiddleware(`客服`), controller[`advertisementController`].getAdvertisementByPosition);
     router.post('/advertisement/updateAdvertisementList',
-        app.middleware.authenticatedMiddleware(`客服`), controller[`advertisementController`].updateAdvertisementList);
+        app.middleware.authenticatedMiddleware(`运营`), controller[`advertisementController`].updateAdvertisementList);
     router.post('/advertisement/setAdvertisementActivity',
-        app.middleware.authenticatedMiddleware(`客服`), controller[`advertisementController`].setAdvertisementActivity);
+        app.middleware.authenticatedMiddleware(`运营`), controller[`advertisementController`].setAdvertisementActivity);
     router.post('/advertisement/deleteAdvertisement',
-        app.middleware.authenticatedMiddleware(`客服`), controller[`advertisementController`].deleteAdvertisement);
+        app.middleware.authenticatedMiddleware(`运营`), controller[`advertisementController`].deleteAdvertisement);
 
     router.post('/advertisement/deleteAdvertisement',
-        app.middleware.authenticatedMiddleware(`客服`), controller[`advertisementController`].deleteAdvertisement);
+        app.middleware.authenticatedMiddleware(`运营`), controller[`advertisementController`].deleteAdvertisement);
     router.get('/advertisement/countAdv',
         app.middleware.authenticatedMiddleware(`客服`), controller[`dataAnalyzeController`].countAdv);
 };

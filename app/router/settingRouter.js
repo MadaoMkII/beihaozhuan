@@ -7,20 +7,16 @@ module.exports = app => {
     //     controller[`systemSettingController`].setAdvPosition);
     // router.post('/setting/setBannerGood', app.middleware.authenticatedMiddleware(`客服`),
     //     controller[`systemSettingController`].setBannerGood);
-    router.post('/setting/setSetting', app.middleware.authenticatedMiddleware(`客服`),
+    router.post('/setting/setSetting', app.middleware.authenticatedMiddleware(`运营`),
         controller[`systemSettingController`].setSetting);
 
-    router.post('/setting/setRecommendGood', app.middleware.authenticatedMiddleware(`客服`),
+    router.post('/setting/setRecommendGood', app.middleware.authenticatedMiddleware(`运营`),
         controller[`systemSettingController`].setRecommendGood);
 
-    router.post('/setting/getSetting', app.middleware.authenticatedMiddleware(`客服`),
+    router.post('/setting/getSetting', app.middleware.authenticatedMiddleware(`用户`),
         controller[`systemSettingController`].getSetting);
 
-    router.get('/callback', controller[`callBackController`].getCallBackInfo);
-
-    router.get('/setting/getMemberNumber', controller[`systemSettingController`].getMemberNumber);
-
-    router.get('/getSquare', controller[`systemSettingController`].getSquare);
+    router.get('/setting/getMemberNumber', app.middleware.authenticatedMiddleware(`客服`), controller[`systemSettingController`].getMemberNumber);
 
     router.get('/index', async (ctx) => {
         ctx.response.type = 'html';
