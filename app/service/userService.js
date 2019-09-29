@@ -146,14 +146,14 @@ class UserService extends Service {
             $match: {
                 "uuid": userUUid,
                 "balanceList.createTime": {
-                    $lte: new Date(option.beginDate)
+                    $gte: new Date(option.beginDate)
                 }
             }
         },
             {$sort: {"balanceList.createTime": 1}},
-            // {$limit: option.limit},
-            // {$skip: option.skip},
-            //
+            {$limit: option.limit},
+            {$skip: option.skip},
+
             {
                 $project: {
                     sizeAmount: {$size: "$balanceList"},
@@ -165,6 +165,8 @@ class UserService extends Service {
 
             {
                 $project: {
+                    updated_at: 0,
+                    created_at: 0,
                     balanceList: {
                         _id: 0
                     }
@@ -172,7 +174,7 @@ class UserService extends Service {
             }
 
         ]);
-        console.log(result)
+
         if (result.length > 0) {
             let tempArray = result[0].balanceList.sort((a, b) => {
                 return b.createTime - a.createTime;
