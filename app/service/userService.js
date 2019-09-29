@@ -16,8 +16,21 @@ class UserService extends Service {
 
     };
 
+
     async syncingTasks(user) { //把mission同步为missionTracker
-        let requireMissionResult = await this.ctx.service[`missionProcessingTrackerService`].requireMissionToTrack();
+
+        let promiseArray = [];
+        let closedMissionArray = await this.ctx.service[`missionProcessingTrackerService`].requireMissionToTrack("disable");
+
+        for (const missionElement of closedMissionArray) {
+            let modelName = missionElement._id + `MissionProcessingTracker`;
+            missionElement.missions.forEach((littleMission) => {
+                let promise = this.ctx.model[modelName].deleteOne({missionID: littleMission._id});
+                promiseArray.push(promise);
+            });
+        }
+
+        let requireMissionResult = await this.ctx.service[`missionProcessingTrackerService`].requireMissionToTrack("enable");
         requireMissionResult.find((missionArray) => {
             if ([`Weekly`, `Daily`, `Permanent`].includes(missionArray._id)) {
                 missionArray.missions.forEach(async (mission) => {
@@ -43,11 +56,13 @@ class UserService extends Service {
                     let missionTracker = await this.ctx.model[modelName].findOne(conditions);
                     if (this.ctx.helper.isEmpty(missionTracker)) {
                         let newMissionTracker = new this.ctx.model[modelName](conditions);
-                        newMissionTracker.save();
+                        let savePromise = newMissionTracker.save();
+                        promiseArray.push(savePromise);
                     }
                 });
             }
         });
+        Promise.all(promiseArray).then();
         return requireMissionResult;
     };
 
@@ -98,13 +113,16 @@ class UserService extends Service {
         return this.ctx.model[`UserAccount`].findOne(user, project);
     };
 
-    async getMyTeam(user_uuid) {
+    async getMyTeam(user_uuid, option) {
         let result = await this.ctx.model[`UserAccount`].findOne({uuid: user_uuid}, {referrals: 1}).populate({
             path: `referrals`,
             model: this.ctx.model[`UserAccount`],
             select: 'nickName -_id created_at avatar',
         });
-        return result["referrals"];
+
+        let count = result["referrals"].length;
+        let slicedArray = this.ctx.helper.sliceArray(result["referrals"], option);
+        return [slicedArray, count];
     };
 
     async getManyUser(conditions, option, project = {}) {
@@ -125,18 +143,21 @@ class UserService extends Service {
                     $lte: new Date(option.beginDate)
                 }
             }
-
         },
             {$sort: {"balanceList.createTime": -1}},
             // {$limit: option.limit},
             // {$skip: option.skip},
+            //
             {
                 $project: {
+                    sizeAmount: {$size: "$balanceList"},
                     balanceList: {
                         $slice: ["$balanceList", option.skip, option.limit]
                     }
                 }
-            }, {
+            },
+
+            {
                 $project: {
                     balanceList: {
                         _id: 0
@@ -145,8 +166,10 @@ class UserService extends Service {
             }
 
         ]);
+
         if (result.length > 0) {
-            return result[0].balanceList;
+            // let count = await this.ctx.model[`UserAccount`].find
+            return [result[0].balanceList, result[0].sizeAmount];
         }
         return [];
     };

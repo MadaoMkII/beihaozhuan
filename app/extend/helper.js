@@ -18,6 +18,14 @@ module.exports = {
 
         return str;
     },
+
+    sliceArray(result, option) {
+        console.log(option)
+        console.log(result)
+        let endIndex = (option.skip + option.limit) > result.length ? result.length : (option.skip + option.limit);
+        return result.slice(option.skip, endIndex);
+    },
+
     isEmpty: function (obj) {
         if (obj === undefined) return true;
         if (obj === "") return true;

@@ -199,8 +199,9 @@ class analyzeService extends Service {
             result.push(...aggregateResult)
         }
 //不用aggregate 很难分页
-        let endIndex = (option.skip + option.limit) > result.length ? result.length : (option.skip + option.limit);
-        return [result.slice(option.skip, endIndex), result.length];
+        return this.ctx.helper.sliceArray(result, option);
+        // let endIndex = (option.skip + option.limit) > result.length ? result.length : (option.skip + option.limit);
+        // return [result.slice(option.skip, endIndex), result.length];
     };
 
     async countAdv(option, source) {
@@ -345,14 +346,11 @@ class analyzeService extends Service {
         };
         return finalResult
     };
+
     async countFavoriteGoodForChart(beginDate = new Date(`2019-08-30`)) {
 
 
     };
-
-
-
-
 
 
     async dataIncrementRecord(content, amount, type) {

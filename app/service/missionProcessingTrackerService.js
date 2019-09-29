@@ -64,8 +64,9 @@ class MissionEventManager extends Service {
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
-    async requireMissionToTrack() {
+    async requireMissionToTrack(status) {
         return this.ctx.model.Mission.aggregate([
+            {$match: {"status": status}},
             {$group: {_id: "$missionType", missions: {$push: "$$ROOT"}}}, {
                 $project: {
                     // "missions._id": 0,

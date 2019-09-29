@@ -130,5 +130,5 @@ module.exports = app => {
         }
     });
 
-    return connection.model('UserAccount', userAccountSchema, 'userAccount');
+    return connection.model('UserAccount', userAccountSchema, 'UserAccount');
 };

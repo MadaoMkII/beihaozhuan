@@ -101,6 +101,17 @@ class authController extends Controller {
             if (!ctx.helper.isEmpty(oldUser)) {
                 return this.failure(`电话号码已经被注册`, 400);
             }
+            let initialBcoin;
+            let result = await ctx.service[`systemSettingService`].getSetting();
+
+            if (!this.ctx.helper.isEmpty(result.registerMission) &&
+                !this.ctx.helper.isEmpty(result.registerMission.activity) &&
+                !this.ctx.helper.isEmpty(result.registerMission.reward)) {
+                initialBcoin = result.registerMission.activity ? result.registerMission.reward : 0;
+            } else {
+                initialBcoin = 0;
+            }
+
             const enPassword = ctx.helper.passwordEncrypt(requestEntity.password);
             let uuid = require('cuid')();
             let newUser = {
@@ -108,7 +119,7 @@ class authController extends Controller {
                 uuid: uuid,
                 role: '用户',
                 tel_number: requestEntity.tel_number,
-                Bcoins: 1000
+                Bcoins: initialBcoin
             };
 
             let promise_1 = ctx.service.userService.addUser(newUser, requestEntity.inviteCode);

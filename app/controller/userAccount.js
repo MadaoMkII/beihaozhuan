@@ -9,10 +9,8 @@ class userAccount extends baseController {
         let promiseArray = [];
 
         if (!ctx.helper.isEmpty(userObj)) {
-
             if (ctx.helper.isEmpty(userObj.last_login_time) ||
                 (userObj.last_login_time).toString() !== absoluteDate.toString()) {
-
                 let syncingTasksPromise = ctx.service[`userService`].syncingTasks(userObj);
                 let updateUser = ctx.service[`userService`].updateUser(userObj.uuid, {last_login_time: absoluteDate});
                 promiseArray.push(syncingTasksPromise);
@@ -57,7 +55,7 @@ class userAccount extends baseController {
 
     async getUserBalanceList(ctx) {
         const [condition, option] = await this.cleanupRequestProperty('userAccountController.getUserBalanceListRule',
-            `unit`, `page`, "period");
+            `unit`, `page`, "period", "userUUid");
         if (condition !== false) {
             let end = DateTime.fromISO(ctx.getAbsoluteDate().toISOString());
 
@@ -72,12 +70,12 @@ class userAccount extends baseController {
 
                     break;
                 case `full`:
-                    option.beginDate = undefined;
+                    option.beginDate = new Date(`2019-08-26`);
                     break;
             }
-
-            let result = await ctx.service[`userService`].getUserBalanceListRule(ctx.user.uuid, option);
-            this.success(result);
+            let userUUid = ctx.helper.isEmpty(condition.userUUid) ? ctx.user.uuid : condition.userUUid;
+            let [result, count] = await ctx.service[`userService`].getUserBalanceListRule(userUUid, option);
+            this.success([result, count]);
         }
     };
 
@@ -195,7 +193,15 @@ class userAccount extends baseController {
     };
 
     async getMyTeam(ctx) {
-        let result = await ctx.service[`userService`].getMyTeam(ctx.user.uuid);
+        let [condition, option] = await this.cleanupRequestProperty('userAccountController.myTeamRule',
+            'unit', 'page', `uuid`);
+        if (!condition) {
+            return;
+        }
+        if (ctx.helper.isEmpty(condition.uuid) || ctx.user.role === `用户`) {
+            condition.uuid = ctx.user.uuid;
+        }
+        let result = await ctx.service[`userService`].getMyTeam(condition.uuid, option);
         this.success(result);
     };
 

@@ -10,31 +10,31 @@ class SystemSettingController extends baseController {
         if (ctx.helper.isEmpty(uuid) || ctx.helper.isEmpty(status)) {
             return this.failure(`uuid status不能为空`, 400)
         }
-        await ctx.service.systemSettingService.setRecommendGood(uuid, status);
+        await ctx.service[`systemSettingService`].setRecommendGood(uuid, status);
         this.success();
     };
 
 
     async setSetting(ctx) {
-        let newUser = await ctx.service.systemSettingService.setSetting(ctx.request.body);
+        let newUser = await ctx.service[`systemSettingService`].setSetting(ctx.request.body);
         this.success(newUser);
     };
 
     async getSquare(ctx) {
-        let result = await ctx.service.systemSettingService.getSetting();
-
+        await ctx.service[`systemSettingService`].getSetting();
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/square.html'));
     };
 
     async getSetting(ctx) {
-        let result = await ctx.service.systemSettingService.getSetting();
+        let result = await ctx.service[`systemSettingService`].getSetting();
         this.success(result);
     };
 
     async getMemberNumber() {
         let count = await this.getFindModelCount(`UserAccount`);
-        this.success({count: count});
+        let result = await this.ctx.service[`systemSettingService`].getSetting();
+        this.success({count: count + result.weighting});
     };
 }
 

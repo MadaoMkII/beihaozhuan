@@ -16,7 +16,8 @@ module.exports = app => {
     router.post('/setting/getSetting', app.middleware.authenticatedMiddleware(`用户`),
         controller[`systemSettingController`].getSetting);
 
-    router.get('/setting/getMemberNumber', app.middleware.authenticatedMiddleware(`客服`), controller[`systemSettingController`].getMemberNumber);
+    router.get('/setting/getMemberNumber', app.middleware.authenticatedMiddleware(`用户`),
+        controller[`systemSettingController`].getMemberNumber);
 
     router.get('/index', async (ctx) => {
         ctx.response.type = 'html';
