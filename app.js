@@ -12,7 +12,8 @@ module.exports = app => {
 
         let missionObj = await ctx.model.Mission.findOne({title: missionName});
         if (ctx.helper.isEmpty(missionObj)) {
-            ctx.throw(`监听器任务名匹配有问题，值为${missionName}`);
+            //ctx.throw(`监听器任务名匹配有问题，值为${missionName}`);
+            throw new Error(`监听器任务名匹配有问题，值为${missionName}`)
         }
         let effectDay;
         switch (missionObj.missionType) {

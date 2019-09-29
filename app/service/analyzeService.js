@@ -206,6 +206,11 @@ class analyzeService extends Service {
 
     async countAdv(option, source) {
 
+        if (this.ctx.helper.isEmpty(source)) {
+            source = {$or: ["native", "banner", "full"]}
+        }
+
+
         let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
             {
                 $lookup:
@@ -227,7 +232,7 @@ class analyzeService extends Service {
                         advertisementID: 1,
                         amount: 1,
                         source: 1,
-                        updated_at: 1,title:1,
+                        updated_at: 1, title: 1,
                         reward: 1, activity: 1, uuid: 1
                     }
             },
@@ -245,9 +250,9 @@ class analyzeService extends Service {
                     "title": {$first: "$title"}
                 }
             },
-            // {
-            //     $match: {source: source}
-            // },
+            {
+                $match: {source: source}
+            },
             {
                 $addFields: {
                     rewardInt: {$toInt: "$reward"},
@@ -262,7 +267,7 @@ class analyzeService extends Service {
                         commission: {$multiply: ["$total", "$rewardInt", 0.01]},
                         type: 1,
                         advertisementID: 1,
-                        total: 1,title:1,
+                        total: 1, title: 1,
                         source: 1,
                         updated_at: 1, activity: 1, uuid: 1
                     }
