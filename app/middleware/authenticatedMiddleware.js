@@ -3,13 +3,16 @@
 let getPrivilege = (privilegeName) => {
     let privilege = 0;
     switch (privilegeName) {
-        case 'Admin':
+        case '超管':
+            privilege = 40;
+            break;
+        case '运营':
             privilege = 30;
             break;
-        case 'Super_Admin':
-            privilege = 50;
+        case '客服':
+            privilege = 20;
             break;
-        case 'User':
+        case '用户':
             privilege = 10;
             break;
         case 'All':

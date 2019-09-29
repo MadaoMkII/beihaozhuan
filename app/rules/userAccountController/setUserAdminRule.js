@@ -1,7 +1,7 @@
 const rule = {
     role: [
         {required: true, message: 'role不能为空'},
-        {type: "enum", enum: ['Admin', 'Super_Admin']}
+        {type: "enum", enum: ['运营', '客服']}
     ],
     realName: [
         {required: false, message: '可以能为空'},

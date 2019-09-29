@@ -98,7 +98,7 @@ class authController extends Controller {
             let newUser = {
                 password: enPassword,
                 uuid: uuid,
-                role: 'User',
+                role: '用户',
                 tel_number: requestEntity.tel_number,
                 Bcoins: 1000
             };

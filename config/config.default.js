@@ -122,7 +122,7 @@ module.exports = appInfo => {
 
 
     config.notfound = {
-        pageUrl: '/404.html',
+        pageUrl: '/index',
     };
 
 
