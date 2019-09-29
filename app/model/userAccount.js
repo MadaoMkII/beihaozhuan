@@ -52,7 +52,7 @@ module.exports = app => {
             },
             activity: {
                 type: String,
-                enum: ['enable', 'disable'], default: "disable"
+                enum: ['enable', 'disable'], default: "enable"
             }
         },
         OPENID: {type: String},

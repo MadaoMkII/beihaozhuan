@@ -40,6 +40,12 @@ class authController extends Controller {
         if (ctx.helper.isEmpty(userResult) || ctx.helper.isEmpty(userResult.uuid)) {
             return this.failure(`该用户未注册或密码不正确`, 400);
         }
+
+        if (ctx.helper.isEmpty(userResult.userStatus) ||
+            (ctx.helper.isEmpty(userResult.userStatus.activity) ||
+                userResult.userStatus.activity === `disable`)) {
+            return this.failure(`这个用户已经被停权`, 402);
+        }
         if (userResult || verifyFlag) {
             await ctx.service.userService.updateUser_login(userResult);
 
@@ -48,6 +54,8 @@ class authController extends Controller {
             } else {
                 ctx.session.maxAge = ms('2h');
             }
+
+
             ctx.login(userResult);
             //ctx.rotateCsrfSecret();
 

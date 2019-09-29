@@ -19,7 +19,7 @@ module.exports = app => {
     router.post('/user/getUserBalanceList', app.middleware.authenticatedMiddleware(`客服`),controller[`userAccount`].getUserBalanceList);
     router.post('/user/getUser', controller[`userAccount`].getUser);
     router.get('/user/isLogin', controller[`userAccount`].isLogin);
-    router.get('/user/updateUserPassword', controller[`userAccount`].updateUserPassword);
+    router.post('/user/updateUserPassword', controller[`userAccount`].updateUserPassword);
     router.get('/user/getInfo', app.middleware.authenticatedMiddleware(`客服`), controller['userAccount'].getUserInfo);
     router.post('/user/getManagementUserInfo', controller[`userAccount`].getManagementUserInfo);
     router.post('/user/setUserAdmin', app.middleware.authenticatedMiddleware(`客服`), controller[`userAccount`].setUserAdmin);
