@@ -1,28 +1,21 @@
 `use strict`;
 const baseController = require(`../controller/baseController`);
 const fs = require('fs');
-const path = require('path');
 
 class orderTrackerController extends baseController {
 
     async getExcel(ctx) {
-        let orderArray = await this.ctx.model.OrderTracker.find().populate({
+        let orderArray = await this.ctx.model[`OrderTracker`].find().populate({
             path: "customer_ID",
-            model: this.ctx.model.UserAccount,
+            model: this.ctx.model[`UserAccount`],
             select: "-_id nickName tel_number"
         });
-        let fileName = await ctx.service.excelService.createExcel(orderArray);
+        let fileName = await ctx.service[`excelService`].createExcel(orderArray);
         //请求返回，生成的xlsx文件
-        console.log(fileName)
-        // let promise = fs.unlink(fileName, () => {
-        //     console.log(1)
-        // });
         ctx.status = 200;
         await ctx.downloader(fileName);
         fs.unlinkSync(fileName);
-        // //请求返回后，删除生成的xlsx文件，不删除也行，下次请求回覆盖
-        // await promise;
-        //this.success();
+
     };
 
     async createOrder(ctx) {
@@ -42,7 +35,7 @@ class orderTrackerController extends baseController {
                 address: requestEntity.address,
                 detailAddress: requestEntity.detailAddress,
             };
-            let result = await ctx.service.orderTrackerService.makeOrder(orderTracker);
+            let result = await ctx.service[`orderTrackerService`].makeOrder(orderTracker);
             this.success(result);
         } catch (e) {
             this.failure(e.message, 400);
@@ -53,7 +46,7 @@ class orderTrackerController extends baseController {
     async findOrderByUser() {
         const [condition, option] = await this.cleanupRequestProperty('orderTrackerRules.findOrderOfUser', `unit`, `page`, `userUUid`);
         if (condition !== false) {
-            let result = await this.ctx.service.orderTrackerService.findOrder(condition, option);
+            let result = await this.ctx.service[`orderTrackerService`].findOrder(condition, option);
             this.success(result);
         }
     };
@@ -66,7 +59,7 @@ class orderTrackerController extends baseController {
         }
         condition.customer_ID = ctx.user._id;
         let count = await this.getFindModelCount(`OrderTracker`, condition);
-        let result = await ctx.service.orderTrackerService.findOrder(condition, option);
+        let result = await ctx.service[`orderTrackerService`].findOrder(condition, option);
         return this.success([result, count]);
     };
 
@@ -77,7 +70,7 @@ class orderTrackerController extends baseController {
         if (!condition) {
             return;
         }
-        let result = await this.ctx.service.orderTrackerService.findOrder(condition, option);
+        let result = await this.ctx.service[`orderTrackerService`].findOrder(condition, option);
         let count = await this.getFindModelCount(`OrderTracker`, condition);
         this.success([result, count]);
     }

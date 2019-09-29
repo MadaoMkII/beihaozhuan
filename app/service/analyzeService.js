@@ -204,7 +204,7 @@ class analyzeService extends Service {
         return [result.slice(option.skip, endIndex), result.length];
     };
 
-    async countAdv(option) {
+    async countAdv(option, source) {
 
         let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
             {
@@ -228,9 +228,10 @@ class analyzeService extends Service {
                         amount: 1,
                         source: 1,
                         updated_at: 1,
-                        reward: 1,activity: 1, uuid: 1
+                        reward: 1, activity: 1, uuid: 1
                     }
             },
+
             {
                 "$group": {
                     "_id": {advertisementID: "$advertisementID"},//type: "$type" 这件事得问问前端
@@ -242,6 +243,9 @@ class analyzeService extends Service {
                     "activity": {$first: "$activity"},
                     "uuid": {$first: "$uuid"}
                 }
+            },
+            {
+                $match: {source: source}
             },
             {
                 $addFields: {
@@ -269,6 +273,79 @@ class analyzeService extends Service {
         return [result, count]
     }
 
+    async countAdvForChart(beginDate = new Date(`2019-08-30`)) {
+        let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
+
+            {$match: {absoluteDate: {$gte: beginDate}}},
+            {
+                $lookup:
+                    {
+                        from: "Advertisement",
+                        localField: "advertisementID",
+                        foreignField: "_id",
+                        as: "AdvertisementObj"
+                    }
+            },
+            {
+                $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$AdvertisementObj", 0]}, "$$ROOT"]}}
+            },
+            {
+                "$group": {
+                    "_id": {advertisementID: "$advertisementID", type: "$type"},//type: "$type" 这件事得问问前端
+                    "total": {"$sum": "$amount"},
+                    "title": {$first: "$title"},
+                    "type": {$first: "$type"},
+                }
+            },
+            {
+                $project:
+                    {
+                        _id: 0,
+                        title: "$title",
+                        //totalAmount: {$multiply: ["$total", "$rewardInt"]},
+                        advertisementID: "$_id.advertisementID",
+                        type: 1,
+                        total: 1
+                    }
+            }
+        ]);
+        console.log(aggregateResult)
+        aggregateResult = aggregateResult.sort((a, b) => {
+            return a.type - b.type;
+        });
+
+
+        let categories = [];
+        let seriesData_1 = [];
+        let seriesData_2 = [];
+
+        let totalAmount = 0;
+        let clickList = aggregateResult.filter((element) => {
+            return element.type === `click`;
+        });
+        let closeList = aggregateResult.filter((element) => {
+            return element.type === `close`;
+        });
+
+        clickList.forEach((element) => {
+            categories.push(element.title);
+            seriesData_1.push(element.total);
+            let closer = closeList.find((value) => {
+                return value.advertisementID.toString() === element.advertisementID.toString()
+
+            });
+            let closeTotal = undefined === closer ? 0 : closer.total;
+            seriesData_2.push(closeTotal);
+            totalAmount += element.total + closeTotal;
+        });
+
+        let finalResult = {
+            total: totalAmount, categories: categories, series: [
+                {seriesData: seriesData_1}, {seriesData: seriesData_2}
+            ]
+        };
+        return finalResult
+    };
 
     async dataIncrementRecord(content, amount, type) {
         let date = this.ctx.getAbsoluteDate(true);
@@ -277,8 +354,8 @@ class analyzeService extends Service {
             content: content,
             type: type
         }, {$inc: {amount: amount}}, {upsert: true, new: true});
-    }
-    ;
+    };
+
 }
 
 module.exports = analyzeService;

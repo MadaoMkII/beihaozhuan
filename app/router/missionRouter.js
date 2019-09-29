@@ -18,4 +18,8 @@ module.exports = app => {
         controller[`missionProcessingTrackerController`].getUserPermanentMissionProcessing);
     router.post('/mission/completeMission', app.middleware.authenticatedMiddleware(`User`),
         controller[`missionProcessingTrackerController`].completeMission);
+
+
+    router.get('/test',
+        controller[`home`].test);
 };

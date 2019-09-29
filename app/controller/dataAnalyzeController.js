@@ -20,12 +20,12 @@ class dataAnalyzeController extends Controller {
     };
 
     async countAdv(ctx) {
-        const [condition, option] = await this.cleanupRequestProperty('pageAndUnitRule',
-            `unit`, `page`);
+        const [condition, option] = await this.cleanupRequestProperty('dataAnalyzeRules.advDetailRule',
+            `unit`, `page`, `source`);
         if (!condition) {
             return;
         }
-        let result = await ctx.service.analyzeService.countAdv(option);
+        let result = await ctx.service.analyzeService.countAdv(option, condition.source);
         this.success(result);
     }
 
@@ -51,6 +51,19 @@ class dataAnalyzeController extends Controller {
         this.success(result)
     };
 
+    async countAdvForChart(ctx) {
+        let beginDate = {};
+        const {period} = ctx.request.query;
+        if (!ctx.helper.isEmpty(period)) {
+            beginDate = ctx.getDateByPeriod(period);
+        }else {
+            beginDate = new Date(`2019-08-09`);
+        }
+
+        let result = await ctx.service[`analyzeService`].countAdvForChart(beginDate);
+        this.success(result)
+
+    }
 
 }
 

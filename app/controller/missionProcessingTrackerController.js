@@ -32,7 +32,6 @@ class missionProcessingTrackerController extends baseController {
             this.success();
 
             Promise.all([promise_1, amount, promise_3]).then(function (values) {
-console.log(values)
             }).catch(function (reason) {
 
             })
