@@ -207,77 +207,79 @@ class analyzeService extends Service {
     async countAdv(option, source) {
 
         if (this.ctx.helper.isEmpty(source)) {
-            source = {$or: ["native", "banner", "full"]}
+            source = {
+                $not: {$eq: null}
+            };
+
+
+            let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
+                {
+                    $lookup:
+                        {
+                            from: "Advertisement",
+                            localField: "advertisementID",
+                            foreignField: "_id",
+                            as: "AdvertisementObj"
+                        }
+                },
+                {
+                    $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$AdvertisementObj", 0]}, "$$ROOT"]}}
+                },
+                {
+                    $project:
+                        {
+                            positionName: 1,
+                            type: 1,
+                            advertisementID: 1,
+                            amount: 1,
+                            source: 1,
+                            updated_at: 1, title: 1,
+                            reward: 1, activity: 1, uuid: 1
+                        }
+                },
+
+                {
+                    "$group": {
+                        "_id": {advertisementID: "$advertisementID"},//type: "$type" 这件事得问问前端
+                        "total": {"$sum": "$amount"},
+                        "positionName": {$first: "$positionName"},
+                        "source": {$first: "$source"},
+                        "updated_at": {$first: "$updated_at"},
+                        "reward": {$first: "$reward"},
+                        "activity": {$first: "$activity"},
+                        "uuid": {$first: "$uuid"},
+                        "title": {$first: "$title"}
+                    }
+                },
+                {
+                    $match: {source: source}
+                },
+                {
+                    $addFields: {
+                        rewardInt: {$toInt: "$reward"},
+                    }
+                },
+                {
+                    $project:
+                        {
+                            _id: 0,
+                            positionName: "$positionName",
+                            totalAmount: {$multiply: ["$total", "$rewardInt"]},
+                            commission: {$multiply: ["$total", "$rewardInt", 0.01]},
+                            type: 1,
+                            advertisementID: 1,
+                            total: 1, title: 1,
+                            source: 1,
+                            updated_at: 1, activity: 1, uuid: 1
+                        }
+                }
+            ]);
+
+            let count = aggregateResult.length;
+            let result = aggregateResult.slice(option.skip, option.skip + option.limit);
+            return [result, count]
         }
-
-
-        let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
-            {
-                $lookup:
-                    {
-                        from: "Advertisement",
-                        localField: "advertisementID",
-                        foreignField: "_id",
-                        as: "AdvertisementObj"
-                    }
-            },
-            {
-                $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$AdvertisementObj", 0]}, "$$ROOT"]}}
-            },
-            {
-                $project:
-                    {
-                        positionName: 1,
-                        type: 1,
-                        advertisementID: 1,
-                        amount: 1,
-                        source: 1,
-                        updated_at: 1, title: 1,
-                        reward: 1, activity: 1, uuid: 1
-                    }
-            },
-
-            {
-                "$group": {
-                    "_id": {advertisementID: "$advertisementID"},//type: "$type" 这件事得问问前端
-                    "total": {"$sum": "$amount"},
-                    "positionName": {$first: "$positionName"},
-                    "source": {$first: "$source"},
-                    "updated_at": {$first: "$updated_at"},
-                    "reward": {$first: "$reward"},
-                    "activity": {$first: "$activity"},
-                    "uuid": {$first: "$uuid"},
-                    "title": {$first: "$title"}
-                }
-            },
-            {
-                $match: {source: source}
-            },
-            {
-                $addFields: {
-                    rewardInt: {$toInt: "$reward"},
-                }
-            },
-            {
-                $project:
-                    {
-                        _id: 0,
-                        positionName: "$positionName",
-                        totalAmount: {$multiply: ["$total", "$rewardInt"]},
-                        commission: {$multiply: ["$total", "$rewardInt", 0.01]},
-                        type: 1,
-                        advertisementID: 1,
-                        total: 1, title: 1,
-                        source: 1,
-                        updated_at: 1, activity: 1, uuid: 1
-                    }
-            }
-        ]);
-
-        let count = aggregateResult.length;
-        let result = aggregateResult.slice(option.skip, option.skip + option.limit);
-        return [result, count]
-    }
+    };
 
     async countAdvForChart(beginDate = new Date(`2019-08-30`)) {
         let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
@@ -351,12 +353,14 @@ class analyzeService extends Service {
             ]
         };
         return finalResult
-    };
+    }
+    ;
 
     async countFavoriteGoodForChart(beginDate = new Date(`2019-08-30`)) {
 
 
-    };
+    }
+    ;
 
 
     async dataIncrementRecord(content, amount, type) {
@@ -366,8 +370,10 @@ class analyzeService extends Service {
             content: content,
             type: type
         }, {$inc: {amount: amount}}, {upsert: true, new: true});
-    };
+    }
+    ;
 
 }
 
-module.exports = analyzeService;
+module
+    .exports = analyzeService;
