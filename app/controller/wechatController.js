@@ -74,7 +74,7 @@ class wechatController extends baseController {
             ctx.status = 301;
             ctx.redirect(`/index`);
             await this.ctx.service.userService.updateUser(user.uuid, {
-                "userStatus.hasVerifyWechat": true
+                "userStatus.hasVerifyWechat": `enable`
             });
         } else {
             let requestObj_3 = {

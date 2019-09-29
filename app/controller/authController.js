@@ -175,7 +175,7 @@ class authController extends Controller {
                 newUser.tel_number = requestEntity.tel_number;
                 newUser.Bcoins = 1100;
                 newUser.userStatus = {};
-                newUser.userStatus.hasVerifyWechat = true;
+                newUser.userStatus.hasVerifyWechat = 'enable';
                 let newUser_login = await ctx.service.userService.addUser(newUser, null);
                 ctx.login(newUser_login);
                 delete newUser.password;
@@ -185,7 +185,7 @@ class authController extends Controller {
                 newUser.avatar = ctx.helper.decrypt(requestEntity.head);
                 newUser.nickName = ctx.helper.decrypt(requestEntity.nickName);
                 newUser.userStatus = {};
-                newUser.userStatus.hasVerifyWechat = true;
+                newUser.userStatus.hasVerifyWechat = `enable`;
                 let newUser_login = await ctx.service.userService.updateUser(user.uuid, newUser);
                 ctx.login(newUser_login);
             }
