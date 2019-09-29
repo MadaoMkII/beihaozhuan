@@ -23,7 +23,7 @@ module.exports = app => {
     router.get('/user/getInfo', app.middleware.authenticatedMiddleware(`用户`), controller['userAccount'].getUserInfo);
     router.post('/user/getManagementUserInfo', app.middleware.authenticatedMiddleware(`运营`), controller[`userAccount`].getManagementUserInfo);
     router.post('/user/setUserAdmin', app.middleware.authenticatedMiddleware(`运营`), controller[`userAccount`].setUserAdmin);
-    router.post('/user/updateAdmin', app.middleware.authenticatedMiddleware(`运营`),  controller[`userAccount`].updateAdmin);
+    router.post('/user/updateAdmin', app.middleware.authenticatedMiddleware(`运营`), controller[`userAccount`].updateAdmin);
     router.post('/user/disableUserAdminStatus', app.middleware.authenticatedMiddleware(`运营`),
         controller[`userAccount`].setUserStatus);
     router.post('/user/setUserRole', app.middleware.authenticatedMiddleware(`客服`), controller[`userAccount`].setUserRole);
@@ -31,7 +31,7 @@ module.exports = app => {
 
     router.get('/user/getInviteLink', app.middleware.authenticatedMiddleware(`用户`), controller[`userAccount`].generatorInviteLink);
     router.get('/user/signIn', controller[`authController`].signIn_fake);
-
+    router.get('/user/signInReal', app.middleware.authenticatedMiddleware(`用户`), controller[`authController`].signIn);
     router.post('/user/register_test', controller[`authController`].register_fake);
     router.post('/verify/sendVerifySmsMessage_test', controller[`smsController`].sendVerifySmsMessage_fakes);
 

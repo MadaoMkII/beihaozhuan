@@ -79,6 +79,7 @@ module.exports = app => {
         },
         location: {type: String},
         job: String,
+        lastSignInDay: String,
         educationLevel: String,
         loginTimes: {type: Number},
 

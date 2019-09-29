@@ -23,24 +23,38 @@ class MissionEventManager extends Service {
             missionEventName: missionEventName,
             completed: false,
             effectDay: effectDay
-        });
+        }).populate({path: `missionID`, model: this.ctx.model.Mission, select: `-_id reward`});
         if (this.ctx.helper.isEmpty(missionTracker)) {
             this.ctx.throw(`missionTracker type wrong`);
         }
-        if (missionTracker.recentAmount >= missionTracker.requireAmount) {
-            return this.ctx.model[fullModelName].findOneAndUpdate({
+
+        if ((missionTracker.recentAmount >= missionTracker.requireAmount) && !missionTracker.completed) {
+
+            let tempBcoin = Number(this.ctx.user.Bcoins) + Number(missionTracker.missionID.reward);
+
+            let promise_1 = this.ctx.service.userService.changeBcoin(this.ctx.user._id, tempBcoin);
+
+            let promise_2 = this.ctx.service[`analyzeService`].dataIncrementRecord(`完成任务-${missionTracker.missionEventName}`,
+                missionTracker.missionID.reward, `bcoin`);
+            let promise_3 = this.ctx.service[`userService`].setUserBcionChange(this.ctx.user.uuid, `完成任务-${missionTracker.missionEventName}`,
+                `获得`, missionTracker.missionID.reward);
+
+            let promise_4 = this.ctx.model[fullModelName].findOneAndUpdate({
                 userID: userID,
                 missionEventName: missionEventName,
                 completed: false,
                 effectDay: effectDay
             }, {$set: {completed: true}}, {new: true});
+            Promise.all([promise_1, promise_2, promise_3, promise_4]).catch((e) => {
+                console.log(e)
+            });
         } else {
             this.ctx.throw(400, `Already complete`);
         }
     }
 
 
-    async getUserDailyMissionProcessing(user_ID, status = false) {
+    async getUserDailyMissionProcessing(user_ID, status) {
 
         return this.ctx.model.DailyMissionProcessingTracker.find({
             userID: user_ID,
@@ -49,7 +63,7 @@ class MissionEventManager extends Service {
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
-    async getUserWeeklyMissionProcessing(user_ID, status = false) {
+    async getUserWeeklyMissionProcessing(user_ID, status) {
 
         return this.ctx.model.WeeklyMissionProcessingTracker.find({
             userID: user_ID,
@@ -58,7 +72,7 @@ class MissionEventManager extends Service {
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
-    async getUserPermanentMissionProcessing(user_ID, status = false) {
+    async getUserPermanentMissionProcessing(user_ID, status) {
 
         return this.ctx.model.PermanentMissionProcessingTracker.find({
             userID: user_ID,
