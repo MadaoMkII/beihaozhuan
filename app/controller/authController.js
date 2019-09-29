@@ -162,6 +162,12 @@ class authController extends Controller {
             // ctx.session.tel_number = `null`;
             //  ctx.session.smsVerifyCode = `null`;
             let user = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
+            let result = await ctx.service[`systemSettingService`].getSetting();
+            let bcoin = 0;
+            if (!ctx.helper.isEmpty(result.registerMission)) {
+                bcoin = result.registerMission.reward;
+            }
+
 
             let newUser = {};
             if (ctx.helper.isEmpty(user)) {
@@ -173,7 +179,7 @@ class authController extends Controller {
                 newUser.uuid = require('cuid')();
                 newUser.role = '用户';
                 newUser.tel_number = requestEntity.tel_number;
-                newUser.Bcoins = 1100;
+                newUser.Bcoins = bcoin;
                 newUser.userStatus = {};
                 newUser.userStatus.hasVerifyWechat = 'enable';
                 let newUser_login = await ctx.service.userService.addUser(newUser, null);
