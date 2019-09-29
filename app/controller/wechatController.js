@@ -43,7 +43,7 @@ class wechatController extends baseController {
         let returnUrl = ctx.request.url; ///wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
         //returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
 
-        console.log(returnUrl)
+
         let urlQuery = url.parse(returnUrl, true).query;
         const {code, state} = urlQuery;
 
@@ -61,7 +61,7 @@ class wechatController extends baseController {
             `GET`, `https://api.weixin.qq.com/sns/oauth2/access_token`);
 
 
-        console.log(result_2)
+
         if (!ctx.helper.isEmpty(result_2[`errcode`])) {
             ctx.throw(405, result_2.errmsg)
         }

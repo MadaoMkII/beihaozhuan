@@ -52,6 +52,8 @@ class orderTrackerService extends Service {
         order.goodID = good._id;
         order.mainlyShowPicUrl = good.mainlyShowPicUrl;
         order.orderUUid = `ORD` + require('cuid')();
+        order.redeemCode = this.ctx.helper.randomNumber(8);
+
         let consumerTracker = new this.ctx.model.OrderTracker(order);
         consumerTracker.save();
         return order;

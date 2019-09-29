@@ -117,7 +117,7 @@ class UserService extends Service {
         let result = await this.ctx.model[`UserAccount`].findOne({uuid: user_uuid}, {referrals: 1}).populate({
             path: `referrals`,
             model: this.ctx.model[`UserAccount`],
-            select: 'nickName -_id created_at avatar',
+            select: 'nickName -_id created_at avatar tel_number',
         });
 
         let count = result["referrals"].length;

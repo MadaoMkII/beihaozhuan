@@ -403,7 +403,7 @@ require(`moment-timezone`);
 let date = new Date();
 date.setHours(0);
 date.setMinutes(0, 0, 0);
-console.log(date)
+
 let x22 = moment.tz(date, "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
 console.log(x22)
 

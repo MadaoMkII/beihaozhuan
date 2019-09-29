@@ -26,6 +26,7 @@ const rule = {
         {type: 'string', message: '需要是字符串'}],
     detailAddress: [
         {required: true, message: 'detailAddress不能为空'},
-        {type: 'string', message: '需要是字符串'}]
+        {type: 'string', message: '需要是字符串'}],
+
 };
 module.exports = rule;

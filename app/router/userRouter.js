@@ -16,8 +16,8 @@ module.exports = app => {
         };
         ctx.status = 200;
     });
-    router.post('/user/getUserBalanceList', app.middleware.authenticatedMiddleware(`客服`), controller[`userAccount`].getUserBalanceList);
-    router.post('/user/getUser', app.middleware.authenticatedMiddleware(`客服`), controller[`userAccount`].getUser);
+    router.post('/user/getUserBalanceList', app.middleware.authenticatedMiddleware(`用户`), controller[`userAccount`].getUserBalanceList);
+    router.post('/user/getUser', app.middleware.authenticatedMiddleware(`用户`), controller[`userAccount`].getUser);
     router.get('/user/isLogin', controller[`userAccount`].isLogin);
     router.post('/user/updateUserPassword', controller[`userAccount`].updateUserPassword);
     router.get('/user/getInfo', app.middleware.authenticatedMiddleware(`用户`), controller['userAccount'].getUserInfo);

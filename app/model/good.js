@@ -41,7 +41,8 @@ module.exports = app => {
             enum: ['Bcoin', 'Money'], default: "Money"
         },
         isRecommend: {type: Boolean, default: false},
-        last_login_time: Date
+        last_login_time: Date,
+        redeemCode: Number
     }, {
         'timestamps': {
             'createdAt': 'created_at', 'updatedAt': 'updated_at', toObject: {virtuals: true},

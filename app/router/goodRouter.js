@@ -8,10 +8,10 @@ module.exports = app => {
     router.post('/good/createGood', app.middleware.authenticatedMiddleware(`运营`), controller[`goodController`].createGood);
     router.post('/good/updateGood', app.middleware.authenticatedMiddleware(`运营`), controller[`goodController`].updateGood);
     router.post('/order/makeOrder', app.middleware.authenticatedMiddleware(`用户`), controller[`orderTrackerController`].createOrder);
-    router.post('/order/findOrder', app.middleware.authenticatedMiddleware(`客服`), controller[`orderTrackerController`].findOrder);
+    router.post('/order/findOrder', app.middleware.authenticatedMiddleware(`用户`), controller[`orderTrackerController`].findOrder);
     router.post('/order/getMyOrders', app.middleware.authenticatedMiddleware(`用户`), controller[`orderTrackerController`].getMyOrders);
 
-    router.post('/order/findOrderByUser', app.middleware.authenticatedMiddleware(`客服`), controller[`orderTrackerController`].findOrderByUser);
+    router.post('/order/findOrderByUser', app.middleware.authenticatedMiddleware(`用户`), controller[`orderTrackerController`].findOrderByUser);
     router.post('/good/getManyGoods',  app.middleware.authenticatedMiddleware(`用户`), controller[`goodController`].getManyGoods);
     router.get('/good/getRecommendGood', app.middleware.authenticatedMiddleware(`用户`), controller[`goodController`].getRecommendGood);
     router.post('/good/setGoodStatus', app.middleware.authenticatedMiddleware(`运营`), controller[`goodController`].setGoodStatus);

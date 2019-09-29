@@ -20,8 +20,6 @@ module.exports = {
     },
 
     sliceArray(result, option) {
-        console.log(option)
-        console.log(result)
         let endIndex = (option.skip + option.limit) > result.length ? result.length : (option.skip + option.limit);
         return result.slice(option.skip, endIndex);
     },

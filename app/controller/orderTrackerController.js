@@ -29,12 +29,14 @@ class orderTrackerController extends baseController {
             let orderTracker = {
                 customer_ID: ctx.user._id,
                 goodUUid: requestEntity.goodUUid,
+                userUUid: ctx.user.uuid,
                 additionalInformation: requestEntity.additionalInformation,
                 realName: requestEntity.realName,
                 IDNumber: requestEntity.IDNumber,
                 address: requestEntity.address,
                 detailAddress: requestEntity.detailAddress,
             };
+            console.log(orderTracker)
             let result = await ctx.service[`orderTrackerService`].makeOrder(orderTracker);
             this.success(result);
         } catch (e) {
@@ -46,8 +48,10 @@ class orderTrackerController extends baseController {
     async findOrderByUser() {
         const [condition, option] = await this.cleanupRequestProperty('orderTrackerRules.findOrderOfUser', `unit`, `page`, `userUUid`);
         if (condition !== false) {
+
+            let count = await this.getFindModelCount(`OrderTracker`, condition);
             let result = await this.ctx.service[`orderTrackerService`].findOrder(condition, option);
-            this.success(result);
+            this.success([result,count]);
         }
     };
 
