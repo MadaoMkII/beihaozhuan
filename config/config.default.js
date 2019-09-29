@@ -110,9 +110,8 @@ module.exports = appInfo => {
         // myAppName: 'egg',
     };
     config.wechatConfig = {
-        appid: `wx6da0f69da7e8894c`,
-        secret: `b6b0fb92a432acb9963bc4cf54e507fc`,
-
+        appid: `wx87462aaa978561bf`,   //`wx6da0f69da7e8894c`,
+        secret: `04f2f61ddd304b80d4ccf6267ef50e85`     //`b6b0fb92a432acb9963bc4cf54e507fc`,
     };
     config.session = {
         key: 'yhbSen',
