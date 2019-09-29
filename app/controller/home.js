@@ -6,6 +6,7 @@ class HomeController extends Controller {
     async test(ctx) {
         ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `邀请新人加入`);
         ctx.status=200
+        ctx.body=`ok`
     };
 
     //

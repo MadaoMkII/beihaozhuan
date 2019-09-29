@@ -67,6 +67,9 @@ class wechatController extends baseController {
 
         let [result_2,] = await this.requestMethod(requestObj_2,
             `GET`, `https://api.weixin.qq.com/sns/oauth2/access_token`);
+
+
+        console.log(result_2)
         if (!ctx.helper.isEmpty(result_2[`errcode`])) {
             ctx.throw(405, result_2.errmsg)
         }
