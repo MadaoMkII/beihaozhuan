@@ -26,8 +26,11 @@ class orderTrackerService extends Service {
                 searcher[key] = conditions[key];
             }
         });
-        //.populate({path: `goodUUid`, model: this.ctx.model.Good})
-        return this.ctx.model.OrderTracker.find(searcher, {}, option);
+        //
+        return this.ctx.model.OrderTracker.find(searcher, {}, option).populate({
+            path: `goodID`,
+            model: this.ctx.model.Good, select: "-_id insuranceLink"
+        });
     };
 
     async makeOrder(order) {
@@ -39,9 +42,9 @@ class orderTrackerService extends Service {
             return this.ctx.throw(400, `user cannot offer this good`);
         }
         let balanceRecord = {
-            category: `shopping`,
-            income: false,
-            amount: good.price,
+            category: `购买商品`,
+            income: "消费",
+            amount: -good.price,
             createTime: new Date()
         };
         await this.ctx.service.userService.changeBcoin(this.ctx.user._id,

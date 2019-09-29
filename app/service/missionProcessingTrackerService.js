@@ -40,27 +40,30 @@ class MissionEventManager extends Service {
     }
 
 
-    async getUserDailyMissionProcessing(user_ID) {
+    async getUserDailyMissionProcessing(user_ID, status = true) {
 
         return this.ctx.model.DailyMissionProcessingTracker.find({
             userID: user_ID,
-            effectDay: this.ctx.app[`getFormatDate`]()
+            effectDay: this.ctx.app[`getFormatDate`](),
+            completed: status
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
-    async getUserWeeklyMissionProcessing(user_ID) {
+    async getUserWeeklyMissionProcessing(user_ID, status = true) {
 
         return this.ctx.model.WeeklyMissionProcessingTracker.find({
             userID: user_ID,
-            effectDay: this.ctx.app[`getFormatWeek`]()
+            effectDay: this.ctx.app[`getFormatWeek`](),
+            completed: status
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
-    async getUserPermanentMissionProcessing(user_ID) {
+    async getUserPermanentMissionProcessing(user_ID, status = true) {
 
         return this.ctx.model.PermanentMissionProcessingTracker.find({
             userID: user_ID,
-            effectDay: `Permanent`
+            effectDay: `Permanent`,
+            completed: status
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 

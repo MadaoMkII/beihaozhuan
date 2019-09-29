@@ -143,7 +143,7 @@ class userAccount extends baseController {
             return;
         }
         if (ctx.helper.isEmpty(role)) {
-            condition = {role: {$in: [`客服`, `超管`, `运营`, `用户`]}};
+            condition = {role: {$in: [`客服`, `超管`, `运营`]}};
         }
         let newUser = await ctx.service[`userService`].getManyUser(condition, option, {
             role: 1,
@@ -232,6 +232,16 @@ class userAccount extends baseController {
             if (e.message.includes(`duplicate`)) {
                 return this.failure(`电话号码已经被使用`, 400);
             }
+            return this.failure(`服务器忙，请稍后再试`, 500);
+        }
+
+    };
+
+    async showMyMoney(ctx) {
+        try {
+            ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日晒收入`);
+            this.success();
+        } catch (e) {
             return this.failure(`服务器忙，请稍后再试`, 500);
         }
 

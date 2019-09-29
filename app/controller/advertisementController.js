@@ -31,14 +31,17 @@ class advertisementController extends Controller {
             return;
         }
 
+        let promiseArray = [];
         let advertisementObj = await ctx.service[`advertisementService`].getOneAdvertisement({uuid: advertisement.uuid});
-
+        if (ctx.helper.isEmpty(advertisementObj)) {
+            return this.failure(`uuid 错误`, 402);
+        }
         let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(ctx.user._id, ctx.user._id, 1);
-        let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`看广告`, advertisementObj.reward, `bcoin`);
-        let promise_3 = ctx.service[`userService`].setUserBcionChange(ctx.user.uuid, `观看广告`, `获得`, advertisementObj.reward);
+        promiseArray.push(promise_1);
 
+        //ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `邀请新人加入`);
         this.success();
-        Promise.all([promise_1, promise_2, promise_3]).catch((error) => {
+        Promise.all(promiseArray).catch((error) => {
             console.log(error)
         });
     }
@@ -49,18 +52,26 @@ class advertisementController extends Controller {
         if (!advertisement) {
             return;
         }
+        let promiseArray = [];
         let userObj = ctx.user;
         let advertisementObj = await ctx.service[`advertisementService`].getOneAdvertisement({uuid: advertisement.uuid});
-
+        if (ctx.helper.isEmpty(advertisementObj)) {
+            return this.failure(`uuid 错误`, 402);
+        }
         let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(advertisementObj._id, userObj._id, 1);
-
-        let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`广告视频播放完成`,
+        let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`广告收入`,
             advertisementObj.reward, `bcoin`);
-
-        let promise_3 = ctx.service[`userService`].setUserBcionChange(userObj.uuid, `观看广告视频完成`,
+        let promise_3 = ctx.service[`userService`].setUserBcionChange(userObj.uuid, `广告收入`,
             `获得`, advertisementObj.reward);
+        let newBcoin = Number(ctx.user.Bcoins) + Number(advertisementObj.reward);
+        let promise_4 = ctx.service[`userService`].changeBcoin(ctx.user._id, newBcoin + ``);
+        ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `看一个广告`);
+        ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日看广告`);
+        ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `看一些广告`);
+        promiseArray.push(promise_1, promise_2, promise_3, promise_4);
         this.success();
-        Promise.all([promise_1, promise_2, promise_3]).catch((error) => {
+
+        Promise.all(promiseArray).catch((error) => {
             console.log(error)
         });
     }

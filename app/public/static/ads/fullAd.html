@@ -15,6 +15,13 @@
         console.log('load success');
         showAd148330();
       },
+      closeCallback:function (res) {
+        if(res){
+          console.log('看完广告')
+          parent.checkFinishAdvertisement();
+          parent.close();
+        }
+      },
       rewardedCallback: function(reward_name, reward_amount) {
         console.log(reward_amount);
         parent.checkAdvertisement();

@@ -125,11 +125,11 @@ class authController extends Controller {
 
             await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
             let promise_1 = ctx.service[`analyzeService`].dataIncrementRecord(`userRegister`, 1, `user`);
-            // let promise_2 = ctx.service.userService.setUserBcionChange(newUser.uuid,
-            //     `注册奖励`, `获得`, initialBcoin);
+            let promise_2 = ctx.service.userService.setUserBcionChange(newUser.uuid,
+                `注册奖励`, `获得`, initialBcoin);
             delete newUser.password;
 
-            Promise.all([promise_1]).catch((error) => {
+            Promise.all([promise_1, promise_2]).catch((error) => {
                 console.log(error)
             });
             this.success()
