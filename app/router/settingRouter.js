@@ -25,7 +25,7 @@ module.exports = app => {
         // ctx.redirect('/index.html')
     });
 
-    router.get('/html', async (ctx) => {
+    router.get('/index', async (ctx) => {
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
         // ctx.redirect('/index.html')
