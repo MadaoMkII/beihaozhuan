@@ -11,13 +11,12 @@ class SystemSettingService extends Service {
             {$set: {isRecommend: status}}, {new: true});
 
         if (!good) {
-            this.ctx.throw(`zhaobu dao`)
+            this.ctx.throw(`good missing`)
         }
         if (status) {
-
             await this.setSetting({recommendGood: good._id});
         } else {
-            await this.setSetting({recommendGood: undefined});
+            await this.setSetting({recommendGood: `n/a`});
         }
 
     };

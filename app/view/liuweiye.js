@@ -148,9 +148,14 @@ let getLoop = async (qrcodeId, url, name, cookie) => {
             let tempDocument = {};
             tempDocument.粉丝 = document[`nickname`];
             tempDocument.扫码时间 = getLocalTime(timeStamp2String(document[`scandate`]));
-            // if (new DateTime(tempDocument.扫码时间).day === new DateTime(new Date()).day) {
-            //     continue;
-            // }
+
+            let scannerDay = DateTime.fromISO(new Date( tempDocument.扫码时间 ).toISOString()).day;
+            console.log(scannerDay)
+            let today = DateTime.local().day;
+            console.log(today)
+            if (scannerDay=== today) {
+                continue;
+            }
             switch (document.subscribe) {
                 case 1:
                     tempDocument.关注状态 = `关注中`;

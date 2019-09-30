@@ -41,12 +41,12 @@ class goodService extends Service {
     }
 
     async getRecommendGood() {
-        let settingGood = await this.ctx.model.SystemSetting.findOne({}, {recommendGood: 1},
-            {sort: {updated_at: -1}}).populate({
+        let settingGood = await this.ctx.model.SystemSetting.findOne({}, {},
+            {sort: {created_at: -1}}).populate({
             path: `recommendGood`,
             model: this.ctx.model.Good
         });
-
+console.log(settingGood)
         return settingGood.recommendGood;
     };
 }
