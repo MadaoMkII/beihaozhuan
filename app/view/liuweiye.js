@@ -129,6 +129,9 @@ let getLoop = async (qrcodeId, url, name, cookie) => {
     let tempArray = [];
     let total;
     for (let index = 1; index <= pageSize; index++) {
+        if (name ===``) {
+            continue;
+        }
         console.log(`开始爬 ${name}  第 ${index} 页`);
         await sleep(100);
         //
@@ -149,11 +152,10 @@ let getLoop = async (qrcodeId, url, name, cookie) => {
             tempDocument.粉丝 = document[`nickname`];
             tempDocument.扫码时间 = getLocalTime(timeStamp2String(document[`scandate`]));
 
-            let scannerDay = DateTime.fromISO(new Date( tempDocument.扫码时间 ).toISOString()).day;
-            console.log(scannerDay)
+            let scannerDay = DateTime.fromISO(new Date(tempDocument.扫码时间).toISOString()).day;
             let today = DateTime.local().day;
-            console.log(today)
-            if (scannerDay=== today) {
+
+            if (scannerDay === today) {
                 continue;
             }
             switch (document.subscribe) {

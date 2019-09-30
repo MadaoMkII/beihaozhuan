@@ -5,7 +5,7 @@ require(`moment-timezone`);
 class SystemSettingService extends Service {
 
     async setRecommendGood(uuid, status) {
-        await this.ctx.model.Good.updateMany({ isRecommend:true },{$set:{isRecommend:false }});
+        await this.ctx.model.Good.updateMany({isRecommend: true}, {$set: {isRecommend: false}});
 
         let good = await this.ctx.model.Good.findOneAndUpdate({uuid: uuid},
             {$set: {isRecommend: status}}, {new: true});
@@ -13,10 +13,12 @@ class SystemSettingService extends Service {
         if (!good) {
             this.ctx.throw(`good missing`)
         }
-        if (status) {
+        status =JSON.parse(status);
+        console.log(status)
+        if (status === true) {
             await this.setSetting({recommendGood: good._id});
         } else {
-            await this.setSetting({recommendGood: `n/a`});
+            await this.setSetting({recommendGood: `5d5f4b39ec28e32d70d96cae`}); //这是个家的
         }
 
     };
@@ -40,6 +42,7 @@ class SystemSettingService extends Service {
     };
 
     async setSetting(settingEntity) {
+
         let lastSettingObj = await this.getSetting();
         let settingObj = {};
 
@@ -62,7 +65,7 @@ class SystemSettingService extends Service {
         delete settingObj.created_at;
         delete settingObj.updated_at;
 
-
+        console.log(settingObj)
         //settingObj.advertisementSetting = {square: fs.readFileSync(path.resolve(__dirname, '../public/admin.html'))};
         let systemSettingObj = new this.ctx.model.SystemSetting(
             settingObj

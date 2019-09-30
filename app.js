@@ -43,7 +43,7 @@ module.exports = app => {
 
         if (!res) {
             console.log(missionSearcher)
-            console.log()(`值为${modelName}`)
+            console.log(`值为${modelName}`);
 
         }
     });
