@@ -150,8 +150,8 @@ class authController extends Controller {
             if (!requestEntity) {
                 return;
             }
-            if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
-                String(requestEntity.smsVerifyCode).toLowerCase())) {
+            if (ctx.helper.isEmpty(ctx.session.fdbsmsVerifyCode) || !(String(ctx.session.fdbsmsVerifyCode).toLowerCase() ===
+                String(requestEntity.fdbsmsVerifyCode).toLowerCase())) {
                 ctx.throw(401, `VerifyCode verify failed`);
             }
             if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
@@ -161,7 +161,7 @@ class authController extends Controller {
 
             let promise = {};
             ctx.session.tel_number = null;
-            ctx.session.smsVerifyCode = null;
+            ctx.session.fdbsmsVerifyCode = null;
             let user = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
             let result = await ctx.service[`systemSettingService`].getSetting();
             let bcoin = 0;
