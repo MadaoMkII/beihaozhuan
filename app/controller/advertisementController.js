@@ -67,7 +67,7 @@ class advertisementController extends Controller {
         let promise_4 = ctx.service[`userService`].changeBcoin(ctx.user._id, newBcoin + ``);
         ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `看一个广告`);
         ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日看广告`);
-        ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `看一些广告`);
+        //ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `看一些广告`); //以后需要动态配置 任务没有开启不需要监听器
         promiseArray.push(promise_1, promise_2, promise_3, promise_4);
         this.success();
 

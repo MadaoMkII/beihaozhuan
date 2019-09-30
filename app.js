@@ -10,10 +10,11 @@ module.exports = app => {
     const ctx = app.createAnonymousContext();
     app.eventEmitter.on(`normalMissionCount`, async (userId, missionName) => {
 
-        let missionObj = await ctx.model.Mission.findOne({title: missionName});
+        let missionObj = await ctx.model.Mission.findOne({title: missionName, status: "enable"});
         if (ctx.helper.isEmpty(missionObj)) {
             //ctx.throw(`监听器任务名匹配有问题，值为${missionName}`);
-            throw new Error(`监听器任务名匹配有问题，值为${missionName}`)
+            console.log(`监听器任务名匹配有问题或者任务没有开启，值为${missionName}`)
+
         }
         let effectDay;
         switch (missionObj.missionType) {

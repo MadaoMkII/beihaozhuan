@@ -13,7 +13,7 @@ class SystemSettingService extends Service {
         if (!good) {
             this.ctx.throw(`good missing`)
         }
-        status =JSON.parse(status);
+        status = JSON.parse(status);
         console.log(status)
         if (status === true) {
             await this.setSetting({recommendGood: good._id});
