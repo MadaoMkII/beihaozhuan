@@ -24,6 +24,12 @@ module.exports = app => {
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
         // ctx.redirect('/index.html')
     });
+
+    router.get('/html', async (ctx) => {
+        ctx.response.type = 'html';
+        ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
+        // ctx.redirect('/index.html')
+    });
     router.get('/admin', async (ctx) => {
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/admin.html'));
