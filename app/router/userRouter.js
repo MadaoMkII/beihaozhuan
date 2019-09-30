@@ -1,5 +1,7 @@
 module.exports = app => {
     const {router, controller} = app;
+
+    router.get('/user/showMyMoney', app.middleware.authenticatedMiddleware(`用户`), controller[`authController`].showMyMoney);
     router.post('/user/getManyUser', app.middleware.authenticatedMiddleware(`客服`), controller[`userAccount`].getManyUser);
     router.post('/user/updateInfo', app.middleware.authenticatedMiddleware(`用户`), controller[`userAccount`].updateUserInfo);
     router.post('/user/register', controller[`authController`].register);
