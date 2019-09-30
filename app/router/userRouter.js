@@ -26,7 +26,7 @@ module.exports = app => {
     router.post('/user/getManagementUserInfo', app.middleware.authenticatedMiddleware(`运营`), controller[`userAccount`].getManagementUserInfo);
     router.post('/user/setUserAdmin', app.middleware.authenticatedMiddleware(`运营`), controller[`userAccount`].setUserAdmin);
     router.post('/user/updateAdmin', app.middleware.authenticatedMiddleware(`运营`), controller[`userAccount`].updateAdmin);
-    router.post('/user/disableUserAdminStatus', app.middleware.authenticatedMiddleware(`运营`),
+    router.post('/user/setUserStatus', app.middleware.authenticatedMiddleware(`运营`),
         controller[`userAccount`].setUserStatus);
     router.post('/user/setUserRole', app.middleware.authenticatedMiddleware(`客服`), controller[`userAccount`].setUserRole);
 

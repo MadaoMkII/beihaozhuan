@@ -46,7 +46,7 @@ class goodService extends Service {
             path: `recommendGood`,
             model: this.ctx.model.Good
         });
-console.log(settingGood)
+
         return settingGood.recommendGood;
     };
 }

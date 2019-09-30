@@ -14,7 +14,7 @@ class SystemSettingService extends Service {
             this.ctx.throw(`good missing`)
         }
         status = JSON.parse(status);
-        console.log(status)
+
         if (status === true) {
             await this.setSetting({recommendGood: good._id});
         } else {
@@ -65,7 +65,7 @@ class SystemSettingService extends Service {
         delete settingObj.created_at;
         delete settingObj.updated_at;
 
-        console.log(settingObj)
+
         //settingObj.advertisementSetting = {square: fs.readFileSync(path.resolve(__dirname, '../public/admin.html'))};
         let systemSettingObj = new this.ctx.model.SystemSetting(
             settingObj

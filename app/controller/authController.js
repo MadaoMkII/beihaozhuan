@@ -87,14 +87,14 @@ class authController extends Controller {
                 return;
             }
 
-            // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
-            //     String(requestEntity.smsVerifyCode).toLowerCase())) {
-            //     ctx.throw(400, `VerifyCode verify failed`);
-            // }
-            // if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
-            //     String(requestEntity.tel_number).toLowerCase())) {
-            //     ctx.throw(400, `tel_number doesn't exist`);
-            // }
+            if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
+                String(requestEntity.smsVerifyCode).toLowerCase())) {
+                ctx.throw(400, `VerifyCode verify failed`);
+            }
+            if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
+                String(requestEntity.tel_number).toLowerCase())) {
+                ctx.throw(400, `tel_number doesn't exist`);
+            }
 
             ctx.session.tel_number = null;
             ctx.session.smsVerifyCode = null;
@@ -150,18 +150,18 @@ class authController extends Controller {
             if (!requestEntity) {
                 return;
             }
-            // if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
-            //     String(requestEntity.smsVerifyCode).toLowerCase())) {
-            //     ctx.throw(401, `VerifyCode verify failed`);
-            // }
-            // if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
-            //     String(requestEntity.tel_number).toLowerCase())) {
-            //     ctx.throw(402, `tel_number doesn't exist`);
-            // }
+            if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
+                String(requestEntity.smsVerifyCode).toLowerCase())) {
+                ctx.throw(401, `VerifyCode verify failed`);
+            }
+            if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
+                String(requestEntity.tel_number).toLowerCase())) {
+                ctx.throw(402, `tel_number doesn't exist`);
+            }
 
             let promise = {};
-            // ctx.session.tel_number = `null`;
-            //  ctx.session.smsVerifyCode = `null`;
+            ctx.session.tel_number = null;
+            ctx.session.smsVerifyCode = null;
             let user = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
             let result = await ctx.service[`systemSettingService`].getSetting();
             let bcoin = 0;

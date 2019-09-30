@@ -11,7 +11,7 @@ class userAccount extends baseController {
         if (!ctx.helper.isEmpty(userObj)) {
             if (ctx.helper.isEmpty(userObj.last_login_time) ||
                 (userObj.last_login_time).toString() !== absoluteDate.toString()) {
-                console.log(`here`)
+
                 let syncingTasksPromise = ctx.service[`userService`].syncingTasks(userObj);
                 let updateUser = ctx.service[`userService`].updateUser(userObj.uuid, {last_login_time: absoluteDate});
                 promiseArray.push(syncingTasksPromise);

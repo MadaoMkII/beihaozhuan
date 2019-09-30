@@ -108,7 +108,7 @@ class UserService extends Service {
                 this.ctx.app.eventEmitter.emit(`normalMissionCount`, userx._id, `每日邀新人`);
                 this.ctx.app.eventEmitter.emit(`normalMissionCount`, userx._id, `每周邀新人`);
 
-                console.log(userx)
+
             }
         }
         await userNew.save();
