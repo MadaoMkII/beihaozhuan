@@ -90,6 +90,7 @@ class UserService extends Service {
             let userResult = await this.ctx.model[`UserAccount`].findOne({
                 inviteCode: inviteCode
             });
+            if(!userResult){this.ctx.throw(`zhaobudao`)}
             return userResult._id;
         }
     };

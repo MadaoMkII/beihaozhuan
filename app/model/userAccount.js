@@ -4,19 +4,16 @@ module.exports = app => {
     // mongoose.set('useFindAndModify', false);
     const connection = app.mongooseDB.get('userConnection');
     let balanceRecord = new mongoose.Schema({
-        category: {type: String, required: true},
-        income: {
-            type: String,
-            enum: ['消费', '获得'], default: "获得'"
-        },
-        amount: {type: Number, default: 0},
-        createTime: Date,
-        // status: {type: String, enum: [`success`, `failed`, `pending`], default: `pending`}
-    }, {
-        'timestamps': {
-            'createdAt': 'created_at', 'updatedAt': 'updated_at'
+            category: {type: String, required: true},
+            income: {
+                type: String,
+                enum: ['消费', '获得'], default: "获得'"
+            },
+            amount: {type: Number, default: 0},
+            createTime: Date,
+            // status: {type: String, enum: [`success`, `failed`, `pending`], default: `pending`}
         }
-    });
+    );
 
     balanceRecord.set('toJSON', {
         transform: (origin, show) => {

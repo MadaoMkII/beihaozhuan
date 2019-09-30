@@ -19,7 +19,7 @@ module.exports = app => {
     router.get('/setting/getMemberNumber', app.middleware.authenticatedMiddleware(`用户`),
         controller[`systemSettingController`].getMemberNumber);
 
-    router.get('/index', async (ctx) => {
+    router.get('/', async (ctx) => {
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
         // ctx.redirect('/index.html')
@@ -29,11 +29,11 @@ module.exports = app => {
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/admin.html'));
         // ctx.redirect('/index.html')
     });
-    router.get('/', async (ctx) => {
-        ctx.response.type = 'html';
-        ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/prepare.html'));
-        // ctx.redirect('/index.html')
-    });
+    // router.get('/', async (ctx) => {
+    //     ctx.response.type = 'html';
+    //     ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/prepare.html'));
+    //     // ctx.redirect('/index.html')
+    // });
     router.get('/missionSignIn', async (ctx) => {
         ctx.response.type = 'html';
         ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/missionSignIn.html'));
