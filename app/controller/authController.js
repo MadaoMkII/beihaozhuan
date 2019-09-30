@@ -151,7 +151,7 @@ class authController extends Controller {
                 return;
             }
             if (ctx.helper.isEmpty(ctx.session.fdbsmsVerifyCode) || !(String(ctx.session.fdbsmsVerifyCode).toLowerCase() ===
-                String(requestEntity.fdbsmsVerifyCode).toLowerCase())) {
+                String(requestEntity.smsVerifyCode).toLowerCase())) {
                 ctx.throw(401, `VerifyCode verify failed`);
             }
             if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
