@@ -54,7 +54,7 @@ class MissionEventManager extends Service {
     }
 
 
-    async getUserDailyMissionProcessing(user_ID, status) {
+    async getUserDailyMissionProcessing(user_ID, status = false) {
 
         return this.ctx.model.DailyMissionProcessingTracker.find({
             userID: user_ID,
@@ -63,7 +63,7 @@ class MissionEventManager extends Service {
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
-    async getUserWeeklyMissionProcessing(user_ID, status) {
+    async getUserWeeklyMissionProcessing(user_ID, status = false) {
 
         return this.ctx.model.WeeklyMissionProcessingTracker.find({
             userID: user_ID,
@@ -72,7 +72,7 @@ class MissionEventManager extends Service {
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
-    async getUserPermanentMissionProcessing(user_ID, status) {
+    async getUserPermanentMissionProcessing(user_ID, status = false) {
 
         return this.ctx.model.PermanentMissionProcessingTracker.find({
             userID: user_ID,
