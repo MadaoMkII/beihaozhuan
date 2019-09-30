@@ -80,7 +80,6 @@ class UserService extends Service {
         let absoluteDate = this.ctx.getAbsoluteDate();
 
         return this.ctx.model[`UserAccount`].findOneAndUpdate({uuid: user.uuid}, {
-            $set: {last_login_time: absoluteDate},
             $inc: {loginTimes: 1}
         }, {new: true});
     };
