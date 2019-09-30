@@ -42,7 +42,8 @@ module.exports = app => {
             {new: true});
 
         if (!res) {
-            throw new Error(`任务完成时候发送问题，值为${res}`)
+            console.log(missionSearcher)
+            console.log()(`值为${modelName}`)
 
         }
     });
