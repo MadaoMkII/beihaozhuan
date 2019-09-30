@@ -333,7 +333,7 @@ class authController extends Controller {
     async signIn(ctx) {
 
         let thisDay = ctx.app.getFormatDate();
-        let newUser = await this.ctx.model.UserAccountFake.findOne({tel_number: ctx.user.tel_number});
+        let newUser = await this.ctx.model.UserAccount.findOne({tel_number: ctx.user.tel_number});
         if (ctx.helper.isEmpty(newUser)) {
             return this.success(null, `找不到这个用户，请注册`, 404)
         }
