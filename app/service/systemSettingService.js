@@ -14,7 +14,7 @@ class SystemSettingService extends Service {
             this.ctx.throw(`zhaobu dao`)
         }
         if (status) {
-            console.log(good)
+
             await this.setSetting({recommendGood: good._id});
         } else {
             await this.setSetting({recommendGood: undefined});

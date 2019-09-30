@@ -46,7 +46,7 @@ class MissionEventManager extends Service {
                 effectDay: effectDay
             }, {$set: {completed: true}}, {new: true});
             Promise.all([promise_1, promise_2, promise_3, promise_4]).catch((e) => {
-                console.log(e)
+
             });
         } else {
             this.ctx.throw(400, `Already complete`);

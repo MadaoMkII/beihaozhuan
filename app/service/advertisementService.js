@@ -22,7 +22,7 @@ class advertisementService extends Service {
         return this.ctx.model.Advertisement.find(advertising, {}, options);
     };
     async getOneAdvertisement(advertising, options) {
-        console.log(advertising)
+
         return this.ctx.model.Advertisement.findOne(advertising, {}, options);
     };
 

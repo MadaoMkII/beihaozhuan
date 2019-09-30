@@ -42,7 +42,8 @@ module.exports = app => {
             {new: true});
 
         if (!res) {
-            this.ctx.throw(400, `initMissionEventManager Error`)
+            throw new Error(`任务完成时候发送问题，值为${res}`)
+
         }
     });
     // logger.set('file', new FileTransport({

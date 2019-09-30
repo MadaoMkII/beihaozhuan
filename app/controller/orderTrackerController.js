@@ -36,7 +36,7 @@ class orderTrackerController extends baseController {
                 address: requestEntity.address,
                 detailAddress: requestEntity.detailAddress,
             };
-            console.log(orderTracker)
+
             let result = await ctx.service[`orderTrackerService`].makeOrder(orderTracker);
             this.success(result);
         } catch (e) {

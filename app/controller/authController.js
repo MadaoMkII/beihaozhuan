@@ -130,7 +130,7 @@ class authController extends Controller {
             delete newUser.password;
 
             Promise.all([promise_1, promise_2]).catch((error) => {
-                console.log(error)
+
             });
             this.success()
         } catch (e) {
