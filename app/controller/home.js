@@ -7,8 +7,18 @@ class HomeController extends Controller {
 
     async test(ctx) {
 
+        let adxxx = await ctx.model.AdvRecord.find();
+        adxxx.forEach(async (x) => {
 
-        await ctx.service[`userService`].setUserBcionChange(ctx.user.uuid, `测试活动奖励`, `获得`, 4500);
+            let del = await ctx.model.Advertisement.findOne({_id: x.advertisementID});
+            if (ctx.helper.isEmpty(del)) {
+
+
+                console.log(x)
+            }
+
+        });
+        // await ctx.service[`userService`].setUserBcionChange(ctx.user.uuid, `测试活动奖励`, `获得`, 4500);
         // let userResult = await ctx.model[`UserAccountFake`].find({
         //     // lottery: {$exists: 1},
         //     // signTimes: {$exists: 1}
@@ -73,7 +83,7 @@ class HomeController extends Controller {
         //
         //     await ctx.service[`userService`].setUserBcionChange(uuid, `预热活动奖励`,
         //         `获得`, finallyBcoin);
-       // }
+        // }
         this.success()
     };
 

@@ -36,7 +36,7 @@ class advertisementController extends Controller {
         if (ctx.helper.isEmpty(advertisementObj)) {
             return this.failure(`uuid 错误`, 402);
         }
-        let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(ctx.user._id, ctx.user._id, 1);
+        let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(advertisementObj._id, ctx.user._id, 1);
         promiseArray.push(promise_1);
 
         //ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `邀请新人加入`);

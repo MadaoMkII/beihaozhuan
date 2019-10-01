@@ -305,19 +305,19 @@ class analyzeService extends Service {
                     "type": {$first: "$type"},
                 }
             },
-            {
-                $project:
-                    {
-                        _id: 0,
-                        title: "$title",
-                        //totalAmount: {$multiply: ["$total", "$rewardInt"]},
-                        advertisementID: "$_id.advertisementID",
-                        type: 1,
-                        total: 1
-                    }
-            }
+            // {
+            //     $project:
+            //         {
+            //             _id: 0,
+            //             title: "$title",
+            //             //totalAmount: {$multiply: ["$total", "$rewardInt"]},
+            //             advertisementID: "$_id.advertisementID",
+            //             type: 1,
+            //             total: 1
+            //         }
+            // }
         ]);
-
+console.log(aggregateResult)
         aggregateResult = aggregateResult.sort((a, b) => {
             return a.type - b.type;
         });
@@ -347,14 +347,14 @@ class analyzeService extends Service {
             totalAmount += element.total + closeTotal;
         });
 
-        let finalResult = {
+        return {
             total: totalAmount, categories: categories, series: [
                 {seriesData: seriesData_1}, {seriesData: seriesData_2}
             ]
         };
-        return finalResult
-    }
-    ;
+
+    };
+
 
     async countFavoriteGoodForChart(beginDate = new Date(`2019-08-30`)) {
 
