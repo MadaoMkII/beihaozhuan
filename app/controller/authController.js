@@ -258,7 +258,7 @@ class authController extends Controller {
         try {
             let app = ctx.app;
             let nodeExcel = require('excel-export');
-            let users = await ctx.model[`UserAccountFake`].find();
+            let users = await ctx.model[`UserAccount`].find();
             let resultData = [];
 
             users.forEach((user) => {
