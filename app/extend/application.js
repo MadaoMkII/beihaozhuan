@@ -39,7 +39,7 @@ module.exports = {
         require(`moment-timezone`);
         return moment.tz(date, "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
     },
-    getFormatDateForJSON: function (date) {
+    getFormatDateForJSON: function (date = new Date()) {
         let {DateTime} = require('luxon');
         let local = DateTime.fromISO(date.toISOString());
         let rezoned = local.setZone("Asia/Shanghai");
@@ -57,6 +57,6 @@ module.exports = {
         return moment.tz(date, "Asia/ShangHai").format(`YYYY年MM月DD日 HH时mm分ss秒`);
     },
     getInviteCode: function () {
-        return (Math.random() / 100000 * Date.now() * 3.1415926).toFixed(0)
+        return (Math.random() / 100000 * Date.now() * 3.1415926).toFixed(0);
     }
 };
