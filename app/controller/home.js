@@ -10,11 +10,10 @@ class HomeController extends Controller {
         let adxxx = await ctx.model.AdvRecord.find();
         adxxx.forEach(async (x) => {
 
-            let del = await ctx.model.Advertisement.findOne({_id: x.advertisementID});
-            if (ctx.helper.isEmpty(del)) {
+            if (x.advertisementID.toString() === x.userID.toString() ) {
+console.log(x)
+                await ctx.model.AdvRecord.deleteOne({advertisementID:x.advertisementID})
 
-
-                console.log(x)
             }
 
         });

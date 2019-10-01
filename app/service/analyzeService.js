@@ -6,7 +6,7 @@ class analyzeService extends Service {
 
     async recordAdvIncrease(advID, userID, amount, type = "click") {
         let date = this.ctx.getAbsoluteDate();
-        await this.ctx.model.AdvRecord.findOneAndUpdate({
+        await this.ctx.model[`AdvRecord`].findOneAndUpdate({
             advertisementID: advID,
             absoluteDate: date,
             userID: userID,
@@ -19,7 +19,17 @@ class analyzeService extends Service {
     async countByMonth(condition) {
 
         const resultArray = [];
-        let matcher = {content: condition};
+        let matcher = {};
+        if (condition === `increaseBcoin`) {
+            matcher = {
+                "content": {
+                    "$in": [`完成任务-每日晒收入`, `完成任务-完善用户信息`, `完成任务-看一个广告`, `完成任务-每日看广告`,
+                        `完成任务-每日签到`, `完成任务-看一个广告`, `广告收入`, `完成任务-每日邀新人`]
+                }
+            };
+        } else {
+            matcher.content = condition;
+        }
 
         let start = DateTime.fromISO('2019-06-18');
         let end = DateTime.fromISO(this.ctx.getAbsoluteDate().toISOString());
@@ -27,7 +37,7 @@ class analyzeService extends Service {
         diffInMonths = Math.abs(diffInMonths);
         diffInMonths = Math.ceil(diffInMonths);
 
-        let aggregateResult = await this.ctx.model.DataAnalyze.aggregate([
+        let aggregateResult = await this.ctx.model[`DataAnalyze`].aggregate([
             {
                 "$project": {
                     "YearBy": {"$year": {date: "$absoluteDate", timezone: "+0700"}},
@@ -47,10 +57,11 @@ class analyzeService extends Service {
         let categories = [];
         let innerIndex = 0;
         let total = 0;
+
         aggregateResult = aggregateResult.sort((a, b) => {
-            let aDate = DateTime.local(a._id.year, a._id.month, 1);
-            let bDate = DateTime.local(b._id.year, b._id.month, 1);
-            return aDate.diff(bDate, "months");
+            let aDate = DateTime.local(Number(a._id.year), Number(a._id.month), 1);
+            let bDate = DateTime.local(Number(b._id.year), Number(b._id.month), 1);
+            return Number(aDate.diff(bDate, "months"));
         });
 
         let dateTime = start;
@@ -83,8 +94,18 @@ class analyzeService extends Service {
         let local = DateTime.fromISO(new Date().toISOString());
         let rezoned = local.setZone("Asia/Shanghai");
         let matcher = {MonthNew: rezoned.month};
-        matcher.content = condition;
-        let aggregateResult = await this.ctx.model.DataAnalyze.aggregate([
+        if (condition === `increaseBcoin`) {
+
+            matcher = {
+                "content": {
+                    "$in": [`完成任务-每日晒收入`, `完成任务-完善用户信息`, `完成任务-看一个广告`, `完成任务-每日看广告`,
+                        `完成任务-每日签到`, `完成任务-看一个广告`, `广告收入`, `完成任务-每日邀新人`]
+                }
+            };
+        } else {
+            matcher.content = condition;
+        }
+        let aggregateResult = await this.ctx.model[`DataAnalyze`].aggregate([
             {
                 "$project": {
                     "MonthNew": {"$month": {date: "$absoluteDate", timezone: "+0700"}},
@@ -131,8 +152,20 @@ class analyzeService extends Service {
         let local = DateTime.fromISO(new Date().toISOString());
         let rezoned = local.setZone("Asia/Shanghai");
         let matcher = {DogDay: rezoned.day};
-        matcher.content = condition;
-        let aggregateResult = await this.ctx.model.DataAnalyze.aggregate([
+
+        if (condition === `increaseBcoin`) {
+
+            matcher = {
+                "content": {
+                    "$in": [`完成任务-每日晒收入`, `完成任务-完善用户信息`, `完成任务-看一个广告`, `完成任务-每日看广告`,
+                        `完成任务-每日签到`, `完成任务-看一个广告`, `广告收入`, `完成任务-每日邀新人`]
+                }
+            };
+        } else {
+            matcher.content = condition;
+        }
+
+        let aggregateResult = await this.ctx.model[`DataAnalyze`].aggregate([
             {
                 "$project": {
                     "DogDay": {"$dayOfMonth": {date: "$absoluteDate", timezone: "+0700"}},
@@ -182,18 +215,18 @@ class analyzeService extends Service {
             conditions.title = {$regex: `.*${conditions.title}.*`};
         }
 
-        let advertisementArray = await this.ctx.model.Advertisement.find(conditions);
+        let advertisementArray = await this.ctx.model[`Advertisement`].find(conditions);
 
         let result = [];
         for (const advertisement of advertisementArray) {
-            let aggregateResult = await this.ctx.model.AdvRecord.find({advertisementID: advertisement._id},
+            let aggregateResult = await this.ctx.model[`AdvRecord`].find({advertisementID: advertisement._id},
                 {_id: 0}).populate([{
                 path: `userID`,
-                model: this.ctx.model.UserAccount,
+                model: this.ctx.model[`UserAccount`],
                 select: '-_id tel_number avatar'
             }, {
                 path: `advertisementID`,
-                model: this.ctx.model.Advertisement,
+                model: this.ctx.model[`Advertisement`],
                 select: '-_id title source reward positionName activity'
             }]);
             result.push(...aggregateResult)
@@ -212,7 +245,7 @@ class analyzeService extends Service {
             };
 
 
-            let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
+            let aggregateResult = await this.ctx.model[`AdvRecord`].aggregate([
                 {
                     $lookup:
                         {
@@ -282,7 +315,7 @@ class analyzeService extends Service {
     };
 
     async countAdvForChart(beginDate = new Date(`2019-08-30`)) {
-        let aggregateResult = await this.ctx.model.AdvRecord.aggregate([
+        let aggregateResult = await this.ctx.model[`AdvRecord`].aggregate([
 
             {$match: {absoluteDate: {$gte: beginDate}}},
             {
@@ -305,19 +338,19 @@ class analyzeService extends Service {
                     "type": {$first: "$type"},
                 }
             },
-            // {
-            //     $project:
-            //         {
-            //             _id: 0,
-            //             title: "$title",
-            //             //totalAmount: {$multiply: ["$total", "$rewardInt"]},
-            //             advertisementID: "$_id.advertisementID",
-            //             type: 1,
-            //             total: 1
-            //         }
-            // }
+            {
+                $project:
+                    {
+                        _id: 0,
+                        title: "$title",
+                        //totalAmount: {$multiply: ["$total", "$rewardInt"]},
+                        advertisementID: "$_id.advertisementID",
+                        type: 1,
+                        total: 1
+                    }
+            }
         ]);
-console.log(aggregateResult)
+
         aggregateResult = aggregateResult.sort((a, b) => {
             return a.type - b.type;
         });
@@ -355,17 +388,16 @@ console.log(aggregateResult)
 
     };
 
-
-    async countFavoriteGoodForChart(beginDate = new Date(`2019-08-30`)) {
-
-
-    }
-    ;
+    //
+    // async countFavoriteGoodForChart(beginDate = new Date(`2019-08-30`)) {
+    //
+    //
+    // };
 
 
     async dataIncrementRecord(content, amount, type) {
         let date = this.ctx.getAbsoluteDate(true);
-        await this.ctx.model.DataAnalyze.findOneAndUpdate({
+        await this.ctx.model[`DataAnalyze`].findOneAndUpdate({
             absoluteDate: date,
             content: content,
             type: type
