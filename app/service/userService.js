@@ -90,7 +90,9 @@ class UserService extends Service {
             let userResult = await this.ctx.model[`UserAccount`].findOne({
                 inviteCode: inviteCode
             });
-            if(!userResult){this.ctx.throw(`zhaobudao`)}
+            if (!userResult) {
+                this.ctx.throw(`zhaobudao`)
+            }
             return userResult._id;
         }
     };
@@ -135,6 +137,7 @@ class UserService extends Service {
         if (!this.ctx.helper.isEmpty(conditions.nickName)) {
             conditions.nickName = {$regex: `.*${conditions.nickName}.*`};
         }
+        option.sort = {created_at: -1};
         let count = await this.ctx.model[`UserAccount`].countDocuments(conditions);
         let data = await this.ctx.model[`UserAccount`].find(conditions, project, option);
         return [data, count];
