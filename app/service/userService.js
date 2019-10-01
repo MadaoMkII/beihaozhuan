@@ -151,8 +151,8 @@ class UserService extends Service {
             }
         },
             {$sort: {"balanceList.createTime": 1}},
-            {$limit: option.limit},
-            {$skip: option.skip},
+            // {$limit: option.limit},
+            // {$skip: option.skip},
 
             {
                 $project: {

@@ -21,7 +21,7 @@ class authController extends Controller {
             if (ctx.session.smsLoginVerifyCode === condition.smsLoginVerifyCode) {
                 verifyFlag = true;
                 ctx.session.smsLoginVerifyCode = undefined;
-                userResult = await ctx.service.userService.getUser({
+                userResult = await ctx.service[`userService`].getUser({
                     tel_number: condition.tel_number
                 });
             } else {
@@ -29,7 +29,7 @@ class authController extends Controller {
                 return;
             }
         } else if (!this.ctx.helper.isEmpty(condition.password)) {
-            userResult = await ctx.service.userService.getUser({
+            userResult = await ctx.service[`userService`].getUser({
                 tel_number: condition.tel_number,
                 password: ctx.helper.passwordEncrypt(condition.password)
             });
@@ -47,7 +47,7 @@ class authController extends Controller {
             return this.failure(`这个用户已经被停权`, 402);
         }
         if (userResult || verifyFlag) {
-            await ctx.service.userService.updateUser_login(userResult);
+            await ctx.service[`userService`].updateUser_login(userResult);
 
             if (condition[`rememberMe`]) {
                 ctx.session.maxAge = ms('7d');
@@ -98,7 +98,7 @@ class authController extends Controller {
 
             ctx.session.tel_number = null;
             ctx.session.smsVerifyCode = null;
-            let oldUser = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
+            let oldUser = await ctx.service[`userService`].getUser({tel_number: requestEntity.tel_number});
             if (!ctx.helper.isEmpty(oldUser)) {
                 return this.failure(`电话号码已经被注册`, 400);
             }
@@ -123,9 +123,9 @@ class authController extends Controller {
                 Bcoins: initialBcoin
             };
 
-            await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
+            await ctx.service[`userService`].addUser(newUser, requestEntity.inviteCode);
             let promise_1 = ctx.service[`analyzeService`].dataIncrementRecord(`userRegister`, 1, `user`);
-            let promise_2 = ctx.service.userService.setUserBcionChange(newUser.uuid,
+            let promise_2 = ctx.service[`userService`].setUserBcionChange(newUser.uuid,
                 `注册奖励`, `获得`, initialBcoin);
             delete newUser.password;
 
@@ -137,7 +137,6 @@ class authController extends Controller {
             if (e.message.toString().includes(`E11000`)) {
                 return this.failure(`tel_number is duplicated `, 400);
             } else {
-                console.log(e)
                 this.failure(e.message, 400);
             }
         }
@@ -162,7 +161,7 @@ class authController extends Controller {
             let promise = {};
             ctx.session.tel_number = null;
             ctx.session.fdbsmsVerifyCode = null;
-            let user = await ctx.service.userService.getUser({tel_number: requestEntity.tel_number});
+            let user = await ctx.service[`userService`].getUser({tel_number: requestEntity.tel_number});
             let result = await ctx.service[`systemSettingService`].getSetting();
             let bcoin = 0;
             if (!ctx.helper.isEmpty(result.registerMission)) {
@@ -183,9 +182,9 @@ class authController extends Controller {
                 newUser.Bcoins = bcoin;
                 newUser.userStatus = {};
                 newUser.userStatus.hasVerifyWechat = 'enable';
-                let newUser_login = await ctx.service.userService.addUser(newUser, null);
+                let newUser_login = await ctx.service[`userService`].addUser(newUser, null);
                 if (bcoin !== 0) {
-                    promise = ctx.service.userService.setUserBcionChange(newUser.uuid, `注册奖励`, `获得`, bcoin);
+                    promise = ctx.service[`userService`].setUserBcionChange(newUser.uuid, `注册奖励`, `获得`, bcoin);
                 }
                 ctx.login(newUser_login);
                 delete newUser.password;
@@ -196,7 +195,7 @@ class authController extends Controller {
                 newUser.nickName = ctx.helper.decrypt(requestEntity.nickName);
                 newUser.userStatus = {};
                 newUser.userStatus.hasVerifyWechat = `enable`;
-                let newUser_login = await ctx.service.userService.updateUser(user.uuid, newUser);
+                let newUser_login = await ctx.service[`userService`].updateUser(user.uuid, newUser);
                 ctx.login(newUser_login);
             }
             this.success();
