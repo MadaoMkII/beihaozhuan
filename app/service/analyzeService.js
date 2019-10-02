@@ -93,7 +93,7 @@ class analyzeService extends Service {
         const resultArray = [];
         let local = DateTime.fromISO(new Date().toISOString());
         let rezoned = local.setZone("Asia/Shanghai");
-        let matcher = {MonthNew: rezoned.month};
+        let matcher = {};
         if (condition === `increaseBcoin`) {
 
             matcher = {
@@ -105,11 +105,13 @@ class analyzeService extends Service {
         } else {
             matcher.content = condition;
         }
+        matcher.MonthNew = rezoned.month;
+
         let aggregateResult = await this.ctx.model[`DataAnalyze`].aggregate([
             {
                 "$project": {
-                    "MonthNew": {"$month": {date: "$absoluteDate", timezone: "+0700"}},
-                    "DogDay": {"$dayOfMonth": {date: "$absoluteDate", timezone: "+0700"}},
+                    "MonthNew": {"$month": {date: "$absoluteDate", timezone: "+0800"}},
+                    "DogDay": {"$dayOfMonth": {date: "$absoluteDate", timezone: "+0800"}},
                     "amount": 1,
                     "content": 1
                 }
