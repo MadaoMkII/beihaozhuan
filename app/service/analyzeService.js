@@ -166,10 +166,12 @@ class analyzeService extends Service {
         }
 
         matcher.DogDay = rezoned.day;
+        matcher.DogMonth = rezoned.month;
         let aggregateResult = await this.ctx.model[`DataAnalyze`].aggregate([
             {
                 "$project": {
                     "DogDay": {"$dayOfMonth": {date: "$absoluteDate", timezone: "+0800"}},
+                    "DogMonth": {"$month": {date: "$absoluteDate", timezone: "+0800"}},
                     "hourNew": {"$hour": {date: "$absoluteDate", timezone: "+0800"}},
                     "amount": 1,
                     content: 1,
