@@ -83,22 +83,18 @@ class userAccount extends baseController {
 
     async updateUserPassword(ctx) {
 
-        if (ctx.helper.isEmpty(ctx.session.fdbsmsVerified)) {
-            return this.failure(`need successfully verify first`, 400)
-        }
         const [condition,] = await this.cleanupRequestProperty('authRules.updatePasswordRule',
-            `tel_number`, `password`, `fdbsmsVerified`);
+            `password`);
         if (!condition) {
             return;
         }
-        if (ctx.session.fdbsmsVerified !== condition.fdbsmsVerified) {
+        if (ctx.helper.isEmpty(ctx.session.fdbsmsVerified) || ctx.session.fdbsmsVerified !== true) {
             return this.failure(`验证码不匹配`, 400)
         }
-
-
         let encryptedPassword = ctx.helper.passwordEncrypt(condition.password);
-        await ctx.service[`userService`].updateUserPassword(condition.tel_number, encryptedPassword);
+        await ctx.service[`userService`].updateUserPassword(ctx.session.tel_number, encryptedPassword);
         ctx.session.tel_number = null;
+        ctx.session.fdbsmsVerified = true;
         this.success();
     };
 

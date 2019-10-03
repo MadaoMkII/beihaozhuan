@@ -1,24 +1,7 @@
 'use strict';
 
 const rule = {
-    fdbsmsVerified: [
-        {required: true, message: '不能为空'},
-        {type: 'string', message: '格式不正确'},
-    ],
-    tel_number: [
-        {required: true, message: '手机号不能为空'},
-        {type: 'string', message: '手机号类型不正确'},
-        // {
-        //     validator: function (rule, value, callback) {
-        //         let mainland_reg = /^1[3|4|5|7|8][0-9]{9}$/;
-        //         if (mainland_reg.test(value)) {
-        //             callback(); // 验证通过
-        //         } else {
-        //             callback({message: '无法使用该手机号'}); // 验证不通过}
-        //         }
-        //     }
-        // }
-    ],
+
     password: [
         {required: true, message: '手机号不能为空'},
         {type: 'string', message: '密码字段需要是字符串'},
