@@ -10,7 +10,11 @@ class userAccount extends baseController {
 
 
         if (!ctx.helper.isEmpty(userObj)) {
-            let dailyMission = await this.ctx.model[`DailyMissionProcessingTracker`].findOne({userID: userObj._id});
+            let dailyMission = await this.ctx.model[`DailyMissionProcessingTracker`].findOne({
+                userID: userObj._id,
+                effectDay: absoluteDate
+            });
+
             if (ctx.helper.isEmpty(userObj.last_login_time) ||
                 (userObj.last_login_time).toString() !== absoluteDate.toString()
                 || ctx.helper.isEmpty(dailyMission)) {

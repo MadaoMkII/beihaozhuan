@@ -31,6 +31,7 @@ class UserService extends Service {
         }
 
         let requireMissionResult = await this.ctx.service[`missionProcessingTrackerService`].requireMissionToTrack("enable");
+
         requireMissionResult.find((missionArray) => {
             if ([`Weekly`, `Daily`, `Permanent`].includes(missionArray._id)) {
                 missionArray.missions.forEach(async (mission) => {
@@ -56,6 +57,7 @@ class UserService extends Service {
                     let missionTracker = await this.ctx.model[modelName].findOne(conditions);
                     if (this.ctx.helper.isEmpty(missionTracker)) {
                         let newMissionTracker = new this.ctx.model[modelName](conditions);
+
                         let savePromise = newMissionTracker.save();
                         promiseArray.push(savePromise);
                     }
