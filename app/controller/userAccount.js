@@ -8,8 +8,9 @@ class userAccount extends baseController {
         let absoluteDate = ctx.getAbsoluteDate();
         let promiseArray = [];
 
-        let dailyMission = await this.ctx.model[`DailyMissionProcessingTracker`].findOne({userID: userObj._id});
+
         if (!ctx.helper.isEmpty(userObj)) {
+            let dailyMission = await this.ctx.model[`DailyMissionProcessingTracker`].findOne({userID: userObj._id});
             if (ctx.helper.isEmpty(userObj.last_login_time) ||
                 (userObj.last_login_time).toString() !== absoluteDate.toString()
                 || ctx.helper.isEmpty(dailyMission)) {
