@@ -8,22 +8,27 @@ class userAccount extends baseController {
         let absoluteDate = ctx.getAbsoluteDate();
         let promiseArray = [];
 
-
+        let triggerFlag = false;
         if (!ctx.helper.isEmpty(userObj)) {
-            let dailyMission = await this.ctx.model[`DailyMissionProcessingTracker`].findOne({
-                userID: userObj._id,
-                effectDay: absoluteDate
-            });
 
             if (ctx.helper.isEmpty(userObj.last_login_time) ||
-                (userObj.last_login_time).toString() !== absoluteDate.toString()
-                || ctx.helper.isEmpty(dailyMission)) {
+                (userObj.last_login_time).toString() !== absoluteDate.toString()) {
+                triggerFlag = true;
+            } else {
+                let dailyMission = await this.ctx.model[`DailyMissionProcessingTracker`].findOne({
+                    userID: userObj._id,
+                    effectDay: absoluteDate
+                });
+                if (ctx.helper.isEmpty(dailyMission)) {
+                    triggerFlag = true;
+                }
+            }
 
+            if (triggerFlag) {
                 let syncingTasksPromise = ctx.service[`userService`].syncingTasks(userObj);
                 let updateUser = ctx.service[`userService`].updateUser(userObj.uuid, {last_login_time: absoluteDate});
                 promiseArray.push(syncingTasksPromise);
                 promiseArray.push(updateUser);
-
             }
             this.success(`用户已经登录`, 200);
             Promise.all(promiseArray).then();
