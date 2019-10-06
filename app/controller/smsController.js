@@ -11,8 +11,9 @@ class smsController extends baseController {
         }
         const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
         ctx.session.smsVerifyCode = text;
-        await this.sendSmsMessage(tel_number, text);
-
+        let promise = this.sendSmsMessage(tel_number, text);
+        this.success();
+        await promise;
     };
 
     async sendVerifySmsMessage_fakes(ctx) {
@@ -51,8 +52,10 @@ class smsController extends baseController {
         const {tel_number} = this.ctx.request.body;
         const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
         this.ctx.session.smsLoginVerifyCode = text;
-        await this.sendSmsMessage(tel_number, text);
 
+        let promise = this.sendSmsMessage(tel_number, text);
+        this.success();
+        await promise;
     };
 
     async sendfindPasswordBackSmsMessage(ctx) {
@@ -60,7 +63,9 @@ class smsController extends baseController {
         const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
         ctx.session.fdbsmsVerifyCode = text;
         ctx.session.tel_number = tel_number;
-        await this.sendSmsMessage(tel_number, text);
+        let promise = this.sendSmsMessage(tel_number, text);
+        this.success();
+        await promise;
     };
 
     async verifyfpbCode(ctx) {
