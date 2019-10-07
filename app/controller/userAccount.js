@@ -159,7 +159,7 @@ class userAccount extends baseController {
             return;
         }
         if (ctx.helper.isEmpty(role)) {
-            condition = {role: {$in: [`客服`, `超管`, `运营`]}};
+            condition = {role: {$in: [`客服`, `超管`]}};
         }
         let newUser = await ctx.service[`userService`].getManyUser(condition, option, {
             role: 1,

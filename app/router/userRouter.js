@@ -30,6 +30,7 @@ module.exports = app => {
         controller[`userAccount`].setUserStatus);
     router.post('/user/setUserRole', app.middleware.authenticatedMiddleware(`客服`), controller[`userAccount`].setUserRole);
 
+    router.post('/user/disableUserAdminStatus', app.middleware.authenticatedMiddleware(`运营`), controller[`userAccount`].setUserStatus);
 
     router.get('/user/getInviteLink', app.middleware.authenticatedMiddleware(`用户`), controller[`userAccount`].generatorInviteLink);
     router.get('/user/signIn', controller[`authController`].signIn_fake);
