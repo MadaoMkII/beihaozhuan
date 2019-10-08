@@ -220,7 +220,12 @@ class analyzeService extends Service {
             conditions.title = {$regex: `.*${conditions.title}.*`};
         }
 
-        let advertisementArray = await this.ctx.model[`Advertisement`].find(conditions);
+        let advertisementArray = await this.ctx.model[`Advertisement`].find({uuid: conditions.uuid});
+        let matcher = {};
+        if (!this.ctx.helper.isEmpty(conditions.tel_number)) {
+            matcher = {match: {tel_number: conditions.tel_number}}
+        }
+
 
         let result = [];
         for (const advertisement of advertisementArray) {
@@ -228,6 +233,7 @@ class analyzeService extends Service {
                 {_id: 0}).populate([{
                 path: `userID`,
                 model: this.ctx.model[`UserAccount`],
+                matcher,
                 select: '-_id tel_number avatar'
             }, {
                 path: `advertisementID`,
@@ -237,7 +243,7 @@ class analyzeService extends Service {
             result.push(...aggregateResult)
         }
 //不用aggregate 很难分页
-        return this.ctx.helper.sliceArray(result, option);
+        return [this.ctx.helper.sliceArray(result, option), result.length];
         // let endIndex = (option.skip + option.limit) > result.length ? result.length : (option.skip + option.limit);
         // return [result.slice(option.skip, endIndex), result.length];
     };
@@ -249,79 +255,78 @@ class analyzeService extends Service {
                 $not: {$eq: null}
             };
 
-
-            let aggregateResult = await this.ctx.model[`AdvRecord`].aggregate([
-                {
-                    $lookup:
-                        {
-                            from: "Advertisement",
-                            localField: "advertisementID",
-                            foreignField: "_id",
-                            as: "AdvertisementObj"
-                        }
-                },
-                {
-                    $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$AdvertisementObj", 0]}, "$$ROOT"]}}
-                },
-                {
-                    $project:
-                        {
-                            positionName: 1,
-                            type: 1,
-                            advertisementID: 1,
-                            amount: 1,
-                            source: 1,
-                            updated_at: 1, title: 1,
-                            reward: 1, activity: 1, uuid: 1
-                        }
-                },
-
-                {
-                    "$group": {
-                        "_id": {advertisementID: "$advertisementID"},//type: "$type" 这件事得问问前端
-                        "total": {"$sum": "$amount"},
-                        "positionName": {$first: "$positionName"},
-                        "source": {$first: "$source"},
-                        "updated_at": {$first: "$updated_at"},
-                        "reward": {$first: "$reward"},
-                        "activity": {$first: "$activity"},
-                        "uuid": {$first: "$uuid"},
-                        "title": {$first: "$title"}
-                    }
-                },
-                {
-                    $match: {source: source}
-                },
-                {
-                    $addFields: {
-                        rewardInt: {$toInt: "$reward"},
-                    }
-                },
-                {
-                    $project:
-                        {
-                            _id: 0,
-                            positionName: "$positionName",
-                            totalAmount: {$multiply: ["$total", "$rewardInt"]},
-                            commission: {$multiply: ["$total", "$rewardInt", 0.01]},
-                            type: 1,
-                            advertisementID: 1,
-                            total: 1, title: 1,
-                            source: 1,
-                            updated_at: 1, activity: 1, uuid: 1
-                        }
-                }
-            ]);
-
-            let count = aggregateResult.length;
-            let result = aggregateResult.slice(option.skip, option.skip + option.limit);
-            return [result, count]
         }
+        let aggregateResult = await this.ctx.model[`AdvRecord`].aggregate([
+            {
+                $lookup:
+                    {
+                        from: "Advertisement",
+                        localField: "advertisementID",
+                        foreignField: "_id",
+                        as: "AdvertisementObj"
+                    }
+            },
+            {
+                $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$AdvertisementObj", 0]}, "$$ROOT"]}}
+            },
+            {
+                $project:
+                    {
+                        positionName: 1,
+                        type: 1,
+                        advertisementID: 1,
+                        amount: 1,
+                        source: 1,
+                        updated_at: 1, title: 1,
+                        reward: 1, activity: 1, uuid: 1
+                    }
+            },
+
+            {
+                "$group": {
+                    "_id": {advertisementID: "$advertisementID"},//type: "$type" 这件事得问问前端
+                    "total": {"$sum": "$amount"},
+                    "positionName": {$first: "$positionName"},
+                    "source": {$first: "$source"},
+                    "updated_at": {$first: "$updated_at"},
+                    "reward": {$first: "$reward"},
+                    "activity": {$first: "$activity"},
+                    "uuid": {$first: "$uuid"},
+                    "title": {$first: "$title"}
+                }
+            },
+            {
+                $match: {source: source}
+            },
+            {
+                $addFields: {
+                    rewardInt: {$toInt: "$reward"},
+                }
+            },
+            {
+                $project:
+                    {
+                        _id: 0,
+                        positionName: "$positionName",
+                        totalAmount: {$multiply: ["$total", "$rewardInt"]},
+                        commission: {$multiply: ["$total", "$rewardInt", 0.0001]},
+                        type: 1,
+                        advertisementID: 1,
+                        total: 1, title: 1,
+                        source: 1,
+                        updated_at: 1, activity: 1, uuid: 1
+                    }
+            }
+        ]);
+
+        let count = aggregateResult.length;
+        let result = aggregateResult.slice(option.skip, option.skip + option.limit);
+        return [result, count]
+
     };
 
     async countAdvForChart(beginDate = new Date(`2019-08-30`)) {
-        let aggregateResult = await this.ctx.model[`AdvRecord`].aggregate([
-
+        let aggregateResult = await this.ctx.model[`OrderTracker`].aggregate([
             {$match: {absoluteDate: {$gte: beginDate}}},
             {
                 $lookup:
@@ -407,10 +412,9 @@ class analyzeService extends Service {
             content: content,
             type: type
         }, {$inc: {amount: amount}}, {upsert: true, new: true});
-    }
-    ;
+    };
+
 
 }
 
-module
-    .exports = analyzeService;
+module.exports = analyzeService;

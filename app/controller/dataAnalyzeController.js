@@ -11,7 +11,7 @@ class dataAnalyzeController extends Controller {
 
     async advDetail(ctx) {
         const [condition, option] = await this.cleanupRequestProperty('pageAndUnitRule',
-            `source`, `page`, 'unit', `title`);
+            `page`, 'unit', `uuid`, `tel_number`);
         if (!condition) {
             return;
         }
@@ -20,7 +20,7 @@ class dataAnalyzeController extends Controller {
     };
 
     async countAdv(ctx) {
-        const [condition, option] = await this.cleanupRequestProperty('dataAnalyzeRules.advDetailRule',
+        const [condition, option] = await this.cleanupRequestProperty('dataAnalyzeRules.countAdvRule',
             `unit`, `page`, `source`);
         if (!condition) {
             return;
@@ -56,7 +56,7 @@ class dataAnalyzeController extends Controller {
         const {period} = ctx.request.query;
         if (!ctx.helper.isEmpty(period)) {
             beginDate = ctx.getDateByPeriod(period);
-        }else {
+        } else {
             beginDate = new Date(`2019-08-09`);
         }
 
@@ -65,6 +65,19 @@ class dataAnalyzeController extends Controller {
 
     }
 
+    async countGoodForChart(ctx) {
+        let beginDate = {};
+        const {period} = ctx.request.query;
+        if (!ctx.helper.isEmpty(period)) {
+            beginDate = ctx.getDateByPeriod(period);
+        } else {
+            beginDate = new Date(`2019-08-09`);
+        }
+
+        let result = await ctx.service[`analyzeService`].countGoodForChart(beginDate);
+        this.success(result)
+
+    }
 }
 
 module.exports = dataAnalyzeController;

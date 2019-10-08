@@ -58,7 +58,8 @@ class advertisementController extends Controller {
         if (ctx.helper.isEmpty(advertisementObj)) {
             return this.failure(`找不到目标广告`, 4041, 400);
         }
-        let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(advertisementObj._id, userObj._id, 1);
+        let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(advertisementObj._id, userObj._id, 1,
+            `close`);
         let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`广告收入`,
             advertisementObj.reward, `bcoin`);
         let promise_3 = ctx.service[`userService`].setUserBcionChange(userObj.uuid, `广告收入`,

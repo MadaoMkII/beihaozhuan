@@ -13,18 +13,21 @@
       unitid: 148330,
       loadedCallback: function() {
         console.log('load success');
+        parent.checkAdvertisement();
         showAd148330();
       },
       closeCallback:function (res) {
         if(res){
-          console.log('看完广告')
-          parent.checkFinishAdvertisement();
+          console.log('看完广告');
           parent.close();
         }
       },
+      errorCallback:function () {
+        parent.showNoAdsTip();
+      },
       rewardedCallback: function(reward_name, reward_amount) {
         console.log(reward_amount);
-        parent.checkAdvertisement();
+        parent.checkFinishAdvertisement();
       }
     });
   }

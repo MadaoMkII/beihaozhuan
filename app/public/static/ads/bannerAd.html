@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>banner-video</title>
-
 </head>
 <body>
 <div style="margin-top: 40%" id="ad_placeholder_148334"></div>
@@ -17,6 +16,9 @@
       loadedCallback: function() {
         console.log('success');
         parent.checkAdvertisement();
+      },
+      errorCallback:function () {
+        parent.showNoAdsTip();
       }
     });
   }
