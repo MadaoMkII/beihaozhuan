@@ -1,7 +1,7 @@
 `use strict`;
 const baseController = require(`../controller/baseController`);
 let url = require("url");
-
+let URL = require('url').URL;
 class wechatController extends baseController {
 
     requestMethod(JSONObject, method, url) {
