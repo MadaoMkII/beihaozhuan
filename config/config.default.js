@@ -208,9 +208,9 @@ module.exports = appInfo => {
     // config/config.default.js
     exports.alinode = {
         server: 'wss://agentserver.node.aliyun.com:8080',
-        appid: '81576',
-        secret: '660b93ceef24cb6d5621419e16c53d645d1bddd6',
-        logdir: '/logs/',
+        appid: '81962',
+        secret: '230de42bd435f5067b2685a7119307bca7ccf2bb',
+        //logdir: '/logs/',
         // error_log: [
         //     '您的应用在业务层面产生的异常日志的路径，数组，可选，可配置多个',
         //     '例如：/root/.logs/error.#YYYY#-#MM#-#DD#.log',
