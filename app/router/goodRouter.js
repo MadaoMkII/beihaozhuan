@@ -12,9 +12,10 @@ module.exports = app => {
     router.post('/order/getMyOrders', app.middleware.authenticatedMiddleware(`用户`), controller[`orderTrackerController`].getMyOrders);
 
     router.post('/order/findOrderByUser', app.middleware.authenticatedMiddleware(`用户`), controller[`orderTrackerController`].findOrderByUser);
-    router.post('/good/getManyGoods',  app.middleware.authenticatedMiddleware(`用户`), controller[`goodController`].getManyGoods);
+    router.post('/good/getManyGoods', app.middleware.authenticatedMiddleware(`用户`), controller[`goodController`].getManyGoods);
     router.get('/good/getRecommendGood', app.middleware.authenticatedMiddleware(`用户`), controller[`goodController`].getRecommendGood);
     router.post('/good/setGoodStatus', app.middleware.authenticatedMiddleware(`运营`), controller[`goodController`].setGoodStatus);
     router.post('/good/delGood', app.middleware.authenticatedMiddleware(`运营`), controller[`goodController`].delGood);
     //router.get('/good/getRecommendGoods', controller[`goodController`].getBannerGood);
+    router.post('/good/getShowGoods', app.middleware.authenticatedMiddleware(`用户`), controller[`goodController`].getShowGoods);
 };

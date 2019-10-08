@@ -34,7 +34,7 @@ class advertisementController extends Controller {
         let promiseArray = [];
         let advertisementObj = await ctx.service[`advertisementService`].getOneAdvertisement({uuid: advertisement.uuid});
         if (ctx.helper.isEmpty(advertisementObj)) {
-            return this.failure(`uuid 错误`, 402);
+            return this.failure(`找不到目标广告`, 4041, 400);
         }
         let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(advertisementObj._id, ctx.user._id, 1);
         promiseArray.push(promise_1);
@@ -56,7 +56,7 @@ class advertisementController extends Controller {
         let userObj = ctx.user;
         let advertisementObj = await ctx.service[`advertisementService`].getOneAdvertisement({uuid: advertisement.uuid});
         if (ctx.helper.isEmpty(advertisementObj)) {
-            return this.failure(`uuid 错误`, 402);
+            return this.failure(`找不到目标广告`, 4041, 400);
         }
         let promise_1 = ctx.service[`analyzeService`].recordAdvIncrease(advertisementObj._id, userObj._id, 1);
         let promise_2 = ctx.service[`analyzeService`].dataIncrementRecord(`广告收入`,

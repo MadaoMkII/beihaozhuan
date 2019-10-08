@@ -25,7 +25,7 @@ class authController extends Controller {
                     tel_number: condition.tel_number
                 });
             } else {
-                this.failure(`smsLoginVerifyCode 验证失败`, 400);
+                this.failure(`smsLoginVerifyCode 验证失败`, 4010, 400);
                 return;
             }
         } else if (!this.ctx.helper.isEmpty(condition.password)) {
@@ -34,17 +34,17 @@ class authController extends Controller {
                 password: ctx.helper.passwordEncrypt(condition.password)
             });
         } else {
-            return this.failure(`登陆方式失败`, 401);
+            return this.failure(`登陆方式失败`, 4001, 400);
         }
 
         if (ctx.helper.isEmpty(userResult) || ctx.helper.isEmpty(userResult.uuid)) {
-            return this.failure(`该用户未注册或密码不正确`, 400);
+            return this.failure(`该用户未注册或密码不正确`, 4002, 400);
         }
 
         if (ctx.helper.isEmpty(userResult.userStatus) ||
             (ctx.helper.isEmpty(userResult.userStatus.activity) ||
                 userResult.userStatus.activity === `disable`)) {
-            return this.failure(`这个用户已经被停权`, 402);
+            return this.failure(`这个用户已经被停权`, 4003, 400);
         }
         if (userResult || verifyFlag) {
             await ctx.service[`userService`].updateUser_login(userResult);
@@ -62,15 +62,14 @@ class authController extends Controller {
             this.success();
 
         } else {
-            this.failure(`login failed`, 400);
+            this.failure(`login failed`, 5000, 503);
         }
     };
 
     async logout(ctx) {
 
         if (!ctx.user) {
-            this.failure(`user have not login yet`);
-
+            return this.failure(`用户还没有登录`, 4004, 400);
         } else {
             ctx.logout();
             this.success();
@@ -89,18 +88,18 @@ class authController extends Controller {
 
             if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
                 String(requestEntity.smsVerifyCode).toLowerCase())) {
-                ctx.throw(400, `VerifyCode verify failed`);
+                return this.failure(`注册短信验证失败`, 4011, 400);
             }
             if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
                 String(requestEntity.tel_number).toLowerCase())) {
-                ctx.throw(400, `tel_number doesn't exist`);
+                return this.failure(`注册号码未验证或者不存在`, 4012, 400);
             }
 
             ctx.session.tel_number = null;
             ctx.session.smsVerifyCode = null;
             let oldUser = await ctx.service[`userService`].getUser({tel_number: requestEntity.tel_number});
             if (!ctx.helper.isEmpty(oldUser)) {
-                return this.failure(`电话号码已经被注册`, 400);
+                return this.failure(`电话号码已经被注册`, 4013, 400);
             }
             let initialBcoin;
             let result = await ctx.service[`systemSettingService`].getSetting();
@@ -137,7 +136,7 @@ class authController extends Controller {
             if (e.message.toString().includes(`E11000`)) {
                 return this.failure(`tel_number is duplicated `, 400);
             } else {
-                this.failure(e.message, 400);
+                this.failure(e.message, 5000, 503);
             }
         }
     };
@@ -151,11 +150,11 @@ class authController extends Controller {
             }
             if (ctx.helper.isEmpty(ctx.session.fdbsmsVerifyCode) || !(String(ctx.session.fdbsmsVerifyCode).toLowerCase() ===
                 String(requestEntity.smsVerifyCode).toLowerCase())) {
-                ctx.throw(401, `VerifyCode verify failed`);
+                return this.failure(`微信短信验证失败`, 4015, 400);
             }
             if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
                 String(requestEntity.tel_number).toLowerCase())) {
-                ctx.throw(402, `tel_number doesn't exist`);
+                return this.failure(`注册号码未验证或者不存在`, 4012, 400);
             }
 
             let promise = {};
@@ -204,7 +203,7 @@ class authController extends Controller {
             if (e.message.toString().includes(`E11000`)) {
                 return this.failure(`tel_number is duplicated `, 400);
             } else {
-                this.failure(e.message, 503);
+                this.failure(e.message, 5000, 503);
             }
         }
     };

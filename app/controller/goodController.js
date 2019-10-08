@@ -12,10 +12,14 @@ class goodController extends baseController {
         if (!ctx.helper.isEmpty(condition.title)) {
             condition.title = {$regex: `.*${condition.title}.*`};
         }
-        condition.status = "enable";
         let count = await this.getFindModelCount(`Good`, condition);
         let result = await ctx.service[`goodService`].getManyGood(condition, option);
         return this.success([result, count]);
+    };
+
+    async getShowGoods(ctx) {
+        ctx.request.body.status = "enable";
+        await this.getManyGoods(ctx);
     };
 
     async delGood(ctx) {
@@ -36,7 +40,7 @@ class goodController extends baseController {
 
         let result = await ctx.service[`goodService`].setGoodStatus(condition);
         if (ctx.helper.isEmpty(result)) {
-            return this.failure(`找不到商品`, 400);
+            return this.failure(`找不到商品`, 4031, 400);
         }
         return this.success(result);
 
@@ -80,7 +84,7 @@ class goodController extends baseController {
             }
             let result = await ctx.service[`goodService`].updateGood(newGood, uuid);
             if (ctx.helper.isEmpty(result)) {
-                return this.failure(`通过UUID找不到商品`, 400);
+                return this.failure(`找不到商品`, 4031, 400);
             }
             return this.success();
         } catch (e) {
@@ -99,7 +103,7 @@ class goodController extends baseController {
             let result = await ctx.service[`goodService`].createGood(newGood);
             return this.success(result);
         } catch (e) {
-            this.failure(e.message, 503)
+            this.failure(e.message, 5000, 503)
         }
     };
 

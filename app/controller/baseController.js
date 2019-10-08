@@ -24,12 +24,12 @@ class BaseController extends Controller {
         ctx.status = 200;
     };
 
-    failure(msg, state = 503) {
+    failure(msg, msgState, state = 503) {
         const {ctx} = this;
         //const defaultCode = (state >= 200 && state < 300) ? 0 : state;
 
         ctx.body = {
-            code: state,//String(code || defaultCode),
+            code: msgState,//String(code || defaultCode),
             msg: msg || ctx.helper.errorCode[String(state)],
         };
         ctx.status = state;

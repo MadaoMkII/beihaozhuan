@@ -101,7 +101,7 @@ class userAccount extends baseController {
             return;
         }
         if (ctx.helper.isEmpty(ctx.session.fdbsmsVerified) || ctx.session.fdbsmsVerified !== true) {
-            return this.failure(`验证码不匹配`, 400)
+            return this.failure(`找回密码验证失败`, 4014, 400)
         }
         let encryptedPassword = ctx.helper.passwordEncrypt(condition.password);
         await ctx.service[`userService`].updateUserPassword(ctx.session.tel_number, encryptedPassword);
@@ -252,14 +252,14 @@ class userAccount extends baseController {
             }
             let user = await ctx.service[`userService`].updateUser(condition.uuid, condition);
             if (ctx.helper.isEmpty(user)) {
-                return this.failure(`找不到这个用户`, 404);
+                return this.failure(`找不到这个用户`, 4016, 400);
             }
             this.success();
         } catch (e) {
             if (e.message.includes(`duplicate`)) {
-                return this.failure(`电话号码已经被使用`, 400);
+                return this.failure(`电话号码已经被使用`, 4013, 400);
             }
-            return this.failure(`服务器忙，请稍后再试`, 500);
+            return this.failure(`服务器忙，请稍后再试`, 5000, 500);
         }
 
     };
@@ -269,7 +269,7 @@ class userAccount extends baseController {
             ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日晒收入`);
             this.success();
         } catch (e) {
-            return this.failure(`服务器忙，请稍后再试`, 500);
+            return this.failure(`服务器忙，请稍后再试`, 5000);
         }
 
     };

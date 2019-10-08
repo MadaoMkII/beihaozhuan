@@ -6,8 +6,7 @@ class smsController extends baseController {
         const {tel_number} = ctx.request.body;
         let resultUser = await this.ctx.service.userService.getUser({tel_number: this.ctx.request.body.tel_number});
         if (!this.ctx.helper.isEmpty(resultUser)) {
-            this.failure(`该手机号已注册`, 400);
-            return;
+            return this.failure(`该手机号已注册`, 4013, 400);
         }
         const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
         ctx.session.smsVerifyCode = text;
@@ -46,8 +45,7 @@ class smsController extends baseController {
         let resultUser = await this.ctx.service.userService.getUser({tel_number: this.ctx.request.body.tel_number});
 
         if (this.ctx.helper.isEmpty(resultUser)) {
-            this.failure(`该手机号未注册`, 400);
-            return;
+            return this.failure(`该手机号已注册`, 4013, 400);
         }
         const {tel_number} = this.ctx.request.body;
         const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
@@ -71,7 +69,7 @@ class smsController extends baseController {
     async verifyfpbCode(ctx) {
         const {code} = ctx.request.body;
         if (code !== ctx.session.fdbsmsVerifyCode) {
-            this.failure(`VerifyCode doesn't pair`, 401);
+            this.failure(`找回密码验证失败`, 4014, 400);
         } else {
             ctx.session.fdbsmsVerifyCode = null;
             ctx.session.fdbsmsVerified = true;
