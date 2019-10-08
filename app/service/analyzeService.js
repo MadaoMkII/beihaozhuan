@@ -430,7 +430,6 @@ class analyzeService extends Service {
                     }
             }
         ]);
-        console.log(aggregateResult)
         aggregateResult = aggregateResult.sort((a, b) => {
             return a.type - b.type;
         });

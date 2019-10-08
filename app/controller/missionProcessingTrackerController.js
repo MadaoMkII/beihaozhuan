@@ -3,14 +3,14 @@ const baseController = require(`../controller/baseController`);
 
 class missionProcessingTrackerController extends baseController {
     async getUserWeeklyMissionProcessing(ctx) {
-        const {status} = ctx.request.query;
-        let result = await this.service[`missionProcessingTrackerService`].getUserWeeklyMissionProcessing(ctx.user._id, status);
+
+        let result = await this.service[`missionProcessingTrackerService`].getUserWeeklyMissionProcessing(ctx.user._id);
         this.success([result, result.length]);
     };
 
     async getUserDailyMissionProcessing(ctx) {
-        const {status} = ctx.request.query;
-        let result = await this.service[`missionProcessingTrackerService`].getUserDailyMissionProcessing(ctx.user._id, status);
+
+        let result = await this.service[`missionProcessingTrackerService`].getUserDailyMissionProcessing(ctx.user._id);
         this.success([result, result.length]);
     };
 

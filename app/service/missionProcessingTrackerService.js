@@ -58,8 +58,7 @@ class MissionEventManager extends Service {
 
         return this.ctx.model.DailyMissionProcessingTracker.find({
             userID: user_ID,
-            effectDay: this.ctx.app[`getFormatDate`](),
-            completed: status
+            effectDay: this.ctx.app[`getFormatDate`]()
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
@@ -67,8 +66,7 @@ class MissionEventManager extends Service {
 
         return this.ctx.model.WeeklyMissionProcessingTracker.find({
             userID: user_ID,
-            effectDay: this.ctx.app[`getFormatWeek`](),
-            completed: status
+            effectDay: this.ctx.app[`getFormatWeek`]()
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
@@ -76,8 +74,7 @@ class MissionEventManager extends Service {
 
         return this.ctx.model.PermanentMissionProcessingTracker.find({
             userID: user_ID,
-            effectDay: `Permanent`,
-            completed: status
+            effectDay: `Permanent`
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
