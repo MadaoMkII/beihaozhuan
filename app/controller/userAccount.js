@@ -161,6 +161,7 @@ class userAccount extends baseController {
         if (ctx.helper.isEmpty(role)) {
             condition = {role: {$in: [`客服`, `运营`]}};
         }
+        s
         let newUser = await ctx.service[`userService`].getManyUser(condition, option, {
             role: 1,
             tel_number: 1,
@@ -180,6 +181,16 @@ class userAccount extends baseController {
             return;
         }
         await ctx.service[`userService`].updateUser(condition.uuid, {role: `用户`});
+        this.success();
+    };
+
+    async setUserOpenStatus(ctx) {
+        let [condition,] = await this.cleanupRequestProperty('userAccountController.setUserStatusRule',
+            'uuid', `activity`);
+        if (!condition) {
+            return;
+        }
+        await ctx.service[`userService`].updateUser(condition.uuid, {"userStatus.activity": `用户`});
         this.success();
     };
 

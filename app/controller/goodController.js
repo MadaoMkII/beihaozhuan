@@ -12,8 +12,9 @@ class goodController extends baseController {
         if (!ctx.helper.isEmpty(condition.title)) {
             condition.title = {$regex: `.*${condition.title}.*`};
         }
+        condition.status = "enable";
         let count = await this.getFindModelCount(`Good`, condition);
-        let result = await ctx.service.goodService.getManyGood(condition, option);
+        let result = await ctx.service[`goodService`].getManyGood(condition, option);
         return this.success([result, count]);
     };
 
@@ -22,7 +23,7 @@ class goodController extends baseController {
         if (ctx.helper.isEmpty(uuid)) {
             this.failure(`uuid can not be empty`, 400)
         }
-        await ctx.service.goodService.delGood(uuid);
+        await ctx.service[`goodService`].delGood(uuid);
         return this.success();
     };
 
@@ -33,7 +34,7 @@ class goodController extends baseController {
             return;
         }
 
-        let result = await ctx.service.goodService.setGoodStatus(condition);
+        let result = await ctx.service[`goodService`].setGoodStatus(condition);
         if (ctx.helper.isEmpty(result)) {
             return this.failure(`找不到商品`, 400);
         }
@@ -52,7 +53,7 @@ class goodController extends baseController {
         const files = ctx.request.files;
         if (!ctx.helper.isEmpty(files)) {
             for (let fileObj of files) {
-                let ossUrl = await ctx.service.picService.putImgs(fileObj);
+                let ossUrl = await ctx.service[`picService`].putImgs(fileObj);
                 if (fileObj.field === `mainlyShowPicUrl`) {
                     newGood.mainlyShowPicUrl = ossUrl;
                 } else {
@@ -77,7 +78,7 @@ class goodController extends baseController {
             if (newGood === false) {
                 return;
             }
-            let result = await ctx.service.goodService.updateGood(newGood, uuid);
+            let result = await ctx.service[`goodService`].updateGood(newGood, uuid);
             if (ctx.helper.isEmpty(result)) {
                 return this.failure(`通过UUID找不到商品`, 400);
             }
@@ -95,15 +96,15 @@ class goodController extends baseController {
                 return;
             }
             newGood.uuid = uuid;
-            let result = await ctx.service.goodService.createGood(newGood);
+            let result = await ctx.service[`goodService`].createGood(newGood);
             return this.success(result);
         } catch (e) {
             this.failure(e.message, 503)
         }
     };
 
-    async getRecommendGood(ctx) {
-        let setting = await this.service.goodService.getRecommendGood();
+    async getRecommendGood() {
+        let setting = await this.service[`goodService`].getRecommendGood();
         this.success(setting);
     };
 }
