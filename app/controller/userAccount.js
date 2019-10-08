@@ -159,7 +159,7 @@ class userAccount extends baseController {
             return;
         }
         if (ctx.helper.isEmpty(role)) {
-            condition = {role: {$in: [`客服`, `超管`]}};
+            condition = {role: {$in: [`客服`, `运营`]}};
         }
         let newUser = await ctx.service[`userService`].getManyUser(condition, option, {
             role: 1,
@@ -205,8 +205,7 @@ class userAccount extends baseController {
 
     async generatorInviteLink(ctx) {
         this.success(`https://www.beihaozhuan.com/index?inviteCode=${ctx.user.inviteCode}`);
-        ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日邀新人`);
-        ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每周邀新人`);
+
     };
 
     async getMyTeam(ctx) {

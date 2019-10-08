@@ -209,50 +209,50 @@ class authController extends Controller {
         }
     };
 
-    async register_fake(ctx) {
-        try {
-            const [requestEntity] = await this.cleanupRequestProperty('authRules.loginRule',
-                `smsVerifyCode`, `password`, `tel_number`);
-            if (!requestEntity) {
-                return;
-            }
-            if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
-                String(requestEntity.smsVerifyCode).toLowerCase())) {
-                //ctx.throw(403, `VerifyCode verify failed`);
-                return this.failure(`验证码不正确`, 403);
-            }
-            if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
-                String(requestEntity.tel_number).toLowerCase())) {
-                // ctx.throw(402, `tel_number smsVerifyCode doesn't exist`);
-                return this.failure(`验证码不正确`, 403);
-            }
-            ctx.session.tel_number = null;
-            ctx.session.smsVerifyCode = null;
-            let oldUser = await ctx.model[`UserAccountFake`].findOne({tel_number: requestEntity.tel_number});
-
-            if (!ctx.helper.isEmpty(oldUser)) {
-                return this.failure(`电话号码已经被注册`, 400);
-            }
-            //const enPassword = ctx.helper.passwordEncrypt(requestEntity.password);
-            let uuid = require('cuid')();
-            const newUser = {
-                password: requestEntity.password,
-                uuid: uuid,
-                tel_number: requestEntity.tel_number,
-            };
-
-            let userNew = new this.ctx.model.UserAccountFake(newUser);
-            userNew.save();
-            this.success();
-        } catch (e) {
-            if (e.message.toString().includes(`E11000`)) {
-                return this.failure(`tel_number is duplicated `, 400);
-            } else {
-                this.failure(e.message, 503);
-            }
-        }
-
-    }
+    // async register_fake(ctx) {
+    //     try {
+    //         const [requestEntity] = await this.cleanupRequestProperty('authRules.loginRule',
+    //             `smsVerifyCode`, `password`, `tel_number`);
+    //         if (!requestEntity) {
+    //             return;
+    //         }
+    //         if (ctx.helper.isEmpty(ctx.session.smsVerifyCode) || !(String(ctx.session.smsVerifyCode).toLowerCase() ===
+    //             String(requestEntity.smsVerifyCode).toLowerCase())) {
+    //             //ctx.throw(403, `VerifyCode verify failed`);
+    //             return this.failure(`验证码不正确`, 403);
+    //         }
+    //         if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
+    //             String(requestEntity.tel_number).toLowerCase())) {
+    //             // ctx.throw(402, `tel_number smsVerifyCode doesn't exist`);
+    //             return this.failure(`验证码不正确`, 403);
+    //         }
+    //         ctx.session.tel_number = null;
+    //         ctx.session.smsVerifyCode = null;
+    //         let oldUser = await ctx.model[`UserAccountFake`].findOne({tel_number: requestEntity.tel_number});
+    //
+    //         if (!ctx.helper.isEmpty(oldUser)) {
+    //             return this.failure(`电话号码已经被注册`, 400);
+    //         }
+    //         //const enPassword = ctx.helper.passwordEncrypt(requestEntity.password);
+    //         let uuid = require('cuid')();
+    //         const newUser = {
+    //             password: requestEntity.password,
+    //             uuid: uuid,
+    //             tel_number: requestEntity.tel_number,
+    //         };
+    //
+    //         let userNew = new this.ctx.model.UserAccountFake(newUser);
+    //         userNew.save();
+    //         this.success();
+    //     } catch (e) {
+    //         if (e.message.toString().includes(`E11000`)) {
+    //             return this.failure(`tel_number is duplicated `, 400);
+    //         } else {
+    //             this.failure(e.message, 503);
+    //         }
+    //     }
+    //
+    // }
 
     async biefanle(ctx) {
         try {
@@ -313,21 +313,21 @@ class authController extends Controller {
         }
     }
 
-    async signIn_fake(ctx) {
-        const {tel_number} = ctx.query;
-        let thisDay = ctx.app.getFormatDate();
-        let newUser = await this.ctx.model.UserAccountFake.findOne({tel_number: tel_number});
-        if (ctx.helper.isEmpty(newUser)) {
-            return this.success(null, `找不到这个用户，请注册`, 404)
-        }
-        if (newUser.lastSignInDay === thisDay) {
-            return this.success({count: newUser.signTimes}, `今天已经签到了`, 201)
-        } else {
-            let user = await this.ctx.model.UserAccountFake.findOneAndUpdate({tel_number: tel_number},
-                {$set: {lastSignInDay: thisDay}, $inc: {signTimes: 1}}, {new: true});
-            return this.success({count: user.signTimes}, `签到成功`)
-        }
-    }
+    // async signIn_fake(ctx) {
+    //     const {tel_number} = ctx.query;
+    //     let thisDay = ctx.app.getFormatDate();
+    //     let newUser = await this.ctx.model.UserAccountFake.findOne({tel_number: tel_number});
+    //     if (ctx.helper.isEmpty(newUser)) {
+    //         return this.success(null, `找不到这个用户，请注册`, 404)
+    //     }
+    //     if (newUser.lastSignInDay === thisDay) {
+    //         return this.success({count: newUser.signTimes}, `今天已经签到了`, 201)
+    //     } else {
+    //         let user = await this.ctx.model.UserAccountFake.findOneAndUpdate({tel_number: tel_number},
+    //             {$set: {lastSignInDay: thisDay}, $inc: {signTimes: 1}}, {new: true});
+    //         return this.success({count: user.signTimes}, `签到成功`)
+    //     }
+    // }
 
     async signIn(ctx) {
 
