@@ -401,7 +401,7 @@ class analyzeService extends Service {
 
     async countGoodForChart(beginDate = new Date(`2019-08-30`)) {
         let aggregateResult = await this.ctx.model[`OrderTracker`].aggregate([
-            // {$match: {absoluteDate: {$gte: beginDate}}},
+             {$match: {created_at: {$gte: beginDate}}},
             // {
             //     $lookup:
             //         {
