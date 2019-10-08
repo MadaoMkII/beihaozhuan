@@ -190,7 +190,7 @@ class userAccount extends baseController {
         if (!condition) {
             return;
         }
-        await ctx.service[`userService`].updateUser(condition.uuid, {"userStatus.activity": `用户`});
+        await ctx.service[`userService`].updateUser(condition.uuid, {"userStatus.activity": condition.activity});
         this.success();
     };
 
