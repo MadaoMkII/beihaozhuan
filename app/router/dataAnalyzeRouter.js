@@ -9,4 +9,6 @@ module.exports = app => {
 
     router.get('/chart/getAdvCompare', app.middleware.authenticatedMiddleware(`客服`),
         controller[`dataAnalyzeController`].countAdvForChart);
+    router.get('/chart/countGoodForChart', app.middleware.authenticatedMiddleware(`客服`),
+        controller[`dataAnalyzeController`].countGoodForChart);
 };

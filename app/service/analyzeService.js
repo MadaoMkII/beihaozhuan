@@ -326,7 +326,7 @@ class analyzeService extends Service {
     };
 
     async countAdvForChart(beginDate = new Date(`2019-08-30`)) {
-        let aggregateResult = await this.ctx.model[`OrderTracker`].aggregate([
+        let aggregateResult = await this.ctx.model[`AdvRecord`].aggregate([
             {$match: {absoluteDate: {$gte: beginDate}}},
             {
                 $lookup:
@@ -398,11 +398,59 @@ class analyzeService extends Service {
 
     };
 
-    //
-    // async countFavoriteGoodForChart(beginDate = new Date(`2019-08-30`)) {
-    //
-    //
-    // };
+
+    async countGoodForChart(beginDate = new Date(`2019-08-30`)) {
+        let aggregateResult = await this.ctx.model[`OrderTracker`].aggregate([
+            // {$match: {absoluteDate: {$gte: beginDate}}},
+            // {
+            //     $lookup:
+            //         {
+            //             from: "Good",
+            //             localField: "goodID",
+            //             foreignField: "_id",
+            //             as: "GoodObj"
+            //         }
+            // },
+            // {
+            //     $replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ["$GoodObj", 0]}, "$$ROOT"]}}
+            // },
+            {
+                "$group": {
+                    "_id": {goodID: "$goodID"},//type: "$type" 这件事得问问前端
+                    "total": {"$sum": "$goodPrice"},
+                    "title": {$first: "$title"}
+                }
+            },
+            {
+                $project:
+                    {
+                        _id: 0,
+                        title: "$title",
+                        total: 1
+                    }
+            }
+        ]);
+        console.log(aggregateResult)
+        aggregateResult = aggregateResult.sort((a, b) => {
+            return a.type - b.type;
+        });
+
+
+        let categories = [];
+        let seriesData_1 = [];
+        let totalAmount = 0;
+        aggregateResult.forEach((element) => {
+            totalAmount += element.total;
+            categories.push(element.title);
+            seriesData_1.push(element.total);
+        });
+
+        return {
+            total: totalAmount, categories: categories, series: [
+                {seriesData: seriesData_1}
+            ]
+        };
+    };
 
 
     async dataIncrementRecord(content, amount, type) {
