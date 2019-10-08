@@ -284,7 +284,7 @@ class analyzeService extends Service {
 
             {
                 "$group": {
-                    "_id": {advertisementID: "$advertisementID"},//type: "$type" 这件事得问问前端
+                    "_id": {advertisementID: "$advertisementID", type: "$type"},//type: "$type" 这件事得问问前端
                     "total": {"$sum": "$amount"},
                     "positionName": {$first: "$positionName"},
                     "source": {$first: "$source"},
@@ -296,7 +296,7 @@ class analyzeService extends Service {
                 }
             },
             {
-                $match: {source: source}
+                $match: {source: source, "_id.type": "close"}
             },
             {
                 $addFields: {
@@ -318,7 +318,7 @@ class analyzeService extends Service {
                     }
             }
         ]);
-
+        console.log(aggregateResult)
         let count = aggregateResult.length;
         let result = aggregateResult.slice(option.skip, option.skip + option.limit);
         return [result, count]
@@ -401,7 +401,7 @@ class analyzeService extends Service {
 
     async countGoodForChart(beginDate = new Date(`2019-08-30`)) {
         let aggregateResult = await this.ctx.model[`OrderTracker`].aggregate([
-             {$match: {created_at: {$gte: beginDate}}},
+            {$match: {created_at: {$gte: beginDate}}},
             // {
             //     $lookup:
             //         {
