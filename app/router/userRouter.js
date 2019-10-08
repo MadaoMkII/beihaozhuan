@@ -33,9 +33,9 @@ module.exports = app => {
     router.post('/user/disableUserAdminStatus', app.middleware.authenticatedMiddleware(`运营`), controller[`userAccount`].setUserStatus);
 
     router.get('/user/getInviteLink', app.middleware.authenticatedMiddleware(`用户`), controller[`userAccount`].generatorInviteLink);
-    router.get('/user/signIn', controller[`authController`].signIn_fake);
+    //router.get('/user/signIn', controller[`authController`].signIn_fake);
     router.get('/user/signInReal', app.middleware.authenticatedMiddleware(`用户`), controller[`authController`].signIn);
-    router.post('/user/register_test', controller[`authController`].register_fake);
+    //router.post('/user/register_test', controller[`authController`].register_fake);
     router.post('/verify/sendVerifySmsMessage_test', controller[`smsController`].sendVerifySmsMessage_fakes);
 
     router.get('/wechat/callback', controller[`wechatController`].callback);
