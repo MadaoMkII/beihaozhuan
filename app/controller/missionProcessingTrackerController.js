@@ -3,21 +3,34 @@ const baseController = require(`../controller/baseController`);
 
 class missionProcessingTrackerController extends baseController {
     async getUserWeeklyMissionProcessing(ctx) {
-
-        let result = await this.service[`missionProcessingTrackerService`].getUserWeeklyMissionProcessing(ctx.user._id);
-        this.success([result, result.length]);
+        try {
+            let result = await this.service[`missionProcessingTrackerService`].getUserWeeklyMissionProcessing(ctx.user._id);
+            this.success([result, result.length]);
+        } catch (e) {
+            this.app.logger.error(e, ctx);
+            this.failure();
+        }
     };
 
     async getUserDailyMissionProcessing(ctx) {
-
-        let result = await this.service[`missionProcessingTrackerService`].getUserDailyMissionProcessing(ctx.user._id);
-        this.success([result, result.length]);
+        try {
+            let result = await this.service[`missionProcessingTrackerService`].getUserDailyMissionProcessing(ctx.user._id);
+            this.success([result, result.length]);
+        } catch (e) {
+            this.app.logger.error(e, ctx);
+            this.failure();
+        }
     };
 
     async getUserPermanentMissionProcessing(ctx) {
-        const {status} = ctx.request.query;
-        let result = await this.service[`missionProcessingTrackerService`].getUserPermanentMissionProcessing(ctx.user._id, status);
-        this.success([result, result.length]);
+        try {
+            const {status} = ctx.request.query;
+            let result = await this.service[`missionProcessingTrackerService`].getUserPermanentMissionProcessing(ctx.user._id, status);
+            this.success([result, result.length]);
+        } catch (e) {
+            this.app.logger.error(e, ctx);
+            this.failure();
+        }
     };
 
     async completeMission(ctx) {
@@ -35,14 +48,14 @@ class missionProcessingTrackerController extends baseController {
             this.success();
 
             Promise.all([promise_1, amount, promise_3]).then(function (values) {
-            }).catch(function (reason) {
-
+            }).catch(function (error) {
+                ctx.throw(503, error);
             })
         } catch (e) {
-            this.failure(e.message);
+            this.app.logger.error(e, ctx);
+            this.failure();
         }
-
-    }
+    };
 }
 
 module.exports = missionProcessingTrackerController;

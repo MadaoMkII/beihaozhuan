@@ -5,76 +5,82 @@ const Controller = require('./baseController');
 class authController extends Controller {
 
     async login(ctx) {
-        // let server = ctx.protocol + '://' + ctx.host;
-        // let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
 
-        const [condition] = await this.cleanupRequestProperty('authRules.loginRule',
-            `password`, `tel_number`, `smsLoginVerifyCode`, `rememberMe`);
-        if (!condition) {
-            return;
-        }
-        let userResult, verifyFlag;
-        if (ctx.user) {
-            ctx.logout();
-        }
-        if (!this.ctx.helper.isEmpty(condition.smsLoginVerifyCode)) {
-            if (ctx.session.smsLoginVerifyCode === condition.smsLoginVerifyCode) {
-                verifyFlag = true;
-                ctx.session.smsLoginVerifyCode = undefined;
-                userResult = await ctx.service[`userService`].getUser({
-                    tel_number: condition.tel_number
-                });
-            } else {
-                this.failure(`smsLoginVerifyCode 验证失败`, 4010, 400);
+        try {
+            // let server = ctx.protocol + '://' + ctx.host;
+            // let url = `${server}/email/valid?act=forget&email=xxx&token=aa`;
+
+            const [condition] = await this.cleanupRequestProperty('authRules.loginRule',
+                `password`, `tel_number`, `smsLoginVerifyCode`, `rememberMe`);
+            if (!condition) {
                 return;
             }
-        } else if (!this.ctx.helper.isEmpty(condition.password)) {
-            userResult = await ctx.service[`userService`].getUser({
-                tel_number: condition.tel_number,
-                password: ctx.helper.passwordEncrypt(condition.password)
-            });
-        } else {
-            return this.failure(`登陆方式失败`, 4001, 400);
-        }
-
-        if (ctx.helper.isEmpty(userResult) || ctx.helper.isEmpty(userResult.uuid)) {
-            return this.failure(`该用户未注册或密码不正确`, 4002, 400);
-        }
-
-        if (ctx.helper.isEmpty(userResult.userStatus) ||
-            (ctx.helper.isEmpty(userResult.userStatus.activity) ||
-                userResult.userStatus.activity === `disable`)) {
-            return this.failure(`这个用户已经被停权`, 4003, 400);
-        }
-        if (userResult || verifyFlag) {
-            await ctx.service[`userService`].updateUser_login(userResult);
-
-            if (condition[`rememberMe`]) {
-                ctx.session.maxAge = ms('7d');
+            let userResult, verifyFlag;
+            if (ctx.user) {
+                ctx.logout();
+            }
+            if (!this.ctx.helper.isEmpty(condition.smsLoginVerifyCode)) {
+                if (ctx.session.smsLoginVerifyCode === condition.smsLoginVerifyCode) {
+                    verifyFlag = true;
+                    ctx.session.smsLoginVerifyCode = undefined;
+                    userResult = await ctx.service[`userService`].getUser({
+                        tel_number: condition.tel_number
+                    });
+                } else {
+                    this.failure(`smsLoginVerifyCode 验证失败`, 4010, 400);
+                    return;
+                }
+            } else if (!this.ctx.helper.isEmpty(condition.password)) {
+                userResult = await ctx.service[`userService`].getUser({
+                    tel_number: condition.tel_number,
+                    password: ctx.helper.passwordEncrypt(condition.password)
+                });
             } else {
-                ctx.session.maxAge = ms('2h');
+                return this.failure(`登陆方式失败`, 4001, 400);
             }
 
+            if (ctx.helper.isEmpty(userResult) || ctx.helper.isEmpty(userResult.uuid)) {
+                return this.failure(`该用户未注册或密码不正确`, 4002, 400);
+            }
 
-            ctx.login(userResult);
-            //ctx.rotateCsrfSecret();
+            if (ctx.helper.isEmpty(userResult.userStatus) ||
+                (ctx.helper.isEmpty(userResult.userStatus.activity) ||
+                    userResult.userStatus.activity === `disable`)) {
+                return this.failure(`这个用户已经被停权`, 4003, 400);
+            }
+            if (userResult || verifyFlag) {
+                await ctx.service[`userService`].updateUser_login(userResult);
 
-            this.success();
-
-        } else {
-            this.failure(`login failed`, 5000, 503);
+                if (condition[`rememberMe`]) {
+                    ctx.session.maxAge = ms('7d');
+                } else {
+                    ctx.session.maxAge = ms('2h');
+                }
+                ctx.login(userResult);
+                //ctx.rotateCsrfSecret();
+                this.success();
+            } else {
+                this.failure(`登陆失败`, 5000, 503);
+            }
+        } catch (e) {
+            this.app.logger.error(e, ctx);
+            this.failure();
         }
     };
 
     async logout(ctx) {
+        try {
+            if (!ctx.user) {
+                return this.failure(`用户还没有登录`, 4004, 400);
+            } else {
+                ctx.logout();
+                this.success();
+            }
 
-        if (!ctx.user) {
-            return this.failure(`用户还没有登录`, 4004, 400);
-        } else {
-            ctx.logout();
-            this.success();
+        } catch (e) {
+            this.app.logger.error(e, ctx);
+            this.failure();
         }
-
     };
 
 
@@ -129,15 +135,12 @@ class authController extends Controller {
             delete newUser.password;
 
             Promise.all([promise_1, promise_2]).catch((error) => {
-
+                ctx.throw(503, error);
             });
             this.success()
         } catch (e) {
-            if (e.message.toString().includes(`E11000`)) {
-                return this.failure(`tel_number is duplicated `, 400);
-            } else {
-                this.failure(e.message, 5000, 503);
-            }
+            this.app.logger.error(e, ctx);
+            this.failure();
         }
     };
 
@@ -200,11 +203,8 @@ class authController extends Controller {
             this.success();
             await promise;
         } catch (e) {
-            if (e.message.toString().includes(`E11000`)) {
-                return this.failure(`tel_number is duplicated `, 400);
-            } else {
-                this.failure(e.message, 5000, 503);
-            }
+            this.app.logger.error(e, ctx);
+            this.failure();
         }
     };
 
@@ -294,23 +294,23 @@ class authController extends Controller {
         }
     };
 
-    async lottery(ctx) {
-        const {tel_number} = ctx.request.query;
-        if (ctx.helper.isEmpty(tel_number)) {
-            return this.success(`该手机号没有填写`, 404)
-        }
-        let newUser = await this.ctx.model.UserAccountFake.findOne({tel_number: tel_number});
-        if (ctx.helper.isEmpty(newUser)) {
-            return this.success(null, `找不到这个用户，请注册`, 404)
-        }
-        if (newUser.lottery >= 2) {
-            return this.success({count: newUser.lottery}, `您的抽奖机会已经耗尽`, 201)
-        } else {
-            let user = await this.ctx.model.UserAccountFake.findOneAndUpdate({tel_number: tel_number},
-                {$inc: {lottery: 1}}, {new: true});
-            return this.success({count: user.lottery}, `抽奖成功`)
-        }
-    }
+    // async lottery(ctx) {
+    //     const {tel_number} = ctx.request.query;
+    //     if (ctx.helper.isEmpty(tel_number)) {
+    //         return this.success(`该手机号没有填写`, 404)
+    //     }
+    //     let newUser = await this.ctx.model.UserAccountFake.findOne({tel_number: tel_number});
+    //     if (ctx.helper.isEmpty(newUser)) {
+    //         return this.success(null, `找不到这个用户，请注册`, 404)
+    //     }
+    //     if (newUser.lottery >= 2) {
+    //         return this.success({count: newUser.lottery}, `您的抽奖机会已经耗尽`, 201)
+    //     } else {
+    //         let user = await this.ctx.model.UserAccountFake.findOneAndUpdate({tel_number: tel_number},
+    //             {$inc: {lottery: 1}}, {new: true});
+    //         return this.success({count: user.lottery}, `抽奖成功`)
+    //     }
+    // }
 
     // async signIn_fake(ctx) {
     //     const {tel_number} = ctx.query;
@@ -328,24 +328,24 @@ class authController extends Controller {
     //     }
     // }
 
-    async signIn(ctx) {
-
-        let thisDay = ctx.app.getFormatDate();
-        let newUser = await this.ctx.model.UserAccount.findOne({tel_number: ctx.user.tel_number});
-        if (ctx.helper.isEmpty(newUser)) {
-            return this.success(null, `找不到这个用户，请注册`, 404)
-        }
-        if (newUser.lastSignInDay === thisDay) {
-            return this.success({count: newUser.signTimes}, `今天已经签到了`, 201)
-        } else {
-            let user = await this.ctx.model.UserAccount.findOneAndUpdate({tel_number: ctx.user.tel_number},
-                {$set: {lastSignInDay: thisDay}, $inc: {signTimes: 1}}, {new: true});
-
-            ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日签到`);
-            ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每周签到`);
-            return this.success({count: user.signTimes}, `签到成功`)
-        }
-    }
+    // async signIn(ctx) {
+    //
+    //     let thisDay = ctx.app.getFormatDate();
+    //     let newUser = await this.ctx.model.UserAccount.findOne({tel_number: ctx.user.tel_number});
+    //     if (ctx.helper.isEmpty(newUser)) {
+    //         return this.success(null, `找不到这个用户，请注册`, 404)
+    //     }
+    //     if (newUser.lastSignInDay === thisDay) {
+    //         return this.success({count: newUser.signTimes}, `今天已经签到了`, 201)
+    //     } else {
+    //         let user = await this.ctx.model.UserAccount.findOneAndUpdate({tel_number: ctx.user.tel_number},
+    //             {$set: {lastSignInDay: thisDay}, $inc: {signTimes: 1}}, {new: true});
+    //
+    //         ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日签到`);
+    //         ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每周签到`);
+    //         return this.success({count: user.signTimes}, `签到成功`)
+    //     }
+    // }
 }
 
 module.exports = authController;

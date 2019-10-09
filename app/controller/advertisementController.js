@@ -22,7 +22,7 @@ class advertisementController extends Controller {
             //ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `邀请新人加入`);
             this.success();
             Promise.all(promiseArray).catch((error) => {
-                console.log(error)
+                ctx.throw(500, error);
             });
         } catch (e) {
             this.app.logger.error(e, ctx);
@@ -52,16 +52,16 @@ class advertisementController extends Controller {
                 `获得`, advertisementObj.reward);
             let newBcoin = Number(ctx.user.Bcoins) + Number(advertisementObj.reward);
             let promise_4 = ctx.service[`userService`].changeBcoin(ctx.user._id, newBcoin + ``);
+            this.success();
+
             ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `看一个广告`);
             ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每周看广告`);
             ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日看广告`);
             ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日看广告_高级`);
             //ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `看一些广告`); //以后需要动态配置 任务没有开启不需要监听器
             promiseArray.push(promise_1, promise_2, promise_3, promise_4);
-            this.success();
-
             Promise.all(promiseArray).catch((error) => {
-                console.log(error)
+                ctx.throw(500, error);
             });
         } catch (e) {
             this.app.logger.error(e, ctx);
@@ -77,7 +77,7 @@ class advertisementController extends Controller {
                 return this.success({object: `uuid 必须填写`}, 200);
             }
             let result = ctx.service[`advertisementService`].deleteAdvertisement(uuid);
-            this.success(result);
+            this.success();
             await result;
         } catch (e) {
             this.app.logger.error(e, ctx);
@@ -98,9 +98,8 @@ class advertisementController extends Controller {
                 let ossUrl = await ctx.service[`picService`].putImgs(files[0]);
                 advertisement.carouselUrl = (ossUrl);
             }
-            let result = ctx.service[`advertisementService`].createAdvertisement(advertisement);
-            this.success(result);
-            await result;
+            await ctx.service[`advertisementService`].createAdvertisement(advertisement);
+            this.success();
         } catch (e) {
             this.app.logger.error(e, ctx);
             this.failure();
@@ -154,9 +153,8 @@ class advertisementController extends Controller {
             if (!condition) {
                 return;
             }
-            let service = ctx.service[`advertisementService`].updateAdvertisement(condition.uuid, condition);
+            await ctx.service[`advertisementService`].updateAdvertisement(condition.uuid, condition);
             this.success();
-            await service;
         } catch (e) {
             this.app.logger.error(e, ctx);
             this.failure();
@@ -190,5 +188,4 @@ class advertisementController extends Controller {
         }
     }
 }
-
 module.exports = advertisementController;

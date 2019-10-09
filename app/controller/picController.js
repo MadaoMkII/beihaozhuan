@@ -1,57 +1,50 @@
 'use strict';
-
 const Controller = require('./baseController');
-const fs = require('fs');
-const path = require('path');
-
 class picController extends Controller {
 
-
     async delImgs(ctx) {
-        let body = [
-            "https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/11354820137869.jpg",
-            "https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/336568005599.jpg",
-            "https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/1578842122952.jpg"
-        ];
-        let result = await this.service.picService.deleteManyImg(body)
-        if (result !== null && result.res.status === 200) {
-            return this.success(result);
-        } else {
-            return this.failure()
+        try {
+            let body = [
+                "https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/11354820137869.jpg",
+                "https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/336568005599.jpg",
+                "https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/images/1578842122952.jpg"
+            ];
+            let result = await this.service.picService.deleteManyImg(body);
+            if (result !== null && result.res.status === 200) {
+                return this.success(result);
+            } else {
+                return this.failure()
+            }
+        } catch (e) {
+            ctx.throw(503, error);
         }
-
     };
 
     async deleteImg(ctx) {
         try {
             let {imageUrl} = ctx.request.query;
-
-
-            let result = await ctx.service.picService.deleteImg(imageUrl);
-
+            let result = await ctx.service[`picService`].deleteImg(imageUrl);
             if (ctx.helper.isEmpty(result) || 200 !== result.res.status) {
                 return this.failure(`find not`, 404);
             }
             this.success();
         } catch (e) {
-            this.failure(`delete failed`);
+            this.app.logger.error(e, ctx);
+            this.failure();
         }
     };
 
     async uploadImgs(ctx) {
         try {
-
             const files = ctx.request.files;
-
             //const stream = await ctx.getFileStream();
             let ossurl;
             files.forEach((file) => {
-                ossurl = ctx.service.picService.putImgs(file);
+                ossurl = ctx.service[`picService`].putImgs(file);
             });
-
             this.success();
         } catch (e) {
-
+            this.app.logger.error(e, ctx);
             this.failure();
         }
         //console.log('got %d files', ctx.request.files.length);
@@ -76,10 +69,6 @@ class picController extends Controller {
         // } else {
         //     ctx.body = 'please select a file to upload！';
         // }
-
     };
-
-
 }
-
 module.exports = picController;

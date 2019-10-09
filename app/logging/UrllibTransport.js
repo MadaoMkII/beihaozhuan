@@ -11,7 +11,8 @@ class UrllibTransport extends Transport {
             const err = args[0];
             //log = util.format('%s: %s\n%s\npid: %s\n', err.name, err.message, err.stack, process.pid);
             // result.log = log;
-            result.level = err.name.toUpperCase();
+            result.level = `ERROR`;
+            result.reason = err.name.toUpperCase();
             result.message = err.message;
             result.stack = err.stack;
             if (ctx && ctx instanceof Object) {

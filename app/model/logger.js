@@ -8,6 +8,7 @@ module.exports = app => {
         originalUrl: String,
         date: Date,
         tel_number: String,
+        reason: String,
         request: mongoose.Schema.Types.Mixed,
         uuid: String,
         nickName: String,

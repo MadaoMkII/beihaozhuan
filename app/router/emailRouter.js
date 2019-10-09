@@ -5,6 +5,6 @@ module.exports = app => {
     // router.get('/sms', controller.smsController.sendSmsMessage);
     router.post('/verify/sendVerifySmsMessage', controller.smsController.sendVerifySmsMessage);
     router.post('/verify/smsLoginVerifyCode', controller.smsController.sendLoginVerifySmsMessage);
-    router.post('/verify/sendFindPasswordBackSmsMessage', controller.smsController.sendfindPasswordBackSmsMessage);
-    router.post('/verify/verifyFpbCode', controller.smsController.verifyfpbCode);
+    router.post('/verify/sendFindPasswordBackSmsMessage', controller.smsController.sendFindPasswordBackSmsMessage);
+    router.post('/verify/verifyFpbCode', controller.smsController.verifyFpbCode);
 };

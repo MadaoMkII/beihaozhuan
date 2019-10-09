@@ -67,8 +67,6 @@ class wechatController extends baseController {
             const OPENID = result_2[`openid`];
             let user = await this.ctx.service.userService.getUser({OPENID: OPENID});
             if (!ctx.helper.isEmpty(user)) {
-
-
                 ctx.login(user);
                 ctx.status = 301;
                 ctx.redirect(`/index`);
@@ -94,11 +92,10 @@ class wechatController extends baseController {
                 ctx.redirect(`/index?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`);
             }
         } catch (e) {
-            this.failure(e.message)
+            this.app.logger.error(e, ctx);
+            this.failure();
         }
-
-
-    }
+    };
 }
 
 module.exports = wechatController;
