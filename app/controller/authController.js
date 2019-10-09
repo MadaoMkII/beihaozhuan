@@ -328,24 +328,24 @@ class authController extends Controller {
     //     }
     // }
 
-    // async signIn(ctx) {
-    //
-    //     let thisDay = ctx.app.getFormatDate();
-    //     let newUser = await this.ctx.model.UserAccount.findOne({tel_number: ctx.user.tel_number});
-    //     if (ctx.helper.isEmpty(newUser)) {
-    //         return this.success(null, `找不到这个用户，请注册`, 404)
-    //     }
-    //     if (newUser.lastSignInDay === thisDay) {
-    //         return this.success({count: newUser.signTimes}, `今天已经签到了`, 201)
-    //     } else {
-    //         let user = await this.ctx.model.UserAccount.findOneAndUpdate({tel_number: ctx.user.tel_number},
-    //             {$set: {lastSignInDay: thisDay}, $inc: {signTimes: 1}}, {new: true});
-    //
-    //         ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日签到`);
-    //         ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每周签到`);
-    //         return this.success({count: user.signTimes}, `签到成功`)
-    //     }
-    // }
+    async signIn(ctx) {
+
+        let thisDay = ctx.app.getFormatDate();
+        let newUser = await this.ctx.model.UserAccount.findOne({tel_number: ctx.user.tel_number});
+        if (ctx.helper.isEmpty(newUser)) {
+            return this.success(null, `找不到这个用户，请注册`, 404)
+        }
+        if (newUser.lastSignInDay === thisDay) {
+            return this.success({count: newUser.signTimes}, `今天已经签到了`, 201)
+        } else {
+            let user = await this.ctx.model.UserAccount.findOneAndUpdate({tel_number: ctx.user.tel_number},
+                {$set: {lastSignInDay: thisDay}, $inc: {signTimes: 1}}, {new: true});
+
+            ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每日签到`);
+            ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `每周签到`);
+            return this.success({count: user.signTimes}, `签到成功`)
+        }
+    }
 }
 
 module.exports = authController;

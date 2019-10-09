@@ -34,7 +34,7 @@ module.exports = app => {
 
     router.get('/user/getInviteLink', app.middleware.authenticatedMiddleware(`用户`), controller[`userAccount`].generatorInviteLink);
     //router.get('/user/signIn', controller[`authController`].signIn_fake);
-    //router.get('/user/signInReal', app.middleware.authenticatedMiddleware(`用户`), controller[`authController`].signIn);
+    router.get('/user/signInReal', app.middleware.authenticatedMiddleware(`用户`), controller[`authController`].signIn);
     //router.post('/user/register_test', controller[`authController`].register_fake);
     router.post('/verify/sendVerifySmsMessage_test', controller[`smsController`].sendVerifySmsMessage_fakes);
 
