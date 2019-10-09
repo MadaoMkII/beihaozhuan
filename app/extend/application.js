@@ -58,5 +58,15 @@ module.exports = {
     },
     getInviteCode: function () {
         return (Math.random() / 100000 * Date.now() * 3.1415926).toFixed(0);
+    },
+    getIP: function (req) {
+        let ip = req.get('x-forwarded-for'); // 获取代理前的ip地址
+        if (ip && ip.split(',').length > 0) {
+            ip = ip.split(',')[0];
+        } else {
+            ip = req.ip;
+        }
+        const ipArr = ip.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/g);
+        return ipArr && ipArr.length > 0 ? ipArr[0] : '127.0.0.1';
     }
 };

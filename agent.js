@@ -1,3 +1,5 @@
+let RemoteErrorTransport = require(`./app/logging/RemoteErrorTransport`)
+
 class AppBootHook {
     constructor(app) {
         this.app = app;
@@ -28,8 +30,8 @@ class AppBootHook {
     }
 
     async serverDidReady() {
+        let app = this.app;
 
-        // Server is listening.
     }
 
     async beforeClose() {

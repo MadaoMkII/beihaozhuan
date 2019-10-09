@@ -2,66 +2,107 @@
 //const LocalStrategy = require('passport-local').Strategy;
 // const Logger = require('egg-logger').Logger;
 // const FileTransport = require('egg-logger').FileTransport;
-// const ConsoleTransport = require('egg-logger').ConsoleTransport;
+const ConsoleTransport = require('egg-logger').ConsoleTransport;
 const EventEmitter = require('events');
-module.exports = app => {
-    // 挂载 strategy
-    app.eventEmitter = new EventEmitter();
-    const ctx = app.createAnonymousContext();
-    app.eventEmitter.on(`normalMissionCount`, async (userId, missionName) => {
+let RemoteErrorTransport = require(`./app/logging/RemoteErrorTransport`)
+let UrllibTransport = require(`./app/logging/UrllibTransport`)
 
-        let missionObj = await ctx.model.Mission.findOne({title: missionName, status: "enable"});
-        if (ctx.helper.isEmpty(missionObj)) {
-            //ctx.throw(`监听器任务名匹配有问题，值为${missionName}`);
-            console.log(`监听器任务名匹配有问题或者任务没有开启，值为${missionName}`)
+class AppBootHook {
+    constructor(app) {
+        this.app = app;
+    }
 
-        }
-        let effectDay;
-        switch (missionObj.missionType) {
-            case `Permanent`:
-                effectDay = `Permanent`;
-                break;
-            case `Daily`:
-                effectDay = app.getFormatDate();
-                break;
-            case `Weekly`:
-                effectDay = app.getFormatWeek();
-                break;
-        }
+    configWillLoad() {
+        // Ready to call configDidLoad,
+        // Config, plugin files are referred,
+        // this is the last chance to modify the config.
+    }
+
+    configDidLoad() {
+        // Config, plugin files have been loaded.
+    }
+
+    async didLoad() {
+        // All files have loaded, start plugin here.
+    }
+
+    async willReady() {
+        const app = this.app;
+        app.logger.set('console', new ConsoleTransport({
+            level: 'info',
+        }));
+        //app.getLogger('errorLogger').set('remote', new RemoteErrorTransport({level: 'WARN', app}));
 
 
-        let missionSearcher = {
-            userID: userId,
-            missionID: missionObj._id,
-            effectDay: effectDay,
-            missionEventName: missionName
-        };
-        let modelName = `${missionObj.missionType}MissionProcessingTracker`;
+        app.logger.set('remote', new UrllibTransport({
+            level: 'WARN', app
+        }));
 
-        let res = await ctx.model[modelName].findOneAndUpdate(missionSearcher,
-            {$inc: {recentAmount: 1}},
-            {new: true});
+        // app.getLogger('appLogger').set('remote', new RemoteErrorTransport({level: 'WARN', app}));
+        // All plugins have started, can do some thing before app ready
+    }
 
-        if (!res) {
-            console.log(missionSearcher)
-            console.log(`值为${modelName}`);
+    async didReady() {
+        // Worker is ready, can do some things
+        // don't need to block the app boot.
+        this.app.eventEmitter = new EventEmitter();
+        const ctx = this.app.createAnonymousContext();
+        this.app.eventEmitter.on(`normalMissionCount`, async (userId, missionName) => {
+            let missionObj = await ctx.model.Mission.findOne({title: missionName, status: "enable"});
+            if (ctx.helper.isEmpty(missionObj)) {
+                //ctx.throw(`监听器任务名匹配有问题，值为${missionName}`);
+                console.log(`监听器任务名匹配有问题或者任务没有开启，值为${missionName}`)
+            }
+            let effectDay;
+            switch (missionObj.missionType) {
+                case `Permanent`:
+                    effectDay = `Permanent`;
+                    break;
+                case `Daily`:
+                    effectDay = app.getFormatDate();
+                    break;
+                case `Weekly`:
+                    effectDay = app.getFormatWeek();
+                    break;
+            }
 
-        }
-    });
-    // logger.set('file', new FileTransport({
-    //     file: '/path/to/file',
-    //     level: 'INFO',
-    // }));
-    // logger.set('console', new ConsoleTransport({
-    //     level: 'DEBUG',
-    // }));
 
-    app.passport.serializeUser((ctx, user) => {
-        return {uuid: user.uuid, password: user.password};
-    });
-    app.passport.deserializeUser(async (ctx, user) => {
-        //console.log('deserializeUser', user);
-        return ctx[`model`][`UserAccount`].findOne(user);
-    });
+            let missionSearcher = {
+                userID: userId,
+                missionID: missionObj._id,
+                effectDay: effectDay,
+                missionEventName: missionName
+            };
+            let modelName = `${missionObj.missionType}MissionProcessingTracker`;
 
-};
+            let res = await ctx.model[modelName].findOneAndUpdate(missionSearcher,
+                {$inc: {recentAmount: 1}},
+                {new: true});
+
+            if (!res) {
+                console.log(missionSearcher)
+                console.log(`值为${modelName}`);
+            }
+        });
+    }
+
+    async serverDidReady() {
+        // Server is listening.
+
+        this.app.passport.serializeUser((ctx, user) => {
+            return {uuid: user.uuid, password: user.password};
+        });
+        this.app.passport.deserializeUser(async (ctx, user) => {
+            //console.log('deserializeUser', user);
+            return ctx[`model`][`UserAccount`].findOne(user);
+        });
+
+
+    }
+
+    async beforeClose() {
+        // Do some thing before app close.
+    }
+}
+
+module.exports = AppBootHook;

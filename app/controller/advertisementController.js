@@ -3,28 +3,8 @@ const Controller = require('./baseController');
 
 class advertisementController extends Controller {
 
-    // async createAD(ctx) {
-    //     let uuid = require('cuid')();
-    //     let mission = this.ctx.model.MissionTracker({
-    //         missionType: "ADV",
-    //         requireAmount: 10,
-    //         recentAmount: 1,
-    //         title: `testing`,
-    //         imgUrl: `https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=2642058357,3579319704&fm=179&app=42&f=JPEG?w=320&h=160`,
-    //         good_id: null,
-    //         missionUUid: uuid,
-    //         user_id: ctx.user._id
-    //     });
-    //     mission.save();
-    //     this.success(mission)
-    // };
-// {
-//     sign: 'CD17A9E2F180A9E0DC08F4B1AF833898BCAA879B8E603A880F9967911C30A276D84095C1C4A8E251A4D0C6D963B632FBEC2257A334FE907A3E0CF3B9AFBC81355DE6015D3F3DB030C9FAC8CD851BD601689E3DF8E26BFF1CF0C067D5EB2BE88D',
-//     uuid: 'ADVck0xmzcbt0000fkufflkyftal',
-//     userUUid: 'ck0s0q0xd0000q4ufff2d90e0',
-//     timeStamp: '1569324531534'
-// }
     async checkAdvertisement(ctx) {
+
         const [advertisement,] = await this.cleanupRequestProperty('advertisementRules.checkAdvRule',
             `sign`, `uuid`, `userUUid`, `timeStamp`);
         if (!advertisement) {

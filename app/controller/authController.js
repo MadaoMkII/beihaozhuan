@@ -290,7 +290,7 @@ class authController extends Controller {
             ctx.set("Content-Disposition", "attachment; filename=" + `UserRegister-${app.getLocalTime(new Date())}.xlsx`);
             ctx.body = data;
         } catch (e) {
-            console.log(e)
+
         }
     };
 
