@@ -241,8 +241,13 @@ class analyzeService extends Service {
                 model: this.ctx.model[`Advertisement`],
                 select: '-_id title source reward positionName activity'
             }]);
-            result.push(...aggregateResult)
+            console.log(aggregateResult)
+            result.push(...aggregateResult);
         }
+        result = result.sort((a, b) => {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+
 //不用aggregate 很难分页
         return [this.ctx.helper.sliceArray(result, option), result.length];
         // let endIndex = (option.skip + option.limit) > result.length ? result.length : (option.skip + option.limit);

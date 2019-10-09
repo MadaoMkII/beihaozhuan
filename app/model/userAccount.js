@@ -123,8 +123,6 @@ module.exports = app => {
             if (doc.Bcoins) {
                 ret.Bcoins = doc.Bcoins;
             }
-
-
         }
     });
 

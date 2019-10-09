@@ -155,7 +155,7 @@ class UserService extends Service {
                 }
             }
         },
-            {$sort: {"balanceList.createTime": 1}},
+            {$sort: {"balanceList.createTime": -1}},
             // {$limit: option.limit},
             // {$skip: option.skip},
 
@@ -182,7 +182,7 @@ class UserService extends Service {
 
         if (result.length > 0) {
             let tempArray = result[0].balanceList.sort((a, b) => {
-                return a.createTime - b.createTime;
+                return   b.createTime-a.createTime;
             });
             // let count = await this.ctx.model[`UserAccount`].find
             return [tempArray, result[0].sizeAmount];
