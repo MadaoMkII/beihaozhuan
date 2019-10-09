@@ -127,7 +127,9 @@ class UserService extends Service {
             model: this.ctx.model[`UserAccount`],
             select: 'nickName -_id created_at avatar tel_number',
         });
-
+        if (this.ctx.helper.isEmpty(result)) {
+            return [[], 0];
+        }
         let count = result["referrals"].length;
         let slicedArray = this.ctx.helper.sliceArray(result["referrals"], option);
         return [slicedArray, count];
@@ -180,7 +182,7 @@ class UserService extends Service {
 
         if (result.length > 0) {
             let tempArray = result[0].balanceList.sort((a, b) => {
-                return b.createTime - a.createTime;
+                return a.createTime - b.createTime;
             });
             // let count = await this.ctx.model[`UserAccount`].find
             return [tempArray, result[0].sizeAmount];

@@ -228,7 +228,8 @@ class analyzeService extends Service {
 
 
         let result = [];
-        for (const advertisement of advertisementArray) {
+        for (let i = advertisementArray.length - 1; i >= 0; i--) {
+            let advertisement = advertisementArray[i];
             let aggregateResult = await this.ctx.model[`AdvRecord`].find({advertisementID: advertisement._id},
                 {_id: 0}).populate([{
                 path: `userID`,
@@ -318,7 +319,7 @@ class analyzeService extends Service {
                     }
             }
         ]);
-        console.log(aggregateResult)
+
         let count = aggregateResult.length;
         let result = aggregateResult.slice(option.skip, option.skip + option.limit);
         return [result, count]

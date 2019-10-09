@@ -266,6 +266,7 @@ class userAccount extends baseController {
             if (!condition) {
                 return;
             }
+            console.log(condition)
             if (ctx.helper.isEmpty(condition.uuid) || ctx.user.role === `用户`) {
                 condition.uuid = ctx.user.uuid;
             }
