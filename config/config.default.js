@@ -241,7 +241,7 @@ module.exports = appInfo => {
         "consoleLevel": "INFO",
         "disableConsoleAfterReady": true,
         "outputJSON": true,
-        //"buffer": true,
+        "buffer": true,
         "allowDebugAtProd": true,
         "type": "application",
         appLogName: `${appInfo.name}-web-running.log`,
