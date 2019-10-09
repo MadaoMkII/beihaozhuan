@@ -8,7 +8,7 @@ module.exports = app => {
     router.post('/user/bindWechat', controller[`authController`].bindWechat);
     router.post('/user/login', controller[`authController`].login);
     router.get('/user/logout', app.middleware.authenticatedMiddleware(`用户`), controller[`authController`].logout);
-    router.get('/user/lottery', controller[`authController`].lottery);
+    //router.get('/user/lottery', controller[`authController`].lottery);
     router.post('/user/getMyTeam', app.middleware.authenticatedMiddleware(`用户`), controller[`userAccount`].getMyTeam);
     //router.get('/index', controller[`home`].index);
     router.get('/checkHealth', (ctx) => {
@@ -34,7 +34,7 @@ module.exports = app => {
 
     router.get('/user/getInviteLink', app.middleware.authenticatedMiddleware(`用户`), controller[`userAccount`].generatorInviteLink);
     //router.get('/user/signIn', controller[`authController`].signIn_fake);
-    router.get('/user/signInReal', app.middleware.authenticatedMiddleware(`用户`), controller[`authController`].signIn);
+    //router.get('/user/signInReal', app.middleware.authenticatedMiddleware(`用户`), controller[`authController`].signIn);
     //router.post('/user/register_test', controller[`authController`].register_fake);
     router.post('/verify/sendVerifySmsMessage_test', controller[`smsController`].sendVerifySmsMessage_fakes);
 
