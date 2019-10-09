@@ -9,7 +9,7 @@ class HomeController extends Controller {
         ctx.logger.debug('debug info');
         ctx.logger.info('some request data: %j', ctx.request.body);
         ctx.logger.warn('WARNNING!!!!');
-        ctx.logger.error('粗大事了');
+        ctx.logger.error(new Error('粗大事了'));
         this.success()
     };
 
