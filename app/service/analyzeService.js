@@ -241,7 +241,6 @@ class analyzeService extends Service {
                 model: this.ctx.model[`Advertisement`],
                 select: '-_id title source reward positionName activity'
             }]);
-            console.log(aggregateResult)
             result.push(...aggregateResult);
         }
         result = result.sort((a, b) => {
