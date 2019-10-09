@@ -246,7 +246,7 @@ module.exports = appInfo => {
         "type": "application",
         appLogName: `${appInfo.name}-web-running.log`,
         coreLogName: `${appInfo.name}-egg-web.log`,
-        //agentLogName: `${appInfo.name}-egg-agent.log`,
+        agentLogName: `${appInfo.name}-egg-agent.log`,
         errorLogName: `${appInfo.name}-common-error.log`,
     };
     return {
