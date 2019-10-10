@@ -14,11 +14,11 @@ class RemoteErrorTransport extends Transport {
             result.reason = err.name.toUpperCase();
             result.message = err.message;
             result.stack = err.stack;
+            result.date = new Date();
             if (ctx && ctx instanceof Object) {
                 let req = ctx.request;
                 result.ip = ctx.app.getIP(req);
                 result.originalUrl = req.originalUrl;
-                result.date = new Date();
                 if (ctx.user) {
                     result.tel_number = ctx.user.tel_number;
                     result.uuid = ctx.user.uuid;
