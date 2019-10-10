@@ -224,6 +224,8 @@ module.exports = appInfo => {
         ],
         error_log: [
             path.join(appInfo.baseDir, 'logs/' + appInfo.name + `/${appInfo.name}-common-error.log`),
+            path.join(appInfo.baseDir, 'logs/' + appInfo.name + `/${appInfo.name}-egg-web.log`),
+            path.join(appInfo.baseDir, 'logs/' + appInfo.name + `/${appInfo.name}-egg-agent.log`),
             path.join(appInfo.baseDir, 'logs/' + appInfo.name + `/${appInfo.name}-web-running.log`),
         ]
     };
@@ -241,12 +243,12 @@ module.exports = appInfo => {
         "consoleLevel": "INFO",
         "disableConsoleAfterReady": true,
         "outputJSON": true,
-        //"buffer": true,
+        "buffer": true,
         "allowDebugAtProd": true,
         "type": "application",
         appLogName: `${appInfo.name}-web-running.log`,
         coreLogName: `${appInfo.name}-egg-web.log`,
-        //agentLogName: `${appInfo.name}-egg-agent.log`,
+        agentLogName: `${appInfo.name}-egg-agent.log`,
         errorLogName: `${appInfo.name}-common-error.log`,
     };
     return {

@@ -59,10 +59,10 @@ class AppBootHook {
                     effectDay = `Permanent`;
                     break;
                 case `Daily`:
-                    effectDay = app.getFormatDate();
+                    effectDay = this.app.getFormatDate();
                     break;
                 case `Weekly`:
-                    effectDay = app.getFormatWeek();
+                    effectDay = this.app.getFormatWeek();
                     break;
             }
 
@@ -81,7 +81,7 @@ class AppBootHook {
 
             if (!res) {
                 console.log(missionSearcher)
-                console.log(`值为${modelName}`);
+                this.app.logger.warn(`值为${modelName}`, ctx);
             }
         });
     }
