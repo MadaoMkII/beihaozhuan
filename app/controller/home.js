@@ -11,12 +11,16 @@ class HomeController extends Controller {
             // ctx.logger.info('some request data: %j', ctx.request.body);
             // ctx.logger.warn('WARNNING!!!!');
             //this.app.logger.error(new Error('you粗大事了'), ctx);
-            ctx.throw(401,`不要嗑瓜子`)
+            //ctx.throw(401,`不要嗑瓜子`)
+            let x = ctx.sleep(3000);
+            this.success()
+            await x;
+            console.log(123123131312313)
             //this.app.logger.warn(`我感觉很难受`, ctx);
             // let app = ctx.app
             // this.ctx.app.getLogger('errorLogger').set('remote', new RemoteErrorTransport({level: 'info', app}));
             // console.log(this.ctx.app.getLogger('errorLogger'))
-            this.success()
+
         } catch (e) {
             this.app.logger.error(e, ctx);
             this.failure();
