@@ -47,7 +47,7 @@ class missionProcessingTrackerController extends baseController {
             let promise_3 = this.ctx.service[`userService`].setUserBcionChange(ctx.user.uuid, condition.missionEventName, `获得`, mission.reward);
             this.success();
 
-            Promise.all([promise_1, amount, promise_3]).then(function (values) {
+            Promise.all([promise_1, promise_3]).then(function (values) {
             }).catch(function (error) {
                 ctx.throw(503, error);
             })

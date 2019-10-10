@@ -32,7 +32,7 @@ class MissionEventManager extends Service {
 
             let tempBcoin = Number(this.ctx.user.Bcoins) + Number(missionTracker.missionID.reward);
 
-            let promise_1 = this.ctx.service.userService.changeBcoin(this.ctx.user._id, tempBcoin);
+            let promise_1 = this.ctx.service[`userService`].changeBcoin(this.ctx.user._id, tempBcoin);
 
             let promise_2 = this.ctx.service[`analyzeService`].dataIncrementRecord(`完成任务-${missionTracker.missionEventName}`,
                 missionTracker.missionID.reward, `bcoin`);
