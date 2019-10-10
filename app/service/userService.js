@@ -155,35 +155,45 @@ class UserService extends Service {
                 }
             }
         },
-            {$sort: {"$balanceList.createTime": -1}},
-            // {$limit: option.limit},
-            // {$skip: option.skip},
+            {$addFields: {totalCount: {$size: "$balanceList"}}},
+            {$unwind: "$balanceList"},
+            {$sort: {"balanceList.createTime": -1}},
+            {$limit: option.limit + option.skip},
+            {$skip: option.skip},
+            // {
+            //     $project: {
+            //         //sizeAmount: {$size: "$balanceList"},
+            //         balanceList: 1,
+            //         $count: "passing_scores"
+            //         // balanceList: {
+            //         //     $slice: ["$balanceList", option.skip, option.limit]
+            //         // }
+            //     }
+            // },
             {
                 $project: {
-                    sizeAmount: {$size: "$balanceList"},
-                    balanceList: {
-                        $slice: ["$balanceList", option.skip, option.limit]
-                    }
+                    // updated_at: 0,
+                    // created_at: 0,
+                    "balanceList._id": 0
                 }
             },
             {
-                $project: {
-                    updated_at: 0,
-                    created_at: 0,
-                    balanceList: {
-                        _id: 0
-                    }
+                "$group": {
+                    "_id": null,//type: "$type" 这件事得问问前端
+                    "balanceListArray": {"$push": "$balanceList"},
+                    "totalCount": {$first: "$totalCount"}
                 }
-            }
+            },
+
 
         ]);
-
         if (result.length > 0) {
-            let tempArray = result[0].balanceList.sort((a, b) => {
-                return new Date(b.createTime).getTime() - new Date(a.createTime).getTime();
-            });
+            // let tempArray = result[0].balanceList.sort((a, b) => {
+            //     return new Date(b.createTime).getTime() - new Date(a.createTime).getTime();
+            // });
+            let tempArray = result[0];
             // let count = await this.ctx.model[`UserAccount`].find
-            return [tempArray, result[0].sizeAmount];
+            return [tempArray.balanceListArray, tempArray.totalCount];
         }
         return [];
     };
