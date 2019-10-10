@@ -23,6 +23,9 @@ module.exports = app => {
             delete ret.__v;
             delete ret._id;
             delete ret.id;
+            if (doc.date) {
+                ret.date = app.getLocalTime(doc.date);
+            }
         }
     });
     logger.set('toObject', {

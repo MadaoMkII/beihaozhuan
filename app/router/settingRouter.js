@@ -7,6 +7,9 @@ module.exports = app => {
     //     controller[`systemSettingController`].setAdvPosition);
     // router.post('/setting/setBannerGood', app.middleware.authenticatedMiddleware(`客服`),
     //     controller[`systemSettingController`].setBannerGood);
+    router.post('/logger/getLogger', app.middleware.authenticatedMiddleware(`运营`),
+        controller[`loggerController`].getLogger);
+
     router.post('/setting/setSetting', app.middleware.authenticatedMiddleware(`运营`),
         controller[`systemSettingController`].setSetting);
 

@@ -4,8 +4,7 @@
 // const FileTransport = require('egg-logger').FileTransport;
 const ConsoleTransport = require('egg-logger').ConsoleTransport;
 const EventEmitter = require('events');
-let RemoteErrorTransport = require(`./app/logging/RemoteErrorTransport`)
-let UrllibTransport = require(`./app/logging/UrllibTransport`)
+let RemoteErrorTransport = require(`./app/logging/RemoteErrorTransport`);
 
 class AppBootHook {
     constructor(app) {
@@ -34,7 +33,7 @@ class AppBootHook {
         //app.getLogger('errorLogger').set('remote', new RemoteErrorTransport({level: 'WARN', app}));
 
 
-        app.logger.set('remote', new UrllibTransport({
+        app.logger.set('remote', new RemoteErrorTransport({
             level: 'WARN', app
         }));
 

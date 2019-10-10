@@ -120,6 +120,28 @@ module.exports = appInfo => {
         encrypt: true,
     };
 
+    config.onerror = {
+        all(err, ctx) {
+            // 在此处定义针对所有响应类型的错误处理方法
+            // 注意，定义了 config.all 之后，其他错误处理方法不会再生效
+            ctx.body = JSON.stringify({message: '服务器内部忙碌，请稍后再试'});
+            ctx.set('Content-Type', 'application/json; charset=utf-8');
+            ctx.status = 503;
+        },
+        html(err, ctx) {
+            // html hander
+            ctx.body = '<h3>error</h3>';
+            ctx.status = 500;
+        },
+        json(err, ctx) {
+            // json hander
+            ctx.body = {message: 'error'};
+            ctx.status = 500;
+        },
+        jsonp(err, ctx) {
+            // 一般来说，不需要特殊针对 jsonp 进行错误定义，jsonp 的错误处理会自动调用 json 错误处理，并包装成 jsonp 的响应格式
+        },
+    };
 
     config.notfound = {
         pageUrl: '/index',
@@ -232,20 +254,20 @@ module.exports = appInfo => {
 
     exports.logrotator = {
         "filesRotateByHour": [
-            path.join(appInfo.root, 'logs', appInfo.name, 'common-error.log')
+            path.join(appInfo.root, '/logs/', appInfo.name, '-common-error.log')
         ]
     };
     exports.logger = {
         "dir": `${appInfo.baseDir}/logs/${appInfo.name}`,
-        "encoding": "utf8",
-        "env": "prod",
-        "level": "INFO",
-        "consoleLevel": "INFO",
-        "disableConsoleAfterReady": true,
-        "outputJSON": true,
-        "buffer": true,
-        "allowDebugAtProd": true,
-        "type": "application",
+        // "encoding": "utf8",
+        // "env": "prod",
+        // "level": "INFO",
+        // "consoleLevel": "INFO",
+        // "disableConsoleAfterReady": true,
+        // "outputJSON": true,
+        // "buffer": true,
+        // "allowDebugAtProd": true,
+        // "type": "application",
         appLogName: `${appInfo.name}-web-running.log`,
         coreLogName: `${appInfo.name}-egg-web.log`,
         agentLogName: `${appInfo.name}-egg-agent.log`,
