@@ -155,10 +155,9 @@ class UserService extends Service {
                 }
             }
         },
-            {$sort: {"balanceList.createTime": -1}},
+            {$sort: {"$balanceList.createTime": -1}},
             // {$limit: option.limit},
             // {$skip: option.skip},
-
             {
                 $project: {
                     sizeAmount: {$size: "$balanceList"},
@@ -167,7 +166,6 @@ class UserService extends Service {
                     }
                 }
             },
-
             {
                 $project: {
                     updated_at: 0,
