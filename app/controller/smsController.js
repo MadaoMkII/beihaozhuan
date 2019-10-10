@@ -13,7 +13,7 @@ class smsController extends baseController {
             ctx.session.smsVerifyCode = text;
             let promise = this.sendSmsMessage(tel_number, text);
             this.success();
-            await promise;
+            Promise.all([promise]).catch();
         } catch (e) {
             this.app.logger.error(e, ctx);
             this.failure();
@@ -63,7 +63,7 @@ class smsController extends baseController {
             this.ctx.session.smsLoginVerifyCode = text;
             let promise = this.sendSmsMessage(tel_number, text);
             this.success();
-            await promise;
+            Promise.all([promise]).catch();
         } catch (e) {
             this.app.logger.error(e, ctx);
             this.failure();
@@ -78,7 +78,7 @@ class smsController extends baseController {
             ctx.session.tel_number = tel_number;
             let promise = this.sendSmsMessage(tel_number, text);
             this.success();
-            await promise;
+            Promise.all([promise]).catch();
         } catch (e) {
             this.app.logger.error(e, ctx);
             this.failure();

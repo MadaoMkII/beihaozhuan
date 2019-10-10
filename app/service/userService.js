@@ -182,7 +182,7 @@ class UserService extends Service {
 
         if (result.length > 0) {
             let tempArray = result[0].balanceList.sort((a, b) => {
-                return   b.createTime-a.createTime;
+                return new Date(b.createTime).getTime() - new Date(a.createTime).getTime();
             });
             // let count = await this.ctx.model[`UserAccount`].find
             return [tempArray, result[0].sizeAmount];

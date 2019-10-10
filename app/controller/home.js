@@ -13,8 +13,9 @@ class HomeController extends Controller {
             //this.app.logger.error(new Error('you粗大事了'), ctx);
             //ctx.throw(401,`不要嗑瓜子`)
             let x = ctx.sleep(3000);
-            this.success()
-            await x;
+            await this.success()
+await x;
+            //Promise.all([x]).catch();
             console.log(123123131312313)
             //this.app.logger.warn(`我感觉很难受`, ctx);
             // let app = ctx.app
