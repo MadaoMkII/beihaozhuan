@@ -1,11 +1,10 @@
-const urllib = require('urllib');
 const Transport = require('egg-logger').Transport;
-const util = require('util');
+
 
 class UrllibTransport extends Transport {
 
     log(level, args, meta) {
-        let log, result = {};
+        let result = {};
         const ctx = args[1];
         if (args[0] instanceof Error) {
             const err = args[0];
@@ -19,13 +18,17 @@ class UrllibTransport extends Transport {
                 let req = ctx.request;
                 result.ip = ctx.app.getIP(req);
                 result.originalUrl = req.originalUrl;
-                result.date = ctx.app.getLocalTime();
+                result.date = new Date();
+                if (ctx.user) {
+                    result.tel_number = ctx.user.tel_number;
+                    result.uuid = ctx.user.uuid;
+                    result.nickName = ctx.user.nickName;
+                    result.realName = ctx.user.realName;
+                    result.role = ctx.user.role;
+                }
                 result.request = {
                     method: req.method,
-                    header: {
-                        'Content-Type': ctx.get('Content-Type'),
-                        token: ctx.get('auth_token'), // token权限
-                    },
+                    header: req.headers,
                     query: req.query,
                     body: req.body
                 }
@@ -40,7 +43,7 @@ class UrllibTransport extends Transport {
                 result.message = message;
                 result.ip = ctx.app.getIP(req);
                 result.originalUrl = req.originalUrl;
-                result.date = ctx.app.getLocalTime();
+                result.date = new Date();
                 result.request = {
                     query: req.query,
                     body: req.body,
@@ -54,7 +57,7 @@ class UrllibTransport extends Transport {
                 }
             }
         }
-        let loggerEntity = new ctx.model.Logger(result);
+        let loggerEntity = new ctx.model[`Logger`](result);
         loggerEntity.save();
     }
 }

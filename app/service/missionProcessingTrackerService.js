@@ -25,7 +25,8 @@ class MissionEventManager extends Service {
             effectDay: effectDay
         }).populate({path: `missionID`, model: this.ctx.model.Mission, select: `-_id reward`});
         if (this.ctx.helper.isEmpty(missionTracker)) {
-            this.ctx.throw(`missionTracker type wrong`);
+            this.app.logger.error(new Error(`完成任务虚拟错误`), this.ctx);
+            return false;
         }
 
         if ((missionTracker.recentAmount >= missionTracker.requireAmount) && !missionTracker.completed) {
@@ -45,16 +46,17 @@ class MissionEventManager extends Service {
                 completed: false,
                 effectDay: effectDay
             }, {$set: {completed: true}}, {new: true});
-            Promise.all([promise_1, promise_2, promise_3, promise_4]).catch((e) => {
-
+            Promise.all([promise_1, promise_2, promise_3, promise_4]).catch((error) => {
+                this.app.logger.error(error, this.ctx);
             });
+            return true;
         } else {
             this.ctx.throw(400, `Already complete`);
         }
     }
 
 
-    async getUserDailyMissionProcessing(user_ID, status = false) {
+    async getUserDailyMissionProcessing(user_ID) {
 
         return this.ctx.model.DailyMissionProcessingTracker.find({
             userID: user_ID,
@@ -62,7 +64,7 @@ class MissionEventManager extends Service {
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
-    async getUserWeeklyMissionProcessing(user_ID, status = false) {
+    async getUserWeeklyMissionProcessing(user_ID) {
 
         return this.ctx.model.WeeklyMissionProcessingTracker.find({
             userID: user_ID,
@@ -70,7 +72,7 @@ class MissionEventManager extends Service {
         }).populate({path: `missionID`, model: this.ctx.model.Mission});
     }
 
-    async getUserPermanentMissionProcessing(user_ID, status = false) {
+    async getUserPermanentMissionProcessing(user_ID) {
 
         return this.ctx.model.PermanentMissionProcessingTracker.find({
             userID: user_ID,
