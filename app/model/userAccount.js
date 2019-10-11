@@ -99,10 +99,10 @@ module.exports = app => {
             delete ret.id;
             delete ret.password;
             if (doc.updated_at) {
-                ret.updated_at = app.getFormatDateForJSON(doc.updated_at);
+                ret.updated_at = app.getLocalTime(doc.updated_at);
             }
             if (doc.created_at) {
-                ret.created_at = app.getFormatDateForJSON(doc.created_at);
+                ret.created_at = app.getLocalTime(doc.created_at);
             }
             if (doc.Bcoins) {
                 ret.Bcoins = doc.Bcoins;
