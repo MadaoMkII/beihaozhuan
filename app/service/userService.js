@@ -109,8 +109,8 @@ class UserService extends Service {
                 let userx = await this.ctx.model[`UserAccount`].findOneAndUpdate({
                     _id: userNew.referrer
                 }, {$push: {referrals: userNew._id}});
-                this.ctx.app.eventEmitter.emit(`normalMissionCount`, userx._id, `每日邀新人`);
-                this.ctx.app.eventEmitter.emit(`normalMissionCount`, userx._id, `每周邀新人`);
+                this.ctx.app.eventEmitter.emit(`normalMissionCount`, userNew.referrer, `每日邀新人`);
+                this.ctx.app.eventEmitter.emit(`normalMissionCount`, userNew.referrer, `每周邀新人`);
             }
         }
         await userNew.save();
