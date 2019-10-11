@@ -38,13 +38,13 @@ class RemoteErrorTransport extends Transport {
         } else {
             //log = util.format(...args);
             const message = args[0];
+            result.level = `WARNING`;
+            result.message = message;
+            result.date = new Date();
             if (ctx && ctx instanceof Object) {
                 let req = ctx.request;
-                result.level = `WARNING`;
-                result.message = message;
                 result.ip = ctx.app.getIP(req);
                 result.originalUrl = req.originalUrl;
-                result.date = new Date();
                 result.request = {
                     query: req.query,
                     body: req.body,
@@ -57,11 +57,11 @@ class RemoteErrorTransport extends Transport {
                     result.role = ctx.user.role;
                 }
             } else {
-                result.level = `WARNING`;
-                result.message = message;
-                result.date = new Date();
                 ctx = this.options.app.createAnonymousContext();
             }
+        }
+        if (args[2]) {
+            result.specialInformation = args[2];
         }
         let loggerEntity = new ctx.model[`Logger`](result);
         loggerEntity.save();

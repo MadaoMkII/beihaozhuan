@@ -14,7 +14,8 @@ module.exports = app => {
         nickName: String,
         realName: String,
         role: String,
-        stack: String
+        stack: String,
+        specialInformation: mongoose.Schema.Types.Mixed,
     });
 
     logger.set('toJSON', {

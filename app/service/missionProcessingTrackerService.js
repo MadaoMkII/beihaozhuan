@@ -17,15 +17,20 @@ class MissionEventManager extends Service {
                 effectDay = this.ctx.app[`getFormatWeek`](new Date());
                 break;
         }
-        let fullModelName = modelName + `MissionProcessingTracker`;
-        let missionTracker = await this.ctx.model[fullModelName].findOne({
+        let missionSearcher = {
             userID: userID,
             missionEventName: missionEventName,
             completed: false,
             effectDay: effectDay
-        }).populate({path: `missionID`, model: this.ctx.model.Mission, select: `-_id reward`});
+        };
+        let fullModelName = modelName + `MissionProcessingTracker`;
+        let missionTracker = await this.ctx.model[fullModelName].findOne(missionSearcher).populate({
+            path: `missionID`,
+            model: this.ctx.model.Mission,
+            select: `-_id reward`
+        });
         if (this.ctx.helper.isEmpty(missionTracker)) {
-            this.app.logger.error(new Error(`完成任务虚拟错误`), this.ctx);
+            this.app.logger.warn(`完成任务警告`, this.ctx, missionSearcher);
             return false;
         }
 

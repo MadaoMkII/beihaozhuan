@@ -78,7 +78,7 @@ class AppBootHook {
                 {$inc: {recentAmount: 1}},
                 {new: true});
             if (!res) {
-                this.app.logger.warn(`值为${modelName}`, ctx);
+                this.app.logger.warn(`值为${modelName}`, ctx, missionSearcher);
             }
         });
     }

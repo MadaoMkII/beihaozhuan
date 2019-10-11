@@ -124,22 +124,31 @@ module.exports = appInfo => {
         all(err, ctx) {
             // 在此处定义针对所有响应类型的错误处理方法
             // 注意，定义了 config.all 之后，其他错误处理方法不会再生效
+            this.app.logger.error(err, ctx);
             ctx.body = JSON.stringify({message: '服务器内部忙碌，请稍后再试'});
             ctx.set('Content-Type', 'application/json; charset=utf-8');
             ctx.status = 503;
         },
         html(err, ctx) {
             // html hander
+            this.app.logger.error(err, ctx);
+            ctx.set('Content-Type', 'text/html; charset=utf-8');
             ctx.body = '<h3>error</h3>';
-            ctx.status = 500;
+            ctx.status = 401;
         },
         json(err, ctx) {
             // json hander
-            ctx.body = {message: 'error'};
-            ctx.status = 500;
+            this.app.logger.error(err, ctx);
+            ctx.body = JSON.stringify({message: 'input error'});
+            ctx.set('Content-Type', 'application/json; charset=utf-8');
+            ctx.status = 402;
         },
         jsonp(err, ctx) {
             // 一般来说，不需要特殊针对 jsonp 进行错误定义，jsonp 的错误处理会自动调用 json 错误处理，并包装成 jsonp 的响应格式
+            this.app.logger.error(err, ctx);
+            ctx.set('Content-Type', 'application/json; charset=utf-8');
+            ctx.body = JSON.stringify({message: 'input error'});
+            ctx.status = 403;
         },
     };
 
