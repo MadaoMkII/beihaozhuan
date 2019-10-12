@@ -3,14 +3,12 @@ const Controller = require('./baseController');
 
 class maintenanceController extends Controller {
 
-    async getData(ctx) {
+  async getData() {
 
 
+    this.success();
 
-
-        this.success();
-
-    }
+  }
 
 
 }

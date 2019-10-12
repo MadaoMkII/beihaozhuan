@@ -4,6 +4,11 @@ require(`moment-timezone`);
 
 class SystemSettingService extends Service {
 
+    async setToken(access_token) {
+        await this.ctx.model.SystemSetting.findOneAndUpdate({}, {$set: {access_token: access_token}}, {sort: {updated_at: -1}});
+    }
+
+
     async setRecommendGood(uuid, status) {
         await this.ctx.model.Good.updateMany({isRecommend: true}, {$set: {isRecommend: false}});
 

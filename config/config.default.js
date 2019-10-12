@@ -272,7 +272,7 @@ module.exports = appInfo => {
         "env": "prod",
         "level": "INFO",
         "consoleLevel": "INFO",
-        "disableConsoleAfterReady": true,
+        "disableConsoleAfterReady": false,
         "outputJSON": true,
         "buffer": true,
         "allowDebugAtProd": true,
