@@ -53,4 +53,6 @@ module.exports = app => {
     ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/missionAward.html'));
     // ctx.redirect('/index.html')
   });
+
+  router.get('/wechat/getSignature', controller.wechatController.getSignature);
 };

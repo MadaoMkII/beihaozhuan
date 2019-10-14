@@ -70,4 +70,41 @@ module.exports = {
     const ipArr = ip.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/g);
     return ipArr && ipArr.length > 0 ? ipArr[0] : '127.0.0.1';
   },
+
+  requestMethod(JSONObject, method, url) {
+    const request_ = require('request');
+    let requestObj = {};
+    if (method === 'GET') {
+      const myURL = new URL(url);
+      Object.keys(JSONObject)
+        .forEach(key => {
+          myURL.searchParams.append(key, JSONObject[key]);
+        });
+      requestObj = {
+        url: myURL.href,
+        method,
+        json: true, // <--Very important!!!
+      };
+    }
+    if (method === 'POST') {
+      requestObj = {
+        url,
+        method,
+        json: true, // <--Very important!!!
+        body: JSONObject,
+      };
+    }
+    return new Promise((resolve, reject) => {
+
+      request_(requestObj, (error, response, body) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve([ body, response ]);
+        }
+      });
+    });
+  },
+
+
 };
