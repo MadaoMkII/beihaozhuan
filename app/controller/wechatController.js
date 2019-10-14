@@ -5,49 +5,56 @@ const url = require('url');
 
 class wechatController extends baseController {
 
-  async getSignature(ctx) {
-    const requestObj_1 = {
-      appid: ctx.app.config.wechatConfig.appid,
-      secret: ctx.app.config.wechatConfig.secret,
-      grant_type: 'client_credential',
-    };
+  async getSignature() {
+    // const requestObj_1 = {
+    //   appid: ctx.app.config.wechatConfig.appid,
+    //   secret: ctx.app.config.wechatConfig.secret,
+    //   grant_type: 'client_credential',
+    // };
+    //
+    // const [ result_1 ] = await this.requestMethod(requestObj_1,
+    //   'GET', 'https://api.weixin.qq.com/cgi-bin/token');
+    //
+    // if (!ctx.helper.isEmpty(result_1.errcode)) {
+    //   ctx.throw(400, result_1.errmsg);
+    // }
+    //
+    // // '26_EpDz1uSWyf3ZQPW2ZCmN49rx8RlPXSA6z_e8NKSHGbUFCbiJWJFDWvfSLKKIg8FCkz2_XEuxNoEsRgPhy0SEeQU60H2kuceAXVjOHjgzSGGd7PrW9vh5OqwgPaq7AoiYpOB9Wpsd0og6UdMoFDGdAIAYWZ'
+    // const requestObj_2 = {
+    //   access_token: result_1.access_token,
+    //   type: 'jsapi',
+    // };
+    // const [ result_2 ] = await this.requestMethod(requestObj_2,
+    //   'GET', 'https://api.weixin.qq.com/cgi-bin/ticket/getticket');
+    //
+    //
+    //
+    //
+    // console.log(result_2);
+    // const appID = ctx.app.config.wechatConfig.appid;
+    // // let ticket = `kgt8ON7yVITDhtdwci0qeTSKjv5Yawv79kzzTIzVlZ0EosIl7SrkqevFvjlR1ozpwctDbXZQ_sR-PqMXDyS8mA`;
+    // const randomStr = ctx.randomString(16);
+    // const url = 'https://www.beihaozhuan.com/index/ad?source=full&uuid=ADVck15314cx0003laa383n2grq6';
+    // const timeStamp = new Date().getTime();
+    // const signStr = `jsapi_ticket=${result_2.ticket}&noncestr=${randomStr}&timestamp=${timeStamp}&url=${url}`;
+    //
+    //
+    // console.log(signStr);
+    // const crypto = require('crypto'),
+    //   shaSum = crypto.createHash('sha1');
+    // shaSum.update(signStr);
+    // const result = shaSum.digest('hex');
+    // console.log(result);
+    // this.success({
+    //   appId: appID,
+    //   jsapi_ticket: result_2.ticket,
+    //   timeStamp,
+    //   nonceStr: randomStr,
+    //   signature: result,
+    //   url,
+    // });
 
-    const [ result_1 ] = await this.requestMethod(requestObj_1,
-      'GET', 'https://api.weixin.qq.com/cgi-bin/token');
-
-    if (!ctx.helper.isEmpty(result_1.errcode)) {
-      ctx.throw(400, result_1.errmsg);
-    }
-
-    // '26_EpDz1uSWyf3ZQPW2ZCmN49rx8RlPXSA6z_e8NKSHGbUFCbiJWJFDWvfSLKKIg8FCkz2_XEuxNoEsRgPhy0SEeQU60H2kuceAXVjOHjgzSGGd7PrW9vh5OqwgPaq7AoiYpOB9Wpsd0og6UdMoFDGdAIAYWZ'
-    const requestObj_2 = {
-      access_token: result_1.access_token,
-      type: 'jsapi',
-    };
-    const [ result_2 ] = await this.requestMethod(requestObj_2,
-      'GET', 'https://api.weixin.qq.com/cgi-bin/ticket/getticket');
-
-    console.log(result_2);
-    const appID = ctx.app.config.wechatConfig.appid;
-    // let ticket = `kgt8ON7yVITDhtdwci0qeTSKjv5Yawv79kzzTIzVlZ0EosIl7SrkqevFvjlR1ozpwctDbXZQ_sR-PqMXDyS8mA`;
-    const randomStr = ctx.randomString(16);
-    const url = 'https://www.beihaozhuan.com/index/ad?source=full&uuid=ADVck15314cx0003laa383n2grq6';
-    const timeStamp = new Date().getTime();
-    const signStr = `jsapi_ticket=${result_2.ticket}&noncestr=${randomStr}&timestamp=${timeStamp}&url=${url}`;
-    console.log(signStr);
-    const crypto = require('crypto'),
-      shaSum = crypto.createHash('sha1');
-    shaSum.update(signStr);
-    const result = shaSum.digest('hex');
-    console.log(result);
-    this.success({
-      appId: appID,
-      jsapi_ticket: result_2.ticket,
-      timeStamp,
-      nonceStr: randomStr,
-      signature: result,
-      url,
-    });
+    this.success();
   }
 
   async callback(ctx) {
