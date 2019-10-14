@@ -8,7 +8,7 @@ class wechatController extends baseController {
     const jsapi_ticket = await ctx.service.wechatService.setToken();
     // const setting = await ctx.model.Setting.findOne();
     // const randomStr = ctx.randomString(16);
-    const url = 'https://www.beihaozhuan.com/index/ad?source=full&uuid=ADVck15314cx0003laa383n2grq6';
+    const url = 'https://www.beihaozhuan.com/admin/system/systemlog';
     const timestamp = Math.round(Date.now() / 1000);
 
     const noncestr = 'I34HYFZaPqZmiVCK';
