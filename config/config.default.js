@@ -261,11 +261,11 @@ module.exports = appInfo => {
     ],
   };
 
-  exports.logrotator = {
-    filesRotateByHour: [
-      path.join(appInfo.root, '/logs/', appInfo.name, '-common-error.log'),
-    ],
-  };
+  // exports.logrotator = {
+  //   filesRotateByHour: [
+  //     path.join(appInfo.root, '/logs/', appInfo.name, '-common-error.log'),
+  //   ],
+  // };
   exports.logger = {
     dir: `${appInfo.baseDir}/logs/${appInfo.name}`,
     encoding: 'utf8',
