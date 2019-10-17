@@ -33,6 +33,13 @@ class missionProcessingTrackerController extends baseController {
     }
   }
 
+  async finishMission(ctx) {
+    const { missionName } = ctx.request.body;
+    ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, missionName);
+    this.success();
+  }
+
+
   async completeMission(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('missionRules.completeMissionRule',

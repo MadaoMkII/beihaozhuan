@@ -21,6 +21,10 @@ module.exports = app => {
     controller.missionProcessingTrackerController.completeMission);
 
 
+  router.post('/mission/finishMission', app.middleware.authenticatedMiddleware('用户'),
+    controller.missionProcessingTrackerController.finishMission);
+
+
   router.get('/test',
     controller.home.test);
 };
