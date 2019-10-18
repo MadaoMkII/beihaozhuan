@@ -107,12 +107,12 @@ module.exports = app => {
       if (doc.Bcoins) {
         ret.Bcoins = doc.Bcoins;
       }
-      if (doc.balanceList && doc.balanceList.length > 0) {
-        doc.balanceList.forEach(record => {
-          const day = record.createTime.getMonthDays();
-          console.log(day);
-        });
-      }
+      // if (doc.balanceList && doc.balanceList.length > 0) {
+      //   doc.balanceList.forEach(record => {
+      //     const day = record.createTime.getMonthDays();
+      //     console.log(day);
+      //   });
+      // }
       if (doc.birthday) {
         ret.birthday = app.getFormatDateForJSON(doc.birthday);
       }
