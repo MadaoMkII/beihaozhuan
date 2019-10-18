@@ -104,7 +104,7 @@ class excelService extends Service {
       const element = {};
       element.用户电话 = user.tel_number;
       element.用户昵称 = user.nickName;
-      element.今日收入 = this.ctx.helper.isEmpty(user.todayIncoming) ? 0 : user.todayIncoming;
+      element.昨日收入 = this.ctx.helper.isEmpty(user.todayIncoming) ? 0 : user.todayIncoming;
       element.金币余额 = app.decrypt(user.Bcoins);
       element.注册时间 = app.getLocalTime(user.created_at);
       resultData.push(element);
