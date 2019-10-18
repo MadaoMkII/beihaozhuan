@@ -256,42 +256,14 @@ class authController extends Controller {
 
   async biefanle(ctx) {
     try {
-      const app = ctx.app;
-      const nodeExcel = require('excel-export');
-      const users = await ctx.model.UserAccount.find();
-      const resultData = [];
-
-      users.forEach(user => {
-        const tempArray = [];
-        tempArray.push(user.tel_number);
-        tempArray.push(app.getLocalTime(user.created_at));
-        tempArray.push(ctx.helper.isEmpty(user.signTimes) ? 0 : Number(user.signTimes));
-        resultData.push(tempArray);
-      });
-      const conf = {};
-      conf.cols = [{
-        caption: '手机号',
-        captionStyleIndex: 1,
-        type: 'string',
-        width: 160,
-      }, {
-        caption: '注册时间',
-        type: 'string',
-        width: 250,
-      }, {
-        caption: '签到次数',
-        type: 'number',
-        width: 360,
-      }];
-      conf.rows = resultData;
-      conf.name = `${app.getFormatDate()}`;
-      const result = nodeExcel.execute(conf);
-      const data = new Buffer(result, 'binary');
-      ctx.set('Content-Type', 'application/vnd.openxmlformats');
-      ctx.set('Content-Disposition', `attachment; filename=UserRegister-${app.getLocalTime(new Date())}.xlsx`);
-      ctx.body = data;
+      const fs = require('fs');
+      const fileName = await ctx.service.excelService.getUserInfoExecl();
+      ctx.status = 200;
+      await ctx.downloader(fileName);
+      fs.unlinkSync(fileName);
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
+      this.failure();
     }
   }
 

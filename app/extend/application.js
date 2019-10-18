@@ -57,6 +57,15 @@ module.exports = {
     require('moment-timezone');
     return moment.tz(date, 'Asia/ShangHai').format('YYYY年MM月DD日 HH时mm分ss秒');
   },
+  modifyDate(unit, value, date = new Date()) {
+    const { DateTime } = require('luxon');
+    const modifier = {};
+    modifier[unit] = value;
+    const local = DateTime.fromJSDate(date);
+    const rezoned = local.setZone('Asia/Shanghai').plus(modifier);
+    return rezoned.toJSDate();
+  },
+
   getInviteCode() {
     return (Math.random() / 100000 * Date.now() * 3.1415926).toFixed(0);
   },

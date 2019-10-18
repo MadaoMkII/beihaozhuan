@@ -321,92 +321,94 @@ compareSign(x, t)
 //             method: method,
 //             json: true,   // <--Very important!!!
 //             body: JSONObject
-//         }, (error, response, body) => {
-//             if (error) {
-//                 reject(error)
-//             } else {
-//                 resolve([response, body]);
-//             }
-//         });
-//     });
+// //         }, (error, response, body) => {
+// //             if (error) {
+// //                 reject(error)
+// //             } else {
+// //                 resolve([response, body]);
+// //             }
+// //         });
+// //     });
+// // };
+// let urlA = '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE';
+//
+// let url = require("url");
+// let query = url.parse(urlA, true).query;
+//
+//
+// const myURL = new URL(`https://example.org`);
+// Object.keys(x).forEach((key) => {
+//     myURL.searchParams.append(key, x[key]);
+// });
+//
+//
+// // {
+// //     method: 'GET',
+// //         url: '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE',
+// //     header: {
+// //     'x-forwarded-for': '117.13.3.8',
+// //         host: 'localhost:3000',
+// //         connection: 'close',
+// //         'upgrade-insecure-requests': '1',
+// //         'user-agent': 'Mozilla/5.0 (Linux; Android 9; G8342 Build/47.2.A.10.80; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/044904 Mobile Safari/537.36 MMWEBID/5109 MicroMessenger/7.0.1380(0x27000034) Process/tools NetType/WIFI Language/zh_CN',
+// //         accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,image/wxpic,image/sharpp,image/apng,image/tpg,*/*;q=0.8',
+// //         'accept-encoding': 'gzip, deflate, br',
+// //         'accept-language': 'zh-CN,zh-CN;q=0.9,en-US;q=0.8',
+// //         cookie: 'yhbSen=O5Y6f2-sdk7DI1im9fJH_P59n7BV3DT2AgusYFVLis2oOfJE9ViNSLOi4jOHKDOp04whCzFXWADUZgIp_wiUFURvUJVQ0SLuaKQi9JVLfVmtxaRnvZfRlxKvNaIOEHyuBSgCct4YaCQyMAtuJ296tjD1R2xaJNdPbsVE4dkCaqA_h04Lf53wXtZBbAa2zxBU'
+// // }
+// // }
+// const CryptoJS = require('crypto-js');  //引用AES源码js
+//
+// const key = CryptoJS.enc.Utf8.parse("12gy122414ABdDEF"); //十六位十六进制数作为秘钥
+// const iv = CryptoJS.enc.Utf8.parse('AHCdCF12351f3412');
+// let decrypt = function (word) {
+//     let encryptedHexStr = CryptoJS.enc.Hex.parse(word);
+//     let srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+//     let decrypt = CryptoJS.AES.decrypt(srcs, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
+//     let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);//
+//     return decryptedStr.toString();
 // };
-let urlA = '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE';
-
-let url = require("url");
-let query = url.parse(urlA, true).query;
-
-
-const myURL = new URL(`https://example.org`);
-Object.keys(x).forEach((key) => {
-    myURL.searchParams.append(key, x[key]);
-});
-
-
-// {
-//     method: 'GET',
-//         url: '/wechat/callback?code=011Ohdcc0x3V2B1xMa9c0FVqcc0Ohdc7&state=STATE',
-//     header: {
-//     'x-forwarded-for': '117.13.3.8',
-//         host: 'localhost:3000',
-//         connection: 'close',
-//         'upgrade-insecure-requests': '1',
-//         'user-agent': 'Mozilla/5.0 (Linux; Android 9; G8342 Build/47.2.A.10.80; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/044904 Mobile Safari/537.36 MMWEBID/5109 MicroMessenger/7.0.1380(0x27000034) Process/tools NetType/WIFI Language/zh_CN',
-//         accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,image/wxpic,image/sharpp,image/apng,image/tpg,*/*;q=0.8',
-//         'accept-encoding': 'gzip, deflate, br',
-//         'accept-language': 'zh-CN,zh-CN;q=0.9,en-US;q=0.8',
-//         cookie: 'yhbSen=O5Y6f2-sdk7DI1im9fJH_P59n7BV3DT2AgusYFVLis2oOfJE9ViNSLOi4jOHKDOp04whCzFXWADUZgIp_wiUFURvUJVQ0SLuaKQi9JVLfVmtxaRnvZfRlxKvNaIOEHyuBSgCct4YaCQyMAtuJ296tjD1R2xaJNdPbsVE4dkCaqA_h04Lf53wXtZBbAa2zxBU'
+// //加密方法
+// /**
+//  * @return {string}
+//  */
+// let encryptSign = (obj) => {
+//     const key = CryptoJS.enc.Utf8.parse("12gy122414ABdDEF"); //十六位十六进制数作为秘钥
+//     const iv = CryptoJS.enc.Utf8.parse('AHCdCF12351f3412');
+//     let resultStr = ``;
+//     Object.keys(obj).sort().forEach((key) => {
+//         resultStr = resultStr + `${key}=${obj[key]}&`
+//     });
+//     let src = CryptoJS.enc.Utf8.parse(resultStr);
+//     let encrypted = CryptoJS.AES.encrypt(src, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
+//     return encrypted.ciphertext.toString().toUpperCase();
+// };
+// let aaa = encryptSign(`ABC`)
+//
+// console.log(decrypt(`CD17A9E2F180A9E0DC08F4B1AF833898BCAA879B8E603A880F9967911C30A276D84095C1C4A8E251A4D0C6D963B632FBEC2257A334FE907A3E0CF3B9AFBC81355DE6015D3F3DB030C9FAC8CD851BD601689E3DF8E26BFF1CF0C067D5EB2BE88D`))
+//
+// function randomString(length) {
+//     let chars = '012345678!%^&$#@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+//     let result = '';
+//     for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+//     return result;
 // }
-// }
-const CryptoJS = require('crypto-js');  //引用AES源码js
+//
+// let aac = encryptSign({name: 12})
+// console.log(aac)
+// var rString = randomString(16)
+//
+// const moment = require(`moment`);
+// require(`moment-timezone`);
+// let date = new Date();
+// date.setHours(0);
+// date.setMinutes(0, 0, 0);
+//
+// let x22 = moment.tz(date, "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
+// console.log(x22)
+//
+// let array= [];
+// array.push(`1`,`2`,`3`)
+// console.log(array)
+console.log(new Date().getDay())
 
-const key = CryptoJS.enc.Utf8.parse("12gy122414ABdDEF"); //十六位十六进制数作为秘钥
-const iv = CryptoJS.enc.Utf8.parse('AHCdCF12351f3412');
-let decrypt = function (word) {
-    let encryptedHexStr = CryptoJS.enc.Hex.parse(word);
-    let srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
-    let decrypt = CryptoJS.AES.decrypt(srcs, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
-    let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);//
-    return decryptedStr.toString();
-};
-//加密方法
-/**
- * @return {string}
- */
-let encryptSign = (obj) => {
-    const key = CryptoJS.enc.Utf8.parse("12gy122414ABdDEF"); //十六位十六进制数作为秘钥
-    const iv = CryptoJS.enc.Utf8.parse('AHCdCF12351f3412');
-    let resultStr = ``;
-    Object.keys(obj).sort().forEach((key) => {
-        resultStr = resultStr + `${key}=${obj[key]}&`
-    });
-    let src = CryptoJS.enc.Utf8.parse(resultStr);
-    let encrypted = CryptoJS.AES.encrypt(src, key, {iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7});
-    return encrypted.ciphertext.toString().toUpperCase();
-};
-let aaa = encryptSign(`ABC`)
-
-console.log(decrypt(`CD17A9E2F180A9E0DC08F4B1AF833898BCAA879B8E603A880F9967911C30A276D84095C1C4A8E251A4D0C6D963B632FBEC2257A334FE907A3E0CF3B9AFBC81355DE6015D3F3DB030C9FAC8CD851BD601689E3DF8E26BFF1CF0C067D5EB2BE88D`))
-
-function randomString(length) {
-    let chars = '012345678!%^&$#@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let result = '';
-    for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-    return result;
-}
-
-let aac = encryptSign({name: 12})
-console.log(aac)
-var rString = randomString(16)
-
-const moment = require(`moment`);
-require(`moment-timezone`);
-let date = new Date();
-date.setHours(0);
-date.setMinutes(0, 0, 0);
-
-let x22 = moment.tz(date, "Asia/ShangHai").format(`YYYY/MM/DD HH:mm:ss`);
-console.log(x22)
-
-let array= [];
-array.push(`1`,`2`,`3`)
-console.log(array)

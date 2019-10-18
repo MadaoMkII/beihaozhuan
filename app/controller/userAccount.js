@@ -155,6 +155,7 @@ class userAccount extends baseController {
             loginTimes: 1,
             nickName: 1,
             avatar: 1,
+            balanceList: 1,
             userStatus: 1,
             uuid: 1,
           });
