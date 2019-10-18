@@ -65,8 +65,6 @@ class AppBootHook {
           break;
         default:break;
       }
-
-
       const missionSearcher = {
         userID: userId,
         missionID: missionObj._id,
@@ -77,9 +75,10 @@ class AppBootHook {
 
       const res = await ctx.model[modelName].findOneAndUpdate(missionSearcher,
         { $inc: { recentAmount: 1 } },
-        { new: true, upsert: true });
+        { new: true });
       if (!res) {
         this.app.logger.warn(`值为${modelName}`, ctx, missionSearcher);
+        await ctx.service.userService.syncingTasks({ _id: userId });
       }
     });
   }

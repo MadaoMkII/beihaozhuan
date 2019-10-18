@@ -128,16 +128,16 @@ let sleep = ms => {
 };
 const getLoop = async (qrcodeId, url, name, cookie) => {
 
-  let pageSize = 1;
+  let pageSize = 94;
   const tempArray = [];
   let total;
-  for (let index = 1; index <= pageSize; index++) {
+  for (let index = 94; index <= pageSize; index++) {
     if (name === '') {
       continue;
     }
     console.log(`开始爬 ${name}  第 ${index} 页 , 一共${pageSize}页`);
     const random = Math.ceil(Math.random() * 10000);
-    console.log('机时间' + random);
+    console.log('机时间' + 11000 + random);
     await sleep(11000 + random);
 
     const [ adminBody ] = await requestMethod({
@@ -146,6 +146,7 @@ const getLoop = async (qrcodeId, url, name, cookie) => {
       appId: 'wx87462aaa978561bf',
       pageNum: index,
     }, 'GET', url, cookie);
+
     for (const document of adminBody.respMsg.list) {
       const tempDocument = {};
       tempDocument.粉丝 = document.nickname;

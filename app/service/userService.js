@@ -32,7 +32,8 @@ class UserService extends Service {
 
     const requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack('enable');
 
-    requireMissionResult.find(missionArray => {
+
+    requireMissionResult.forEach(missionArray => {
       if ([ 'Weekly', 'Daily', 'Permanent' ].includes(missionArray._id)) {
         missionArray.missions.forEach(async mission => {
           const conditions = {
@@ -53,6 +54,7 @@ class UserService extends Service {
             case 'Weekly':
               conditions.effectDay = this.ctx.app.getFormatWeek(new Date());
               break;
+            default:break;
           }
           const missionTracker = await this.ctx.model[modelName].findOne(conditions);
           if (this.ctx.helper.isEmpty(missionTracker)) {
