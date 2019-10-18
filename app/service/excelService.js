@@ -60,8 +60,6 @@ class excelService extends Service {
     const app = this.ctx.app;
     const dayBeforeyesterday = this.ctx.app.modifyDate('day', -2);
     const yesterday = this.ctx.app.modifyDate('day', -1);
-    console.log(yesterday);
-    console.log(dayBeforeyesterday);
     // const users = await ctx.model.UserAccount.find({ nickName: '老司机', balanceList:
     //       { $elemMatch: { createTime: { $gte: yesterday } } } });
     const resultData = [];
