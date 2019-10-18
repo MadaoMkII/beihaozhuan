@@ -72,14 +72,13 @@ class AppBootHook {
         missionEventName: missionName,
       };
       const modelName = `${missionObj.missionType}MissionProcessingTracker`;
+      const res = await ctx.model[modelName].findOne(missionSearcher);
 
-      const res = await ctx.model[modelName].findOneAndUpdate(missionSearcher,
-        { $inc: { recentAmount: 1 } },
-        { new: true });
-      if (!res) {
+      if (ctx.helper.isEmpty(res)) {
         this.app.logger.warn(`值为${modelName}`, ctx, missionSearcher);
         await ctx.service.userService.syncingTasks({ _id: userId });
       }
+      await ctx.model[modelName].updateOne(missionSearcher, { $inc: { recentAmount: 1 } });
     });
   }
 
