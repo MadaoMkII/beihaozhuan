@@ -409,6 +409,8 @@ compareSign(x, t)
 //
 // let array= [];
 // array.push(`1`,`2`,`3`)
-// console.log(array)
-console.log(new Date().getDay())
 
+const moment = require('moment');
+require('moment-timezone');
+let xx= moment.tz(Date.now(), 'Asia/ShangHai').format('YYYY年MM月DD日 HH时mm分ss秒');
+console.log(xx)
