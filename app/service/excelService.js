@@ -101,7 +101,7 @@ class excelService extends Service {
                     tel_number: {$first: '$tel_number'},
                     nickName: {$first: '$nickName'},
                     Bcoins: {$first: '$Bcoins'},
-                    created_at: {first: '$created_at'}
+                    created_at: {$first: '$created_at'}
                 }
             },
         ]);
