@@ -58,13 +58,73 @@ class excelService extends Service {
     async getUserInfoExecl() {
         const XLSX = require('xlsx');
         const app = this.ctx.app;
-        const dayBeforeyesterday = this.ctx.app.modifyDate('day', -2);
-        const yesterday = this.ctx.app.modifyDate('day', -1);
+
+
         // const users = await ctx.model.UserAccount.find({ nickName: '老司机', balanceList:
         //       { $elemMatch: { createTime: { $gte: yesterday } } } });
         const resultData = [];
+
+        let yesterday = app.modifyDate(`day`, -1);
         const users = await this.ctx.model.UserAccount.aggregate([
             // { $match: { nickName: '老司机' } },
+            //
+            // {
+            //     $unwind: {
+            //         path: '$balanceList',
+            //         preserveNullAndEmptyArrays: true,
+            //     }
+            // },
+            // {
+            //     $project: {
+            //         uuid: 1,
+            //         tel_number: 1,
+            //         nickName: 1,
+            //         realName: 1,
+            //         Bcoins: 1,
+            //         balanceDayOfYear: {
+            //             $dayOfYear: {
+            //                 date: "$balanceList.createTime",
+            //                 timezone: "Asia/Shanghai"
+            //             },
+            //
+            //         },
+            //         balanceYear: {
+            //             $year: {
+            //                 date: "$balanceList.createTime",
+            //                 timezone: "Asia/Shanghai"
+            //             }
+            //         },
+            //         amount: "$balanceList.amount",
+            //         created_at: "$created_at"
+            //     }
+            // },
+            // {
+            //     $match: {
+            //         balanceDayOfYear: (Number(yesterday.toFormat('ooo'))),
+            //         balanceYear: Number(yesterday.toFormat(`y`))
+            //     }
+            // },
+            // {
+            //     $group: {
+            //         _id: '$uuid',
+            //         todayIncoming: {$sum: '$amount'},
+            //         tel_number: {$first: '$tel_number'},
+            //         nickName: {$first: '$nickName'},
+            //         Bcoins: {$first: '$Bcoins'},
+            //         created_at: {$first: '$created_at'}
+            //     }
+            // },
+            {
+                $project: {
+                    uuid: 1,
+                    tel_number: 1,
+                    nickName: 1,
+                    realName: 1,
+                    Bcoins: 1,
+                    created_at: '$created_at',
+                    balanceList: 1,
+                }
+            },
             {
                 $project: {
                     items: {
@@ -74,8 +134,8 @@ class excelService extends Service {
                             cond: {
                                 $and:
                                     [
-                                        {$gte: ['$$item.createTime', dayBeforeyesterday]},
-                                        {$lte: ['$$item.createTime', yesterday]},
+                                        {$gte: ['$$item.createTime', yesterday.startOf('day').toJSDate()]},
+                                        {$lte: ['$$item.createTime', yesterday.endOf('day').toJSDate()]},
                                     ],
                             },
                         },
@@ -105,6 +165,7 @@ class excelService extends Service {
                 }
             },
         ]);
+        console.log(users)
         users.forEach(user => {
             const element = {};
             element.用户电话 = user.tel_number;

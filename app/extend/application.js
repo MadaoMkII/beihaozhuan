@@ -63,7 +63,7 @@ module.exports = {
     modifier[unit] = value;
     const local = DateTime.fromJSDate(date);
     const rezoned = local.setZone('Asia/Shanghai').plus(modifier);
-    return rezoned.toJSDate();
+    return  rezoned//rezoned.toJSDate();
   },
 
   getInviteCode() {
