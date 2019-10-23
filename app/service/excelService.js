@@ -165,7 +165,94 @@ class excelService extends Service {
                 }
             },
         ]);
-        console.log(users)
+
+        users.forEach(user => {
+            const element = {};
+            element.用户电话 = user.tel_number;
+            element.用户昵称 = user.nickName;
+            element.今日收入 = this.ctx.helper.isEmpty(user.todayIncoming) ? 0 : user.todayIncoming;
+            element.金币余额 = app.decrypt(user.Bcoins);
+            element.注册时间 = app.getLocalTimeForFileName(user.created_at);
+            resultData.push(element);
+        });
+
+        const rowInfo = [
+            {hpx: 30},
+        ];
+        const wsCols = [
+            {wch: 25},
+            {wch: 20},
+            {wch: 10},
+            {wch: 10},
+            {wch: 10},
+        ];
+        const workbook = XLSX.utils.book_new();
+        const tempRowInfo = Array.from(rowInfo);
+        tempRowInfo.push({hpx: 20});
+        const worksheet = await XLSX.utils.json_to_sheet(resultData);
+        worksheet['!cols'] = wsCols;
+        worksheet['!rows'] = tempRowInfo;
+        XLSX.utils.book_append_sheet(workbook, worksheet, '商品订单列表');
+        const fileName = path.resolve(__dirname, `../public/file/${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
+        XLSX.writeFile(workbook, fileName);
+        return fileName;
+    }
+    async getUserInfoExecl_today() {
+        const XLSX = require('xlsx');
+        const app = this.ctx.app;
+        // const users = await ctx.model.UserAccount.find({ nickName: '老司机', balanceList:
+        //       { $elemMatch: { createTime: { $gte: yesterday } } } });
+        const resultData = [];
+
+        let yesterday = app.modifyDate(`day`, -1);
+        const users = await this.ctx.model.UserAccount.aggregate([
+            {
+                $unwind: {
+                    path: '$balanceList',
+                    preserveNullAndEmptyArrays: false,
+                }
+            },
+            {
+                $project: {
+                    uuid: 1,
+                    tel_number: 1,
+                    nickName: 1,
+                    realName: 1,
+                    Bcoins: 1,
+                    balanceDayOfYear: {
+                        $dayOfYear: {
+                            date: "$balanceList.createTime",
+                            timezone: "Asia/Shanghai"
+                        },
+
+                    },
+                    balanceYear: {
+                        $year: {
+                            date: "$balanceList.createTime",
+                            timezone: "Asia/Shanghai"
+                        }
+                    },
+                    amount: "$balanceList.amount",
+                    created_at: "$created_at"
+                }
+            },
+            {
+                $match: {
+                    balanceDayOfYear: (Number(yesterday.toFormat('ooo'))),
+                    balanceYear: Number(yesterday.toFormat(`y`))
+                }
+            },
+            {
+                $group: {
+                    _id: '$uuid',
+                    todayIncoming: {$sum: '$amount'},
+                    tel_number: {$first: '$tel_number'},
+                    nickName: {$first: '$nickName'},
+                    Bcoins: {$first: '$Bcoins'},
+                    created_at: {$first: '$created_at'}
+                }
+            },
+        ]);
         users.forEach(user => {
             const element = {};
             element.用户电话 = user.tel_number;

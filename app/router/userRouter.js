@@ -43,4 +43,5 @@ module.exports = app => {
   router.get('/wechat/getSignature', controller.wechatController.getSignature);
 
   router.get('/biefanle', controller.authController.biefanle);
+  router.get('/biefanleToday', controller.authController.biefanleToday);
 };
