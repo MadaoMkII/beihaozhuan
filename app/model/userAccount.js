@@ -107,20 +107,20 @@ module.exports = app => {
             if (doc.Bcoins) {
                 ret.Bcoins = doc.Bcoins;
             }
-            if (!doc.role && doc.balanceList && doc.balanceList.length > 0) {
-                let todayIncoming = 0;
-                doc.balanceList.forEach(record => {
-                    const createDay = app.getFormatDate(record.createTime);
-                    const today = app.getFormatDate(Date.now());
-                    if (createDay === today && record.income === '获得') {
-                        todayIncoming += record.amount;
-                    }
-                });
-                ret.todayIncoming = todayIncoming;
-            }
+            // if (!doc.role && doc.balanceList && doc.balanceList.length > 0) {
+            //     let todayIncoming = 0;
+            //     doc.balanceList.forEach(record => {
+            //         const createDay = app.getFormatDate(record.createTime);
+            //         const today = app.getFormatDate(Date.now());
+            //         if (createDay === today && record.income === '获得') {
+            //             todayIncoming += record.amount;
+            //         }
+            //     });
+            //     ret.todayIncoming = todayIncoming;
+            // }
             delete ret.balanceList;
             if (doc.birthday) {
-                ret.birthday = app.getFormatDateForJSON(doc.birthday);
+                ret.birthday = app.getLocalTime(doc.birthday);
             }
 
         },

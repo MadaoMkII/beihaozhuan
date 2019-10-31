@@ -409,8 +409,10 @@ compareSign(x, t)
 //
 // let array= [];
 // array.push(`1`,`2`,`3`)
+const {DateTime} = require('luxon');
+const modifier = {};
+const local = DateTime.fromJSDate(new Date());
+const rezoned = local.setZone('Asia/Shanghai').plus({day: 1})
 
-const moment = require('moment');
-require('moment-timezone');
-let xx= moment.tz(Date.now(), 'Asia/ShangHai').format('YYYY年MM月DD日 HH时mm分ss秒');
-console.log(xx)
+console.log(rezoned)
+console.log( DateTime.local().setZone('Asia/Shanghai').minus({ days: 1 }).startOf('day').toJSDate())
