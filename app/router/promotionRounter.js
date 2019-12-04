@@ -13,6 +13,6 @@ module.exports = app => {
   router.post('/promotion/verifyProof', app.middleware.authenticatedMiddleware('客服'),
     controller.homeCreditController.verifyProofs);
 
-
+  router.get('/daqian', controller.wechatController.daqian);
 };
 

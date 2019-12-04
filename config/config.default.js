@@ -121,6 +121,8 @@ module.exports = appInfo => {
   config.wechatConfig = {
     appid: 'wx87462aaa978561bf', // `wx6da0f69da7e8894c`,
     secret: '9205cff5cae37c4d7539822650ad9dc5', // `b6b0fb92a432acb9963bc4cf54e507fc`,
+    key: 'sC4X531K4MHWDSujZCqJ91qRgFof2r12',
+    mchid: '1546748521',
   };
   config.session = {
     key: 'yhbSen',

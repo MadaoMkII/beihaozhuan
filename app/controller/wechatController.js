@@ -74,6 +74,92 @@ class wechatController extends baseController {
   //     url,
   //   });
   // }
+  async toQueryString(obj) {
+    return Object.keys(obj)
+      .filter(key => key !== 'sign' && obj[key] !== void 0 && obj[key] !== '')
+      .sort()
+      .map(key => key + '=' + obj[key])
+      .join('&');
+  }
+
+  async getSign(params, type = 'MD5') {
+    const str = await this.toQueryString(params) + '&key=' + this.ctx.app.config.wechatConfig.key;
+    let signedStr = '';
+    switch (type) {
+      case 'MD5':
+        signedStr = String(require('md5')(str)).toUpperCase();
+        break;
+      case 'SHA1':
+        signedStr = String(require('sha1')(str)).toUpperCase();
+        break;
+      default:
+        throw new Error('signType Error');
+    }
+    return [ str, signedStr ];
+  }
+
+
+  async daqian(ctx) {
+    const amount = 100,
+      desc = '平台提现';
+
+    // switch (0) {
+    //   case A:
+    //     amount=11;
+    //     desc= `双十二活动奖励`;
+    //     break;
+    //   case B:
+    //     amount=11;
+    //     break;
+    //   case C:
+    //     amount=11;
+    //     break;
+    //   case D:
+    //     amount=11;
+    //     break;
+    //   default:
+    //     ctx.throw(400, `选项错误`);
+    // }
+
+
+    if (ctx.helper.isEmpty(ctx.user.OPENID)) {
+      return this.failure('该用户没有注册微信');
+    }
+
+    const ip = ctx.app.getIP(ctx.request);
+    const partner_trade_no = 100 + ctx.helper.randomNumber(10);
+    const inputObj = {
+      mch_appid: ctx.app.config.wechatConfig.appid,
+      mchid: ctx.app.config.wechatConfig.mchid,
+      nonce_str: ctx.randomString(32),
+      partner_trade_no,
+      openid: ctx.user.OPENID,
+      check_name: 'NO_CHECK',
+      re_user_name: '',
+      amount,
+      desc,
+      spbill_create_ip: ip,
+    };
+    const [ str, signedStr ] = await this.getSign(inputObj);
+    inputObj.sign = signedStr;
+    console.log(str);
+    const xml2js = require('xml2js');
+    const builder = new xml2js.Builder({ headless: true, rootName: 'xml' });
+    const xml = builder.buildObject(inputObj);
+
+    const path = require('path');
+    const appDir = path.dirname(__filename).replace('app\\controller', '');
+
+    const [ result ] = await ctx.app.requestMethod(xml, 'POST',
+      'https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers',
+      path.resolve(appDir + '//config/apiclient_cert.p12'), true);
+
+    const parser = new xml2js.Parser({ explicitArray: false, explicitRoot: false });
+    const x = await parser.parseStringPromise(result);
+    console.log(x);
+    this.success();
+  }
+
 
   async callback(ctx) {
     try {

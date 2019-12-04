@@ -63,7 +63,7 @@ module.exports = {
     modifier[unit] = value;
     const local = DateTime.fromJSDate(date);
     const rezoned = local.setZone('Asia/Shanghai').plus(modifier);
-    return  rezoned//rezoned.toJSDate();
+    return rezoned;// rezoned.toJSDate();
   },
 
   getInviteCode() {
@@ -80,7 +80,7 @@ module.exports = {
     return ipArr && ipArr.length > 0 ? ipArr[0] : '127.0.0.1';
   },
 
-  requestMethod(JSONObject, method, url) {
+  requestMethod(JSONObject, method, url, certPath, xml = false) {
     const request_ = require('request');
     let requestObj = {};
     if (method === 'GET') {
@@ -96,12 +96,26 @@ module.exports = {
       };
     }
     if (method === 'POST') {
-      requestObj = {
-        url,
-        method,
-        json: true, // <--Very important!!!
-        body: JSONObject,
-      };
+      if (xml) {
+        requestObj = {
+          url,
+          method,
+          json: false, // <--Very important!!!
+          body: JSONObject,
+          agentOptions: {
+            pfx: require('fs').readFileSync(certPath), // '../config/apiclient_cert.p12'
+            passphrase: this.config.wechatConfig.mchid,
+          },
+        };
+      } else {
+        requestObj = {
+          url,
+          method,
+          json: true, // <--Very important!!!
+          body: JSONObject,
+        };
+      }
+
     }
     return new Promise((resolve, reject) => {
 
