@@ -132,7 +132,7 @@ class authController extends Controller {
       await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
       const promise_1 = ctx.service.analyzeService.dataIncrementRecord('userRegister', 1, 'user');
       const promise_2 = ctx.service.userService.setUserBcionChange(newUser.uuid,
-        '注册奖励', '获得', initialBcoin);
+        '注册奖励', '获得', initialBcoin, initialBcoin);
       delete newUser.password;
 
       Promise.all([ promise_1, promise_2 ]).catch(error => {
@@ -187,7 +187,8 @@ class authController extends Controller {
         newUser.userStatus.hasVerifyWechat = 'enable';
         const newUser_login = await ctx.service.userService.addUser(newUser, null);
         if (bcoin !== 0) {
-          promise = ctx.service.userService.setUserBcionChange(newUser.uuid, '注册奖励', '获得', bcoin);
+          promise = ctx.service.userService.setUserBcionChange(newUser.uuid, '注册奖励', '获得', bcoin,
+            bcoin);
         }
         ctx.login(newUser_login);
         delete newUser.password;
@@ -266,18 +267,18 @@ class authController extends Controller {
       this.failure();
     }
   }
-    async biefanleToday(ctx) {
-        try {
-            const fs = require('fs');
-            const fileName = await ctx.service.excelService.getUserInfoExecl_today();
-            ctx.status = 200;
-            await ctx.downloader(fileName);
-            fs.unlinkSync(fileName);
-        } catch (e) {
-            this.app.logger.error(e, ctx);
-            this.failure();
-        }
+  async biefanleToday(ctx) {
+    try {
+      const fs = require('fs');
+      const fileName = await ctx.service.excelService.getUserInfoExecl_today();
+      ctx.status = 200;
+      await ctx.downloader(fileName);
+      fs.unlinkSync(fileName);
+    } catch (e) {
+      this.app.logger.error(e, ctx);
+      this.failure();
     }
+  }
   // async lottery(ctx) {
   //     const {tel_number} = ctx.request.query;
   //     if (ctx.helper.isEmpty(tel_number)) {

@@ -48,10 +48,12 @@ class advertisementController extends Controller {
         'close');
       const promise_2 = ctx.service.analyzeService.dataIncrementRecord('广告收入',
         advertisementObj.reward, 'bcoin');
-      const promise_3 = ctx.service.userService.setUserBcionChange(userObj.uuid, '广告收入',
-        '获得', advertisementObj.reward);
+
       const newBcoin = Number(ctx.user.Bcoins) + Number(advertisementObj.reward);
-      const promise_4 = ctx.service.userService.changeBcoin(ctx.user._id, newBcoin + '');
+      const promise_3 = ctx.service.userService.setUserBcionChange(userObj.uuid, '广告收入',
+        '获得', advertisementObj.reward, newBcoin);
+
+      // const promise_4 = ctx.service.userService.changeBcoin(ctx.user._id, newBcoin + '');
       this.success();
 
       ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '看一个广告');
@@ -59,7 +61,7 @@ class advertisementController extends Controller {
       ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '每日看广告');
       ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '每日看广告_高级');
       // ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `看一些广告`); //以后需要动态配置 任务没有开启不需要监听器
-      promiseArray.push(promise_1, promise_2, promise_3, promise_4);
+      promiseArray.push(promise_1, promise_2, promise_3);
       Promise.all(promiseArray).catch(error => {
         ctx.throw(500, error);
       });

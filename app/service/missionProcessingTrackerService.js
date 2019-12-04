@@ -39,12 +39,12 @@ class MissionEventManager extends Service {
 
       const tempBcoin = Number(this.ctx.user.Bcoins) + Number(missionTracker.missionID.reward);
 
-      const promise_1 = this.ctx.service.userService.changeBcoin(this.ctx.user._id, tempBcoin);
+      // const promise_1 = this.ctx.service.userService.changeBcoin(this.ctx.user._id, tempBcoin);
 
       const promise_2 = this.ctx.service.analyzeService.dataIncrementRecord(`完成任务-${missionTracker.missionEventName}`,
         missionTracker.missionID.reward, 'bcoin');
       const promise_3 = this.ctx.service.userService.setUserBcionChange(this.ctx.user.uuid, `完成任务-${missionTracker.missionEventName}`,
-        '获得', missionTracker.missionID.reward);
+        '获得', missionTracker.missionID.reward, tempBcoin);
 
       const promise_4 = this.ctx.model[fullModelName].findOneAndUpdate({
         userID,
@@ -52,7 +52,7 @@ class MissionEventManager extends Service {
         completed: false,
         effectDay,
       }, { $set: { completed: true } }, { new: true });
-      Promise.all([ promise_1, promise_2, promise_3, promise_4 ]).catch(error => {
+      Promise.all([ promise_2, promise_3, promise_4 ]).catch(error => {
         this.app.logger.error(error, this.ctx);
       });
       return true;

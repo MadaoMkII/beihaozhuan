@@ -1,6 +1,10 @@
 'use strict';
-const pageAndUnitRules = require('../pageAndUnitRule');
+
 const rule = {
+  id: [
+    { required: true, message: '手机号不能为空' },
+    { type: 'string', message: '手机号类型不正确' },
+  ],
   status: [
     { required: true, message: 'status不能为空' },
     {
@@ -9,10 +13,6 @@ const rule = {
       message: '数值仅可为 未审核 / 审核通过 / 审核失败',
     },
   ],
-  tel_number: [
-    { required: false, message: '不能为空' },
-    { type: 'string', message: '类型不正确' },
-  ],
 };
-Object.assign(rule, pageAndUnitRules);
+
 module.exports = rule;

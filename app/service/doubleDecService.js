@@ -3,9 +3,10 @@ const { Service } = require('egg');
 
 class doubleDecService extends Service {
 
-  async createDoubleDec(goodObj) {
-    const good = new this.ctx.model.DoubleDec(goodObj);
-    good.save();
+  async createDoubleDec(tel_number_verify, goodObj) {
+
+    await this.ctx.model.DoubleDec.findOneAndUpdate({ tel_number_verify },
+      { $set: goodObj }, { new: true });
   }
 
   async getManyDoubleDec(conditions, option) {

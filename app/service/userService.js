@@ -4,7 +4,7 @@ require('moment-timezone');
 
 class UserService extends Service {
 
-  async setUserBcionChange(user_uuid, category, income, amount) {
+  async setUserBcionChange(user_uuid, category, income, amount, tempBcoin) {
     const newBcionChange = {
       category,
       income,
@@ -12,7 +12,7 @@ class UserService extends Service {
       createTime: new Date(), // 必须加入那些代码
     };
     return this.ctx.model.UserAccount.findOneAndUpdate({ uuid: user_uuid },
-      { $push: { balanceList: newBcionChange } }, { new: true });
+      { $push: { balanceList: newBcionChange }, $set: { Bcoins: tempBcoin } }, { new: true });
 
   }
 
@@ -81,8 +81,6 @@ class UserService extends Service {
   }
 
   async updateUser_login(user) {
-    const absoluteDate = this.ctx.getAbsoluteDate();
-
     return this.ctx.model.UserAccount.findOneAndUpdate({ uuid: user.uuid }, {
       $inc: { loginTimes: 1 },
     }, { new: true });
@@ -108,7 +106,7 @@ class UserService extends Service {
       userNew.referrer = await this.getReferrerID(inviteCode);
 
       if (!this.ctx.helper.isEmpty(userNew.referrer)) {
-        const userx = await this.ctx.model.UserAccount.findOneAndUpdate({
+        await this.ctx.model.UserAccount.findOneAndUpdate({
           _id: userNew.referrer,
         }, { $push: { referrals: userNew._id } });
         this.ctx.app.eventEmitter.emit('normalMissionCount', userNew.referrer, '每日邀新人');
@@ -200,9 +198,9 @@ class UserService extends Service {
     return [];
   }
 
-  async changeBcoin(_id, newBasin_unencrypted) {
-    await this.setUser(_id, { Bcoins: newBasin_unencrypted });
-  }
+  // async changeBcoin(_id, newBasin_unencrypted) {
+  //   await this.setUser(_id, { Bcoins: newBasin_unencrypted });
+  // }
 
 
   // {$set: {Bcoins: newBasin_unencrypted}, $push: {missionTrackers: missionEvent}}, {new: true});
@@ -217,10 +215,10 @@ class UserService extends Service {
       { $set: setObj, $push: pushObj }, { new: true });
   }
 
-  async setUser(id, setObj, pushObj = {}) {
-    return this.ctx.model.UserAccount.findOneAndUpdate({ _id: id },
-      { $set: setObj, $push: pushObj }, { new: true });
-  }
+  // async setUser(id, setObj, pushObj = {}) {
+  //   return this.ctx.model.UserAccount.findOneAndUpdate({ _id: id },
+  //     { $set: setObj, $push: pushObj }, { new: true });
+  // }
 }
 
 module.exports = UserService;
