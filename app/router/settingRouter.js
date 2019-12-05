@@ -27,7 +27,11 @@ module.exports = app => {
     ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
     // ctx.redirect('/index.html')
   });
-
+  router.get('/gift', async ctx => {
+    ctx.response.type = 'html';
+    ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/gift.html'));
+    // ctx.redirect('/index.html')
+  });
   router.get('/index', async ctx => {
     ctx.response.type = 'html';
     ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
