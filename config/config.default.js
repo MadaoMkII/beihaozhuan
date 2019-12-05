@@ -221,11 +221,11 @@ module.exports = appInfo => {
     autoFields: true,
     mode: 'file',
     defaultCharset: 'utf8',
-    fieldNameSize: 100,
-    fieldSize: '100kb',
+    fieldNameSize: 1000,
+    fieldSize: '2048mb',
     fields: 100,
     fileSize: '2048mb',
-    files: 100,
+    files: 1000,
     fileExtensions: [ '' ],
   };
 
