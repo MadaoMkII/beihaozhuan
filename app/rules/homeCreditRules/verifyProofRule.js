@@ -9,8 +9,8 @@ const rule = {
     { required: true, message: 'status不能为空' },
     {
       type: 'enum',
-      enum: [ '未审核', '审核通过', '审核失败' ],
-      message: '数值仅可为 未审核 / 审核通过 / 审核失败',
+      enum: [ '未审核', '审核通过', '审核不通过' ],
+      message: '数值仅可为 未审核 / 审核通过 / 审核不通过',
     },
   ],
 };

@@ -111,6 +111,7 @@ class UserService extends Service {
         }, { $push: { referrals: userNew._id } });
         this.ctx.app.eventEmitter.emit('normalMissionCount', userNew.referrer, '每日邀新人');
         this.ctx.app.eventEmitter.emit('normalMissionCount', userNew.referrer, '每周邀新人');
+        this.ctx.app.eventEmitter.emit('normalMissionCount', userNew.referrer, '双十二邀新人');
       }
     }
     await userNew.save();

@@ -89,9 +89,9 @@ class homeCreditController extends baseController {
       } else {
         return this.failure('图片数量不对');
       }
-      const promise_1 = ctx.service.doubleDecService.createDoubleDec(doubleDec.tel_number_verify, doubleDec);
+      await ctx.service.doubleDecService.createDoubleDec(doubleDec.tel_number_verify, doubleDec);
       this.success();
-      Promise.all([ promise_1 ]).then();
+
     } catch (e) {
       this.app.logger.error(e, ctx);
       this.failure();
