@@ -2,7 +2,7 @@
 const pageAndUnitRules = require('../pageAndUnitRule');
 const rule = {
   status: [
-    { required: true, message: 'status不能为空' },
+    { required: false, message: 'status不能为空' },
     {
       type: 'enum',
       enum: [ '未审核', '审核通过', '审核不通过' ],

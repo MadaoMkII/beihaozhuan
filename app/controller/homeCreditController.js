@@ -44,13 +44,13 @@ class homeCreditController extends baseController {
 
   async getProofs(ctx) {
     try {
-      const [ condition, option ] = await this.cleanupRequestProperty('goodRules.findGoodRule',
-        'unit', 'page', 'status', 'tel_number');
+      const [ condition, option ] = await this.cleanupRequestProperty('homeCreditRules.findGoodRule',
+        'unit', 'page', 'status', 'account');
       if (!condition) {
         return;
       }
-      if (!ctx.helper.isEmpty(condition.tel_number)) {
-        condition.title = { $regex: `.*${condition.tel_number}.*` };
+      if (!ctx.helper.isEmpty(condition.account)) {
+        condition.account = { $regex: `.*${condition.account}.*` };
       }
       const count = await this.getFindModelCount('DoubleDec', condition);
       const result = await ctx.service.doubleDecService.getManyDoubleDec(condition, option);

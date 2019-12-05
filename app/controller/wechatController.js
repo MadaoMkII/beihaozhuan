@@ -78,6 +78,9 @@ class wechatController extends baseController {
 
   async withdrew(ctx) {
     try {
+
+      await ctx.model.PermanentMissionProcessingTracker.deleteMany({ missionEventName: '双十二活动-邀请好友得现金' });
+      return;
       let amount = 100,
         desc = '平台提现';
       const [ condition ] = await this.cleanupRequestProperty('wechatRules.withdrewRule',
@@ -113,24 +116,19 @@ class wechatController extends baseController {
       const result = await ctx.service.wechatService.withdrew(amount, desc, ip, partner_trade_no);
 
 
-        //
-        // {
-        //     "return_code": "SUCCESS",
-        //     "return_msg": "",
-        //     "mch_appid": "wx87462aaa978561bf",
-        //     "mchid": "1546748521",
-        //     "nonce_str": "V3IvzY8zKFwn5NX6iLUwp3Q1xLHcwJmi",
-        //     "result_code": "SUCCESS",
-        //     "partner_trade_no": "1009934862824",
-        //     "payment_no": "10101080611701912050043521019656",
-        //     "payment_time": "2019-12-05 15:13:12"
-        // }
-        //
-
-
-
-
-
+      //
+      // {
+      //     "return_code": "SUCCESS",
+      //     "return_msg": "",
+      //     "mch_appid": "wx87462aaa978561bf",
+      //     "mchid": "1546748521",
+      //     "nonce_str": "V3IvzY8zKFwn5NX6iLUwp3Q1xLHcwJmi",
+      //     "result_code": "SUCCESS",
+      //     "partner_trade_no": "1009934862824",
+      //     "payment_no": "10101080611701912050043521019656",
+      //     "payment_time": "2019-12-05 15:13:12"
+      // }
+      //
 
 
       this.success(result);
