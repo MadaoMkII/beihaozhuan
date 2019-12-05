@@ -126,7 +126,7 @@ class goodController extends baseController {
     }
   }
 
-  async getRecommendGood() {
+  async getRecommendGood(ctx) {
     try {
       const setting = await this.service.goodService.getRecommendGood();
       this.success(setting);

@@ -80,13 +80,11 @@ class wechatController extends baseController {
     try {
       let amount = 100,
         desc = '平台提现';
-
-      const [ condition ] = await this.cleanupRequestProperty('goodRules.findGoodRule',
+      const [ condition ] = await this.cleanupRequestProperty('wechatRules.withdrewRule',
         'type');
       if (!condition) {
         return;
       }
-
       switch (condition.type) {
         case 'A':
           amount = 31;
@@ -113,6 +111,28 @@ class wechatController extends baseController {
       const ip = ctx.app.getIP(ctx.request);
       const partner_trade_no = 100 + ctx.helper.randomNumber(10);
       const result = await ctx.service.wechatService.withdrew(amount, desc, ip, partner_trade_no);
+
+
+        //
+        // {
+        //     "return_code": "SUCCESS",
+        //     "return_msg": "",
+        //     "mch_appid": "wx87462aaa978561bf",
+        //     "mchid": "1546748521",
+        //     "nonce_str": "V3IvzY8zKFwn5NX6iLUwp3Q1xLHcwJmi",
+        //     "result_code": "SUCCESS",
+        //     "partner_trade_no": "1009934862824",
+        //     "payment_no": "10101080611701912050043521019656",
+        //     "payment_time": "2019-12-05 15:13:12"
+        // }
+        //
+
+
+
+
+
+
+
       this.success(result);
     } catch (e) {
       this.app.logger.error(e, ctx);

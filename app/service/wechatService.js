@@ -56,15 +56,13 @@ class WeChatService extends Service {
     const xml = builder.buildObject(inputObj);
 
     const path = require('path');
-    const appDir = path.dirname(__filename).replace('app\\controller', '');
+    const appDir = path.dirname(__filename).replace('app\\service', '');
 
     const [ result ] = await this.ctx.app.requestMethod(xml, 'POST',
       'https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers',
       path.resolve(appDir + '//config/apiclient_cert.p12'), true);
-
     const parser = new xml2js.Parser({ explicitArray: false, explicitRoot: false });
     return await parser.parseStringPromise(result);
-
   }
 
 

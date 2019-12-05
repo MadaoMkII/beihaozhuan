@@ -13,6 +13,6 @@ module.exports = app => {
   router.post('/promotion/verifyProof', app.middleware.authenticatedMiddleware('客服'),
     controller.homeCreditController.verifyProofs);
 
-  router.get('/wechat/withdrew', app.middleware.authenticatedMiddleware('客服'), controller.wechatController.daqian);
+  router.post('/wechat/withdrew', app.middleware.authenticatedMiddleware('客服'), controller.wechatController.withdrew);
 };
 
