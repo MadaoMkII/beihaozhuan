@@ -71,7 +71,7 @@ class WeChatService extends Service {
     const xml = builder.buildObject(inputObj);
 
     const path = require('path');
-    const appDir = path.resolve(process.cwd(), '../');
+    const appDir = path.resolve(process.cwd(), './');
 
     const [ result ] = await this.ctx.app.requestMethod(xml, 'POST',
       'https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers',
