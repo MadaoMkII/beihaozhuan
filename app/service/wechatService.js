@@ -34,23 +34,38 @@ class WeChatService extends Service {
     const sha1 = require('sha1');
     return [ signStr, sha1(signStr) ];
   }
+  async getRealNickName() {
+    const access_token = await this.get_access_token();
+    const requestObj_3 = {
+      access_token,
+      openid: this.ctx.user.OPENID,
+      lang: 'zh_CN',
+    };
+    const [ result_3 ] = await this.app.requestMethod(requestObj_3,
+      'GET', 'https://api.weixin.qq.com/cgi-bin/user/info');
+    if (result_3.errcode) {
+      return;
+    }
+    return result_3;
+  }
 
-  async withdrew(amount, desc, ip, partner_trade_no) {
+  async withdrew(amount, desc, ip, partner_trade_no, newBcoin) {
+    const user = this.ctx.user;
     const inputObj = {
       mch_appid: this.ctx.app.config.wechatConfig.appid,
       mchid: this.ctx.app.config.wechatConfig.mchid,
       nonce_str: this.ctx.randomString(32),
       partner_trade_no,
-      openid: this.ctx.user.OPENID,
-      check_name: 'NO_CHECK',
-      re_user_name: '',
+      openid: user.OPENID,
+      check_name: 'FORCE_CHECK',
+      re_user_name: '大狗子',
       amount,
       desc,
       spbill_create_ip: ip,
     };
-    const [ str, signedStr ] = await this.getSign(inputObj);
+    const [ , signedStr ] = await this.getSign(inputObj);
     inputObj.sign = signedStr;
-    console.log(str);
+
     const xml2js = require('xml2js');
     const builder = new xml2js.Builder({ headless: true, rootName: 'xml' });
     const xml = builder.buildObject(inputObj);
@@ -62,9 +77,63 @@ class WeChatService extends Service {
       'https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers',
       path.resolve(appDir + '//config/apiclient_cert.p12'), true);
     const parser = new xml2js.Parser({ explicitArray: false, explicitRoot: false });
-    return await parser.parseStringPromise(result);
+    const withdrewResult = await parser.parseStringPromise(result);
+    if (!this.ctx.helper.isEmpty(withdrewResult) && withdrewResult.result_code !== 'FAIL') {
+      await this.ctx.service.analyzeService.dataIncrementRecord('提现',
+        -amount * 100, 'bcoin');
+      await this.ctx.service.userService.setUserBcionChange(user.uuid, '提现',
+        '消费', -amount * 100, newBcoin);
+    }
+    const withDrewEntity = {
+      guestIP: ip,
+      desc,
+      amount,
+      OPENID: user.OPENID,
+      partner_trade_no,
+      nickName: user.nickName,
+      userUUid: user.uuid,
+      withdrewResult,
+      return_msg: withdrewResult.return_msg,
+    };
+    const withDrewObj = this.ctx.model.Withdrew(withDrewEntity);
+    await withDrewObj.save();
+    return withdrewResult;
   }
 
+  async update_accessToken() {
+    const requestObj_1 = {
+      appid: this.ctx.app.config.wechatConfig.appid,
+      secret: this.ctx.app.config.wechatConfig.secret,
+      grant_type: 'client_credential',
+    };
+
+    const [ result_1 ] = await this.ctx.app.requestMethod(requestObj_1,
+      'GET', 'https://api.weixin.qq.com/cgi-bin/token');
+    console.log(result_1);
+    if (!this.ctx.helper.isEmpty(result_1.errcode)) {
+      this.ctx.throw(400, result_1.errmsg);
+    }
+    await this.ctx.model.SystemSetting.findOneAndUpdate({},
+      { $set: { access_token: { tokenStr: result_1.access_token, createTime: new Date() } } },
+      { sort: { updated_at: -1 }, new: true });
+    return result_1.access_token;
+  }
+  async get_access_token() {
+    let result;
+    const recentTimeModified = this.ctx.app.modifyDate('second', -7210).toJSDate();
+    const settingObj = await this.ctx.model.SystemSetting.findOne({}, {},
+      { sort: { updated_at: -1 } });
+    if (!this.ctx.helper.isEmpty(settingObj.access_token)) {
+      if (recentTimeModified >= settingObj.access_token.createTime) {
+        result = await this.update_accessToken();
+      } else {
+        result = settingObj.access_token.tokenStr;
+      }
+    } else {
+      result = await this.update_accessToken();
+    }
+    return result;
+  }
 
   async setToken() {
     const requestObj_1 = {
@@ -93,7 +162,7 @@ class WeChatService extends Service {
     if (result_2.errcode !== 0) {
       this.ctx.throw(400, result_2.errmsg);
     }
-    console.log(result_2);
+
     // await this.ctx.model.Setting.findOneAndUpdate({ jsapi_ticket: null }, { $set: { jsapi_ticket: result_2.ticket } });
     return result_2.ticket;
   }

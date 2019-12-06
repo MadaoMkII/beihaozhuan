@@ -4,6 +4,16 @@ module.exports = app => {
   // mongoose.set('useCreateIndex', true);
   // mongoose.set('useFindAndModify', false);
   const connection = app.mongooseDB.get('commonConnection');
+
+
+  const withDrewSetting = mongoose.Schema(
+    {
+      category: String,
+      amount: String,
+      desc: String,
+      optionType: String },
+    { _id: false });
+
   const systemSetting = new mongoose.Schema({
     registerMission: {
       activity: {
@@ -24,12 +34,8 @@ module.exports = app => {
     recommendGood: { type: mongoose.Schema.Types.ObjectId },
     advertisementSetting: { type: mongoose.Schema.Types.Mixed },
     token: { type: mongoose.Schema.Types.Mixed },
-    withDrewSetting: [{
-      category: String,
-      amount: String,
-      desc: String,
-      optionType: String,
-    }],
+    access_token: { tokenStr: String, createTime: Date },
+    withDrewSetting: [ withDrewSetting ],
   }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   });

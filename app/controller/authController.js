@@ -59,7 +59,7 @@ class authController extends Controller {
         }
         ctx.login(userResult);
         // ctx.rotateCsrfSecret();
-        this.success();
+        this.success(ctx.user.role);
       } else {
         this.failure('登陆失败', 5000, 503);
       }

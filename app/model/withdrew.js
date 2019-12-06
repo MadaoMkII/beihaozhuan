@@ -1,7 +1,7 @@
 'use strict';
 module.exports = app => {
   const mongoose = app.mongoose;
-  const connection = app.mongooseDB.get('orderGoodConnection');
+  const connection = app.mongooseDB.get('analyze');
   const goodSchema = new mongoose.Schema({
     guestIP: String,
     desc: String,
@@ -9,7 +9,9 @@ module.exports = app => {
     OPENID: String,
     partner_trade_no: String,
     nickName: String,
-    uuid: String,
+    userUUid: String,
+    withdrewResult: { type: mongoose.Schema.Types.Mixed },
+    return_msg: String,
   }, {
     timestamps: {
       createdAt: 'created_at', updatedAt: 'updated_at', toObject: { virtuals: true },
