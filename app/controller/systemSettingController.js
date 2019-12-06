@@ -14,6 +14,10 @@ class SystemSettingController extends baseController {
     this.success();
   }
 
+  async getWithDrewSetting(ctx) {
+    const newUser = await ctx.service.systemSettingService.getWithDrewSetting();
+    this.success(newUser);
+  }
 
   async setSetting(ctx) {
     const newUser = await ctx.service.systemSettingService.setSetting(ctx.request.body);

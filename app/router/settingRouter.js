@@ -19,6 +19,9 @@ module.exports = app => {
   router.post('/setting/getSetting', app.middleware.authenticatedMiddleware('用户'),
     controller.systemSettingController.getSetting);
 
+  router.get('/setting/getWithDrewSetting', app.middleware.authenticatedMiddleware('用户'),
+    controller.systemSettingController.getWithDrewSetting);
+
   router.get('/setting/getMemberNumber', app.middleware.authenticatedMiddleware('用户'),
     controller.systemSettingController.getMemberNumber);
 

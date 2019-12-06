@@ -78,42 +78,26 @@ class wechatController extends baseController {
 
   async withdrew(ctx) {
     try {
-
-      await ctx.model.PermanentMissionProcessingTracker.deleteMany({ missionEventName: '双十二活动-邀请好友得现金' });
-      return;
-      let amount = 100,
-        desc = '平台提现';
       const [ condition ] = await this.cleanupRequestProperty('wechatRules.withdrewRule',
         'type');
       if (!condition) {
         return;
       }
-      switch (condition.type) {
-        case 'A':
-          amount = 31;
-          desc = '双十二活动奖励A';
-          break;
-        case 'B':
-          amount = 32;
-          desc = '双十二活动奖励B';
-          break;
-        case 'C':
-          amount = 33;
-          desc = '双十二活动奖励C';
-          break;
-        case 'D':
-          amount = 34;
-          desc = '双十二活动奖励D';
-          break;
-        default:
-          ctx.throw(400, '选项错误');
+      const settingArray = await ctx.service.systemSettingService.getWithDrewSetting();
+
+      const option = settingArray.withDrewSetting.find(entity => entity.optionType === condition.type);
+
+      if (ctx.helper.isEmpty(option)) {
+        return this.failure('输入type错误');
       }
+
       if (ctx.helper.isEmpty(ctx.user.OPENID)) {
-        return this.failure('该用户没有注册微信');
+        return this.success('该用户没有注册微信');
       }
+
       const ip = ctx.app.getIP(ctx.request);
       const partner_trade_no = 100 + ctx.helper.randomNumber(10);
-      const result = await ctx.service.wechatService.withdrew(amount, desc, ip, partner_trade_no);
+      const promise_1 = ctx.service.wechatService.withdrew(option.amount, option.category, ip, partner_trade_no);
 
 
       //
@@ -129,9 +113,8 @@ class wechatController extends baseController {
       //     "payment_time": "2019-12-05 15:13:12"
       // }
       //
-
-
-      this.success(result);
+      this.success();
+      Promise.all([ promise_1 ]).catch(e => { ctx.throw(400, e); });
     } catch (e) {
       this.app.logger.error(e, ctx);
       this.failure();
