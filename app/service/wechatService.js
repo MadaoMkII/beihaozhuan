@@ -49,7 +49,7 @@ class WeChatService extends Service {
     return result_3;
   }
   async withdrewConstraint(user) {
-    const name = await ctx.service.wechatService.getRealNickName();
+
     return [ false, 'msg' ];
   }
 
