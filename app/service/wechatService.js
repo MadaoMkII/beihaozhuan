@@ -1,6 +1,6 @@
 'use strict';
 const Service = require('egg').Service;
-require('moment-timezone');
+const { DateTime } = require('luxon');
 class WeChatService extends Service {
   async toQueryString(obj) {
     return Object.keys(obj)
@@ -48,9 +48,59 @@ class WeChatService extends Service {
     }
     return result_3;
   }
-  async withdrewConstraint(user) {
+  async withdrewConstraint(user, type) {
+    let pass = true,
+      msg = '';
+    let result;
+    switch (type) {
+      case '双十二活动':
+        result = await this.ctx.model.DoubleDec.findOne({ userUUid: user.uuid });
+        if (!this.ctx.helper.isEmpty(result)) {
+          if (result.status !== '审核通过') {
+            pass = false;
+            msg = '活动没有达到要求或者已经领取';
+          }
+          await this.ctx.model.DoubleDec.findOneAndUpdate({ userUUid: user.uuid },
+            { $set: { status: '已领取' } });
+        } else {
+          msg = '请先完成活动要求';
+          pass = false;
+        }
+        break;
 
-    return [ false, 'msg' ];
+      case '平台提现':
+
+        // eslint-disable-next-line no-case-declarations
+        const local = DateTime.local().setZone('Asia/Shanghai');
+
+        // eslint-disable-next-line no-case-declarations
+        const records = await this.ctx.model.Withdrew.find({
+          created_at: {
+            $gte: local.startOf('day').toJSDate(),
+            $lte: local.endOf('day').toJSDate(),
+          },
+        }, {
+          desc: 1,
+          amount: 1,
+          partner_trade_no: 1,
+          nickName: 1,
+          return_msg: 1,
+          created_at: 1,
+          result_code: 1,
+        });
+        // eslint-disable-next-line no-case-declarations
+        const succeedTimes = records.filter(x => x.result_code !== 'FAIL').length;
+        if (this.ctx.helper.isEmpty(records) || succeedTimes < 1) {
+          return [ pass, msg ];
+        }
+        pass = false; msg = '距离上次提现不到24小时，提现次数已满';
+        break;
+
+      default:
+        break;
+    }
+
+    return [ pass, msg ];
   }
 
   async withdrew(amount, desc, ip, partner_trade_no, newBcoin) {
@@ -98,6 +148,7 @@ class WeChatService extends Service {
       userUUid: user.uuid,
       withdrewResult,
       return_msg: withdrewResult.return_msg,
+      result_code: withdrewResult.result_code,
     };
     const withDrewObj = this.ctx.model.Withdrew(withDrewEntity);
     await withDrewObj.save();
@@ -116,7 +167,7 @@ class WeChatService extends Service {
 
     const [ result_1 ] = await this.ctx.app.requestMethod(requestObj_1,
       'GET', 'https://api.weixin.qq.com/cgi-bin/token');
-    console.log(result_1);
+
     if (!this.ctx.helper.isEmpty(result_1.errcode)) {
       this.ctx.throw(400, result_1.errmsg);
     }

@@ -65,10 +65,6 @@ class wechatController extends baseController {
     const randomStr = ctx.randomString(16);
 
     const signature = await ctx.service.wechatService.signString({ jsapi_ticket, timestamp, url, randomStr });
-
-    console.log(signature[0]);
-    console.log(signature[1]);
-    // console.log(result);
     this.success({
       jsapi_ticket,
       appID: ctx.app.config.wechatConfig.appid,
@@ -87,21 +83,16 @@ class wechatController extends baseController {
       if (!condition) {
         return;
       }
-      let promise_0 = {};
+      const promise_0 = {};
       const settingArray = await ctx.service.systemSettingService.getWithDrewSetting();
       const option = settingArray.withDrewSetting.find(entity => entity.optionType === condition.type);
 
-      if (option.category !== '平台提现') {
-        const result = await ctx.model.DoubleDec.findOne({ userUUid: user.uuid });
-        if (!ctx.helper.isEmpty(result)) {
-          if (result.status !== '审核通过') {
-            return this.success('活动没有达到要求或者已经领取', 'OK', 400);
-          }
-          promise_0 = ctx.model.DoubleDec.findOneAndUpdate({ userUUid: ctx.user.uuid },
-            { $set: { status: '已领取' } });
-        } else { return this.success('请先完成活动要求', 'OK', 400); }
+      const [ pass, msg ] = await ctx.service.wechatService.withdrewConstraint(ctx.user, option.category);
 
+      if (!pass) {
+        return this.success(msg, 'OK', 400);
       }
+
       const newBcoin = Number(ctx.user.Bcoins) - Number(option.amount * 100);
       if (newBcoin < 0) {
         return this.success('你的钱不够', 'OK', 400);
@@ -131,7 +122,8 @@ class wechatController extends baseController {
       // }
       //
       if (!result || result.result_code === 'FAIL') {
-        ctx.throw('微信服务器连接不稳定,请稍后再试');
+        this.success('微信服务器连接不稳定,请稍后再试');
+        this.app.logger.error(new Error(JSON.stringify(result)), ctx);
       }
       this.success();
       Promise.all([ promise_0 ]).then();
