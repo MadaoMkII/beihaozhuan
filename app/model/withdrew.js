@@ -43,18 +43,10 @@ module.exports = app => {
       delete ret.__v;
       delete ret._id;
       delete ret.id;
-      delete ret.created_at;
+      if (doc.created_at) {
+        ret.created_at = app.getLocalTime(doc.created_at);
+      }
       delete ret.updated_at;
-      // delete ret.password;
-      // ret.Bcoins = doc.Bcoins;
-      // ret.VIPLevel = vipCoculart(doc.growthPoints);
-      // if (doc.created_at && doc.updated_at) {
-      //     ret.created_at = new Date(doc.created_at).getTime();
-      //     ret.updated_at = new Date(doc.updated_at).getTime();
-      // }
-      // if (doc.last_login_time) {
-      //     ret.last_login_time = new Date(doc.last_login_time).getTime();
-      // }
     },
   });
 

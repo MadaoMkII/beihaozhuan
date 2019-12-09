@@ -10,6 +10,49 @@ class wechatController extends baseController {
     this.success(name.nickname);
   }
 
+  async getWithDrewByAdmin(ctx) {
+    try {
+      const [ condition, option ] = await this.cleanupRequestProperty('wechatRules.findWithdrewRule',
+        'unit', 'page', 'return_msg', 'nickName', 'userUUid');
+      if (!condition) {
+        return;
+      }
+      if (!ctx.helper.isEmpty(condition.nickName)) {
+        condition.nickName = { $regex: `.*${condition.nickName}.*` };
+      }
+      const count = await this.getFindModelCount('Withdrew', condition);
+      const result = await ctx.service.wechatService.getWithdrew(condition, option,
+        {
+          desc: 1,
+          amount: 1,
+          partner_trade_no: 1,
+          nickName: 1,
+          return_msg: 1,
+          created_at: 1,
+        });
+      return this.success([ result, count ]);
+    } catch (e) {
+      this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
+  async getWithDrewByUser(ctx) {
+    try {
+      const [ condition, option ] = await this.cleanupRequestProperty('wechatRules.findWithdrewRule',
+        'unit', 'page', 'return_msg');
+      if (!condition) {
+        return;
+      }
+      condition.userUUid = ctx.user.uuid;
+      const count = await this.getFindModelCount('Withdrew', condition);
+      const result = await ctx.service.wechatService.getWithdrew(condition, option,
+        { desc: 1, amount: 1, return_msg: 1 });
+      return this.success([ result, count ]);
+    } catch (e) {
+      this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
 
   async getSignature(ctx) {
     const jsapi_ticket = await ctx.service.wechatService.setToken();

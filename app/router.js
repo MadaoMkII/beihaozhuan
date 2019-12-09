@@ -18,4 +18,5 @@ module.exports = app => {
   require('./router/missionRouter')(app);
   require('./router/maintenanceRouter')(app);
   require('./router/promotionRounter')(app);
+  require('./router/wechatRouter')(app);
 };

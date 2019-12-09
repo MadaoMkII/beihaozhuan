@@ -89,6 +89,9 @@ class userAccount extends baseController {
         }
         const userUUid = ctx.helper.isEmpty(condition.userUUid) ? ctx.user.uuid : condition.userUUid;
         const [ result, count ] = await ctx.service.userService.getUserBalanceListRule(userUUid, option);
+        if (ctx.helper.isEmpty(result)) {
+          return this.success();
+        }
         this.success([ result, count ]);
       }
     } catch (e) {

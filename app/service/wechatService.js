@@ -99,6 +99,9 @@ class WeChatService extends Service {
     await withDrewObj.save();
     return withdrewResult;
   }
+  async getWithdrew(conditions, option, project) {
+    return this.ctx.model.Withdrew.find(conditions, project, option);
+  }
 
   async update_accessToken() {
     const requestObj_1 = {
