@@ -10,6 +10,7 @@ class wechatController extends baseController {
     this.success(name.nickname);
   }
 
+
   async getWithDrewByAdmin(ctx) {
     try {
       const [ condition, option ] = await this.cleanupRequestProperty('wechatRules.findWithdrewRule',

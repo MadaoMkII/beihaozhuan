@@ -169,9 +169,12 @@ class authController extends Controller {
       ctx.session.fdbsmsVerifyCode = null;
       const user = await ctx.service.userService.getUser({ tel_number: requestEntity.tel_number });
       const result = await ctx.service.systemSettingService.getSetting();
-      let bcoin = 0;
-      if (!ctx.helper.isEmpty(result.registerMission)) {
-        bcoin = result.registerMission.reward;
+
+      let initialBcoin = 0;
+      if (!this.ctx.helper.isEmpty(result.registerMission) &&
+          !this.ctx.helper.isEmpty(result.registerMission.activity) &&
+          !this.ctx.helper.isEmpty(result.registerMission.reward)) {
+        initialBcoin = result.registerMission.activity ? result.registerMission.reward : 0;
       }
 
 
@@ -185,13 +188,14 @@ class authController extends Controller {
         newUser.uuid = require('cuid')();
         newUser.role = '用户';
         newUser.tel_number = requestEntity.tel_number;
-        newUser.Bcoins = bcoin;
+        newUser.Bcoins = initialBcoin;
         newUser.userStatus = {};
         newUser.userStatus.hasVerifyWechat = 'enable';
         const newUser_login = await ctx.service.userService.addUser(newUser, null);
-        if (bcoin !== 0) {
-          promise = ctx.service.userService.setUserBcionChange(newUser.uuid, '注册奖励', '获得', bcoin,
-            bcoin);
+
+        if (initialBcoin !== 0) {
+          promise = ctx.service.userService.setUserBcionChange(newUser.uuid, '注册奖励', '获得', initialBcoin,
+            initialBcoin);
         }
         ctx.login(newUser_login);
         delete newUser.password;
