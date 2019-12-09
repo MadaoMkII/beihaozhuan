@@ -122,7 +122,7 @@ class wechatController extends baseController {
       // }
       //
       if (!result || result.result_code === 'FAIL') {
-        this.success('微信服务器连接不稳定,请稍后再试');
+        this.failure('微信服务器连接不稳定,请稍后再试');
         this.app.logger.error(new Error(JSON.stringify(result)), ctx);
       }
       this.success();
