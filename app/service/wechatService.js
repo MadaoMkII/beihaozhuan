@@ -93,7 +93,7 @@ class WeChatService extends Service {
         if (this.ctx.helper.isEmpty(records) || succeedTimes < 1) {
           return [ pass, msg ];
         }
-        pass = false; msg = '距离上次提现不到24小时，提现次数已满';
+        pass = false; msg = '今天已经提过现啦，明天再来试试吧~';
         break;
 
       default:
