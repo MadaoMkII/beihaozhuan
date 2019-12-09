@@ -114,7 +114,7 @@ class authController extends Controller {
       if (!this.ctx.helper.isEmpty(result.registerMission) &&
                 !this.ctx.helper.isEmpty(result.registerMission.activity) &&
                 !this.ctx.helper.isEmpty(result.registerMission.reward)) {
-        initialBcoin = result.registerMission.activity ? result.registerMission.reward : 0;
+        initialBcoin = result.registerMission.activity !== 'disable' ? result.registerMission.reward : 0;
       } else {
         initialBcoin = 0;
       }
@@ -174,7 +174,7 @@ class authController extends Controller {
       if (!this.ctx.helper.isEmpty(result.registerMission) &&
           !this.ctx.helper.isEmpty(result.registerMission.activity) &&
           !this.ctx.helper.isEmpty(result.registerMission.reward)) {
-        initialBcoin = result.registerMission.activity ? result.registerMission.reward : 0;
+        initialBcoin = result.registerMission.activity !== 'disable' ? result.registerMission.reward : 0;
       }
 
 
