@@ -70,7 +70,7 @@ class homeCreditController extends baseController {
                 return;
             }
 
-            const result = await ctx.model.DoubleDec.findOne({userUUid: ctx.user.uuid});
+            const result = await ctx.model.DoubleDec.findOne({userUUid: ctx.user.uuid, status: `审核通过`});
             if (!ctx.helper.isEmpty(result)) {
                 return this.success({status: result.status});
             }
