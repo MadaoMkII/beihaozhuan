@@ -1,7 +1,7 @@
 'use strict';
 module.exports = app => {
   const { router, controller } = app;
-
+ router.get('/test', controller[`home`].test);
   router.get('/user/showMyMoney', app.middleware.authenticatedMiddleware('用户'), controller.userAccount.showMyMoney);
   router.post('/user/getManyUser', app.middleware.authenticatedMiddleware('客服'), controller.userAccount.getManyUser);
   router.post('/user/updateInfo', app.middleware.authenticatedMiddleware('用户'), controller.userAccount.updateUserInfo);
@@ -11,7 +11,7 @@ module.exports = app => {
   router.get('/user/logout', app.middleware.authenticatedMiddleware('用户'), controller.authController.logout);
   // router.get('/user/lottery', controller[`authController`].lottery);
   router.post('/user/getMyTeam', app.middleware.authenticatedMiddleware('用户'), controller.userAccount.getMyTeam);
-  // router.get('/index', controller[`home`].index);
+
   router.get('/checkHealth', ctx => {
     ctx.response.body = {
       success: true,
