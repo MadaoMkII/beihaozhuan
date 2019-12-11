@@ -24,7 +24,7 @@ class analyzeService extends Service {
       matcher = {
         content: {
           $in: [ '完成任务-每日晒收入', '完成任务-完善用户信息', '完成任务-看一个广告', '完成任务-每日看广告',
-            '完成任务-每日签到', '完成任务-看一个广告', '广告收入', '完成任务-每日邀新人' ],
+            '完成任务-每日签到', '完成任务-看一个广告', '广告收入', '完成任务-每日邀新人' ,`活动奖励-双十二`],
         },
       };
     }
@@ -105,7 +105,7 @@ class analyzeService extends Service {
       matcher = {
         content: {
           $in: [ '完成任务-每日晒收入', '完成任务-完善用户信息', '完成任务-看一个广告', '完成任务-每日看广告',
-            '完成任务-每日签到', '完成任务-看一个广告', '广告收入', '完成任务-每日邀新人' ],
+            '完成任务-每日签到', '完成任务-看一个广告', '广告收入', '完成任务-每日邀新人' ,`活动奖励-双十二`],
         },
       };
     }
@@ -174,7 +174,7 @@ class analyzeService extends Service {
       matcher = {
         content: {
           $in: [ '完成任务-每日晒收入', '完成任务-完善用户信息', '完成任务-看一个广告', '完成任务-每日看广告',
-            '完成任务-每日签到', '完成任务-看一个广告', '广告收入', '完成任务-每日邀新人' ],
+            '完成任务-每日签到', '完成任务-看一个广告', '广告收入', '完成任务-每日邀新人' ,`活动奖励-双十二`],
         },
       };
     } if (condition === 'consumeBcoin') {
@@ -478,14 +478,17 @@ class analyzeService extends Service {
 
 
   async dataIncrementRecord(content, amount, type, category) {
+
     const date = this.ctx.getAbsoluteDate(true);
-    await this.ctx.model.DataAnalyze.findOneAndUpdate({
+  let res=  await this.ctx.model.DataAnalyze.findOneAndUpdate({
       absoluteDate: date,
       content,
       type, category
     }, { $inc: { amount } }, { upsert: true, new: true });
-  }
 
+      console.log(res)
+
+  }
 
 }
 
