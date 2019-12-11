@@ -36,6 +36,12 @@ class analyzeService extends Service {
                 },
             };
         }
+        if (condition === 'userRegister') {
+            matcher = {
+                content: '用户注册'
+            };
+        }
+
         const start = DateTime.fromISO('2019-06-18');
         const end = DateTime.fromISO(this.ctx.getAbsoluteDate().toISOString());
         let diffInMonths = end.diff(start, 'months').months;
@@ -115,6 +121,12 @@ class analyzeService extends Service {
                 },
             };
         }
+        if (condition === 'userRegister') {
+            matcher = {
+                content: '用户注册'
+            };
+        }
+
         matcher.MonthNew = rezoned.month;
 
         let aggregateResult = await this.ctx.model.DataAnalyze.aggregate([
@@ -166,7 +178,6 @@ class analyzeService extends Service {
         const local = DateTime.fromISO(new Date().toISOString());
         const rezoned = local.setZone('Asia/Shanghai');
         let matcher = {DogDay: rezoned.day};
-        console.log(12312313123213)
 
         if (condition === 'increaseBcoin') {
             matcher = {type: "bcoin", amount: {$gt: 0}};
@@ -182,6 +193,11 @@ class analyzeService extends Service {
                 content: {
                     $in: ['提现'],
                 },
+            };
+        }
+        if (condition === 'userRegister') {
+            matcher = {
+                content: '用户注册'
             };
         }
 
