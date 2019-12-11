@@ -42,7 +42,7 @@ class MissionEventManager extends Service {
       // const promise_1 = this.ctx.service.userService.changeBcoin(this.ctx.user._id, tempBcoin);
 
       const promise_2 = this.ctx.service.analyzeService.dataIncrementRecord(`完成任务-${missionTracker.missionEventName}`,
-        missionTracker.missionID.reward, 'bcoin');
+        missionTracker.missionID.reward, 'bcoin',`任务`);
       const promise_3 = this.ctx.service.userService.setUserBcionChange(this.ctx.user.uuid, `完成任务-${missionTracker.missionEventName}`,
         '获得', missionTracker.missionID.reward, tempBcoin);
 

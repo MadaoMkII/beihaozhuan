@@ -7,9 +7,8 @@ module.exports = app => {
     amount: Number,
     content: {
       type: String,
-      enum: [ 'increaseBcoin', 'userRegister', 'consumeBcoin' ], default: 'consumeBcoin',
     },
-    type: String,
+    type: String, category:String
   }, {
     timestamps: {
       createdAt: 'created_at', updatedAt: 'updated_at',

@@ -17,6 +17,7 @@ class homeCreditController extends baseController {
             }
             if (status === `审核通过`) {
                 const newBcoin = Number(ctx.user.Bcoins) + 5000;
+                await ctx.service.analyzeService.dataIncrementRecord('活动奖励-双十二', 5000, 'bcoin', `活动`);
                 await this.ctx.service.userService.setUserBcionChange(doubleDec.userUUid, '活动奖励-双十二',
                     '获得', 5000, newBcoin);
             }

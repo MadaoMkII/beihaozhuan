@@ -47,7 +47,7 @@ class advertisementController extends Controller {
       const promise_1 = ctx.service.analyzeService.recordAdvIncrease(advertisementObj._id, userObj._id, 1,
         'close');
       const promise_2 = ctx.service.analyzeService.dataIncrementRecord('广告收入',
-        advertisementObj.reward, 'bcoin');
+        advertisementObj.reward, 'bcoin' ,`广告`);
 
       const newBcoin = Number(ctx.user.Bcoins) + Number(advertisementObj.reward);
       const promise_3 = ctx.service.userService.setUserBcionChange(userObj.uuid, '广告收入',

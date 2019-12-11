@@ -134,7 +134,7 @@ class WeChatService extends Service {
     const withdrewResult = await parser.parseStringPromise(result);
     if (!this.ctx.helper.isEmpty(withdrewResult) && withdrewResult.result_code !== 'FAIL') {
       await this.ctx.service.analyzeService.dataIncrementRecord('提现',
-        -amount * 100, 'bcoin');
+        -amount * 100, 'bcoin' ,'提现');
       await this.ctx.service.userService.setUserBcionChange(user.uuid, '提现',
         '消费', -amount * 100, newBcoin);
     }

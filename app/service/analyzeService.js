@@ -477,12 +477,12 @@ class analyzeService extends Service {
   }
 
 
-  async dataIncrementRecord(content, amount, type) {
+  async dataIncrementRecord(content, amount, type, category) {
     const date = this.ctx.getAbsoluteDate(true);
     await this.ctx.model.DataAnalyze.findOneAndUpdate({
       absoluteDate: date,
       content,
-      type,
+      type, category
     }, { $inc: { amount } }, { upsert: true, new: true });
   }
 
