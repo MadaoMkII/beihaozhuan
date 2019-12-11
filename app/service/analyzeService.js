@@ -49,6 +49,7 @@ class analyzeService extends Service {
                     MonthBy: {$month: {date: '$absoluteDate', timezone: '+0700'}},
                     amount: 1,
                     content: 1,
+                    type: 1
                 },
             },
             {$match: matcher},
@@ -123,6 +124,7 @@ class analyzeService extends Service {
                     DogDay: {$dayOfMonth: {date: '$absoluteDate', timezone: '+0800'}},
                     amount: 1,
                     content: 1,
+                    type: 1
                 },
             },
             {$match: matcher},
