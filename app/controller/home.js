@@ -1,72 +1,89 @@
 'use strict';
-
 const Controller = require('./baseController');
 
 class HomeController extends Controller {
-    async index() {
-        const ctx = this.ctx;
-        let result = await ctx.oss.list({
-            prefix: `images/`
-        });
-        delete result.objects[0]
-        await this.ctx.render('index.ejs', {
-            files: result.objects
-        })
-
-    };
-
-    async main() {
-
-        let x = this.app.encrypt(String(1234));
 
 
-        let aa= this.app.decrypt(x)
+    async test(ctx) {
 
 
+        let res = await ctx.model.DataAnalyze.updateMany({
+            content: "userRegister"
+            // content: {
+            //     $in: ['完成任务-每日晒收入', '完成任务-完善用户信息', '完成任务-看一个广告', '完成任务-每日看广告',
+            //         '完成任务-每日签到', '完成任务-看一个广告', '广告收入', '完成任务-每日邀新人'],
+            // }
+        }, {$set: {category: `用户`,content:"用户注册"}});
+
+        this.success(res);
+        // let requestObj_1 = {
+        //     appid: ctx.app.config.wechatConfig.appid,
+        //     secret: ctx.app.config.wechatConfig.secret,
+        //     grant_type: `client_credential`
+        // };
+        //
+        // let [result_1,] = await this.requestMethod(requestObj_1,
+        //     `GET`, `https://api.weixin.qq.com/cgi-bin/token`);
+        //
+        // if (!ctx.helper.isEmpty(result_1[`errcode`])) {
+        //     ctx.throw(400, result_1.errmsg)
+        // }
+
+        // '26_EpDz1uSWyf3ZQPW2ZCmN49rx8RlPXSA6z_e8NKSHGbUFCbiJWJFDWvfSLKKIg8FCkz2_XEuxNoEsRgPhy0SEeQU60H2kuceAXVjOHjgzSGGd7PrW9vh5OqwgPaq7AoiYpOB9Wpsd0og6UdMoFDGdAIAYWZ'
+        // let requestObj_2 = {
+        //     access_token: result_1.access_token,
+        //     type: "jsapi"
+        // };
+        // let [result_2,] = await this.requestMethod(requestObj_2,
+        //     `GET`, `https://api.weixin.qq.com/cgi-bin/ticket/getticket`);
+
+        //
+        // const ticket = 'kgt8ON7yVITDhtdwci0qeTSKjv5Yawv79kzzTIzVlZ0EosIl7SrkqevFvjlR1ozpwctDbXZQ_sR-PqMXDyS8mA';
+        // const randomStr = ctx.randomString(16);
+        // const url = 'https://www.beihaozhuan.com/index/ad?source=full&uuid=ADVck15314cx0003laa383n2grq6';
+        // const timeStamp = new Date().getTime();
+        // const signStr = `jsapi_ticket=${ticket}&noncestr=${randomStr}&timestamp=${timeStamp}&url=${url}`;
+        // console.log(signStr);
+        // const crypto = require('crypto'),
+        //   shaSum = crypto.createHash('sha1');
+        // shaSum.update(signStr);
+        // const result = shaSum.digest('hex');
+        // console.log(result);
+        // this.success({
+        //   appId: ctx.app.config.wechatConfig.appid,
+        //   timeStamp,
+        //   nonceStr: randomStr,
+        //   signature: result,
+        // });
+        // ctx.logger.debug('debug info');
+        // ctx.logger.info('some request data: %j', ctx.request.body);
+        // ctx.logger.warn('WARNNING!!!!');
 
 
-        this.ctx.body = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>LoginPage</title>
-</head>
-<body>
-    <form action="/verify/verifyCaptTxt" method="post">
-        <input type="hidden" name="_csrf" value="${this.ctx.csrf}">
-        <label for="captchaTxt">
-            verifyCode:
-            <input type="text" value="" id="captchaTxt" name="captchaTxt">
-        </label>
-        <!--<label for="password">-->
-            <!--Password:-->
-            <!--<input type="text" value="pass1" id="password" name="password">-->
-        <!--</label>-->
-        <input type="submit" value="Submit">
-        <img src="http://127.0.0.1:7001/verify/getImg">
-    </form>
-</body>
-</html>`;
-    };
+        // let x = ctx.sleep(3000);
+        // await this.success()
+        // await x;
+        // Promise.all([x]).catch();
+        // console.log(123123131312313)
+        // throw new Error(`不要`);
+        // ctx.throw(401,`不要嗑瓜子!@`)
+        // this.app.logger.warn(`我感觉很难受`, ctx);
+        // let app = ctx.app
+        // this.ctx.app.getLogger('errorLogger').set('remote', new RemoteErrorTransport({level: 'info', app}));
+        // console.log(this.ctx.app.getLogger('errorLogger'))
 
 
-    async addUser(ctx) {
-        let body = ctx.request.body;
-        let result = await this.service.user.addUser({username: body.username, password: body.password});
-        ctx.body = result;
     }
 
-    async updateUser() {
-        await this.service.user.updateUser();
-        this.ctx.body = 'hi, egg3';
-    }
 
-    async deleteUser() {
-        await this.service.user.deleteUser();
-        this.ctx.body = 'hi, egg3';
-    };
+    //
+    // async main() {
+    //     this.ctx.redirect('back', '/index.html');
+    // };
+    //
+    //
+    //
+
 
     // async getUserInfo() {
     //     console.log(this.ctx.isAuthenticated())
@@ -79,13 +96,9 @@ class HomeController extends Controller {
         const svgCaptcha = require('svg-captcha');
         const captcha = svgCaptcha.create();
         ctx.session.captcha = captcha.text;
-        ctx.set('Content-Type', 'image/svg+xml')
+        ctx.set('Content-Type', 'image/svg+xml');
         ctx.status = 200;
         ctx.body = captcha.data;
-    };
-
-    async getA(ctx) {
-        ctx.app.emit('error', err, ctx);
     }
 
 

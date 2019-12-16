@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1, user-scalable=0, minimal-ui">
+    <title>Title</title>
+  <style>
+    .imgCon{
+      width: 128px;
+      height: 128px;
+      margin:auto;
+    }
+    .imgCon img{
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body style="padding-top: 20%;overflow: hidden">
+  <script type="text/html" id="ad_placeholder_148333">
+    <a>
+      <div style="overflow: hidden">
+        <div class="imgCon">
+          <img src="<%=data.icon_url%>" alt="<%=data.title%>">
+        </div>
+        <div style="margin: auto">
+          <h1 style="color: #fff;font-size: 16px;text-align: center"><%=data.title%></h1>
+          <p style="color: #fff;font-size: 14px;text-align: center"><%=data.desc%></p>
+        </div>
+      </div>
+      <video style="width: 100%" x5-playsinline="true" playsinline="true" webkit-playsinline="true" muted autoplay loop src="<%=data.video_url%>" poster="<%=data.image_url%>"></video>
+    </a >
+  </script>
+  <script type="text/javascript" src="//vijs.rayjump.com/bin/vijs.js" onload="Vijs.init(this);" sign="fe0957f687afc0fabade21937de9e4bc" appid="118856"></script>
+  <script type="text/javascript">
+    if (window.Vijs) {
+      var myAd148333 = Vijs.setAD({
+        unitid: 148333,
+        view: 285,
+        autoplay:true,
+        placeholderid: 'ad_placeholder_148333',
+        loadedCallback: function() {
+          console.log('success');
+          parent.checkAdvertisement();
+        },
+        errorCallback:function () {
+          parent.showNoAdsTip();
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

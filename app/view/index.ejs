@@ -1,75 +1,55 @@
 <!DOCTYPE html>
+<!-- saved from url=(0040)http://www.bjsqw.net/Home/Index/ing.html -->
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-          crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>页面正在开发中</title>
     <style>
-        img {
-            width: 100%;
+        .content {
+            position: absolute;
+            text-align: center;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+        .content .info1 {
+            color: #666;
+            font-size: 22px;
+        }
+
+        .content .info {
+            color: #d71020;
+            font-size: 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .content .info img {
+            vertical-align: middle;
+        }
+
+        .content .info span {
+            vertical-align: middle;
+            margin-left: 10px;
         }
     </style>
-    <title>Mongo File Uploads</title>
 </head>
-
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 m-auto">
-            <h1 class="text-center display-4 my-4">Mongo File Uploads</h1>
-            <form action="/uploadImgForEndpoint" method="POST" enctype="multipart/form-data">
-                <!--<div class="custom-file mb-3">-->
-                    <!--<input type="file" name="file" id="file" class="custom-file-input">-->
-                    <!--<label for="file" class="custom-file-label">Choose File</label>-->
-                <!--</div>-->
-                <div class="custom-file mb-3">
-                    <input type="file" name="files" id="files" class="custom-file-input">
-                    <label for="files" class="custom-file-label">Choose File</label>
-                </div>
-                <div class="custom-file mb-3">
-                    <input type="text" name="text" id="text" class="custom-file-input">
-                    <label for="text" class="custom-file-label">text</label>
-                </div>
-                <div class="custom-file mb-3">
-                    <input type="file" name="files" id="files" class="custom-file-input">
-                    <label for="files" class="custom-file-label">Choose File_2</label>
-                </div>
-                <input type="submit" value="Submit" class="btn btn-primary btn-block">
-            </form>
-            <hr>
-            <% if(files){ %>
-            <% files.forEach(function(file) { %>
-            <div class="card card-body mb-3">
-                <% if(file) {  %>
-                <img src="<%= file.url %>" alt="">
-                <% } else { %>
-                <%= file.url %>
-                <% } %>
-                <form method="GET" action="/deleteImage?imageUrl=123?_method=DELETE">
-                    <button class="btn btn-danger btn-block mt-4">Delete</button>
-                </form>
-            </div>
-            <% }) %>
-            <% } else { %>
-            <p>No files to show</p>
-            <% } %>
-        </div>
-    </div>
+<div class="content">
+    <img src="./images/ing.png"
+         alt="">
+    <p class="info1">页面正在建设中...</p>
+    <p class="info"><a href="http://39.100.32.180/"><img
+                    src="./images/ing_back.png"
+                    alt=""><span>返回首页</span></a></p>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
 </body>
-
 </html>
