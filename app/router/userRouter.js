@@ -1,7 +1,7 @@
 'use strict';
 module.exports = app => {
   const { router, controller } = app;
- router.get('/test', controller[`home`].test);
+  router.get('/test', controller.home.test);
   router.get('/user/showMyMoney', app.middleware.authenticatedMiddleware('用户'), controller.userAccount.showMyMoney);
   router.post('/user/getManyUser', app.middleware.authenticatedMiddleware('客服'), controller.userAccount.getManyUser);
   router.post('/user/updateInfo', app.middleware.authenticatedMiddleware('用户'), controller.userAccount.updateUserInfo);

@@ -8,7 +8,7 @@ module.exports = app => {
     content: {
       type: String,
     },
-    type: String, category:String
+    type: String, category: String,
   }, {
     timestamps: {
       createdAt: 'created_at', updatedAt: 'updated_at',

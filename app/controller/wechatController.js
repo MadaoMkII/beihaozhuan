@@ -161,7 +161,7 @@ class wechatController extends baseController {
       if (!ctx.helper.isEmpty(result_2.errcode)) {
         ctx.throw(405, result_2.errmsg);
       }
-      const OPENID = result_2.openid;
+      const OPENID = result_2.openid;// 微信登陆验证，如果有用户就登录
       const user = await this.ctx.service.userService.getUser({ OPENID });
       if (!ctx.helper.isEmpty(user)) {
         ctx.login(user);

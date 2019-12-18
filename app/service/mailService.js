@@ -1,49 +1,49 @@
 'use strict';
-const {Service} = require('egg');
+const { Service } = require('egg');
 const nodeMailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 
 class mailService extends Service {
 
-    // async getSmtpConfig() {
-    //     return {
-    //         host: 'hwsmtp.exmail.qq.com',
-    //         secure:
-    //             true, // upgrade later with STARTTLS
-    //         auth:
-    //             {
-    //                 user: this.app.config.mailusername,
-    //                 pass: this.app.config.mailpassword
-    //             }
-    //     }
-    // };
+  // async getSmtpConfig() {
+  //     return {
+  //         host: 'hwsmtp.exmail.qq.com',
+  //         secure:
+  //             true, // upgrade later with STARTTLS
+  //         auth:
+  //             {
+  //                 user: this.app.config.mailusername,
+  //                 pass: this.app.config.mailpassword
+  //             }
+  //     }
+  // };
 
 
-    async send(obj) {
+  async send(obj) {
 
-        let config = this.app.config;
-        let smtpTransport_done = nodeMailer.createTransport(smtpTransport({
-            host: 'hwsmtp.exmail.qq.com', service: config.email.username,
-            secure: true, // upgrade later with STARTTLS
-            auth: {
-                user: config.email.username,
-                pass: config.email.password
-            }
-        }));
-        let info = await smtpTransport_done.sendMail({
-            from: config.email.user,
-            to: obj.to,
-            subject: obj.title,
-            html: obj.html
+    const config = this.app.config;
+    const smtpTransport_done = nodeMailer.createTransport(smtpTransport({
+      host: 'hwsmtp.exmail.qq.com', service: config.email.username,
+      secure: true, // upgrade later with STARTTLS
+      auth: {
+        user: config.email.username,
+        pass: config.email.password,
+      },
+    }));
+    const info = await smtpTransport_done.sendMail({
+      from: config.email.user,
+      to: obj.to,
+      subject: obj.title,
+      html: obj.html,
 
-        });
+    });
 
-        smtpTransport_done.close();
-    };
+    smtpTransport_done.close();
+  }
 
 
-    sendValidate(obj) {
-        obj.html = `<p><span id="9999" style="display: none !important; font-size:0; line-height:0"> </span></p><p>&nbsp;</p>
+  sendValidate(obj) {
+    obj.html = `<p><span id="9999" style="display: none !important; font-size:0; line-height:0"> </span></p><p>&nbsp;</p>
     <p>&nbsp;</p>
     <div style="width:100%; max-width:640px; margin:0 auto;">
         <div style="padding:0 25px; height:100px; background-color:#FF6C2C; color:#fff;">
@@ -62,8 +62,8 @@ class mailService extends Service {
         </div>
     </div>
     <br><br>`;
-        this.send(obj);
-    }
+    this.send(obj);
+  }
 
 }
 

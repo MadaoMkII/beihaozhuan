@@ -1,18 +1,18 @@
 'use strict';
-const {Service} = require('egg');
+const { Service } = require('egg');
 
 class captchaService extends Service {
-    async getcaptcha() {
+  async getcaptcha() {
 
-        return require(`svg-captcha`).createMathExpr({
-            mathMin: 1,
-            mathMax: 9,
-            noise: 19,
-            color: true,
-            background: '#C88172',
-            mathOperator: `+-`
-        });
-    }
+    return require('svg-captcha').createMathExpr({
+      mathMin: 1,
+      mathMax: 9,
+      noise: 19,
+      color: true,
+      background: '#C88172',
+      mathOperator: '+-',
+    });
+  }
 
 
 }
