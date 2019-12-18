@@ -143,7 +143,6 @@ class wechatController extends baseController {
 
       const urlQuery = url.parse(returnUrl, true).query;
       const { code, state } = urlQuery;
-
       if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
         ctx.throw('空值警告');
       }
@@ -185,8 +184,12 @@ class wechatController extends baseController {
         const statusString = ctx.helper.encrypt(OPENID);
         const head = ctx.helper.encrypt(result_3.headimgurl);
         const nickName = ctx.helper.encrypt(result_3.nickname);
+        let jumpTo = 'loginInfoBindPhone';
+        if (state === 'doubleDec') {
+          jumpTo = 'doubleDec';
+        }
         ctx.status = 301;
-        ctx.redirect(`/index?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`);
+        ctx.redirect(`/index?statusString=${statusString}&jumpTo=${jumpTo}=&head=${head}&nickName=${nickName}`);
       }
     } catch (e) {
       this.app.logger.error(e, ctx);

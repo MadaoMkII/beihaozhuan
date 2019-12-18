@@ -16,14 +16,14 @@ class homeCreditController extends baseController {
         return this.failure('找不到该明目');
       }
       if (status === '审核通过') {
-        const newBcoin = Number(ctx.user.Bcoins) + 5000;
+        const user = await ctx.model.UserAccount.findOne({ uuid: doubleDec.userUUid });
+        const newBcoin = Number(user.Bcoins) + 5000;
         await ctx.service.analyzeService.dataIncrementRecord('活动奖励-双十二', 5000, 'bcoin', '活动');
         await this.ctx.service.userService.setUserBcionChange(doubleDec.userUUid, '活动奖励-双十二',
           '获得', 5000, newBcoin);
+        await this.ctx.app.eventEmitter.emit('normalMissionCount', user.referrer, '活动—双十二邀请好友得现金');
       }
-
       this.success();
-
     } catch (e) {
       this.app.logger.error(e, ctx);
       this.failure();

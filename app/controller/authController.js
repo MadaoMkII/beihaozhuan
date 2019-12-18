@@ -17,6 +17,7 @@ class authController extends Controller {
       }
       let userResult,
         verifyFlag;
+
       if (ctx.user) {
         ctx.logout();
       }
@@ -88,7 +89,7 @@ class authController extends Controller {
   async register(ctx) {
     try {
       const [ requestEntity ] = await this.cleanupRequestProperty('authRules.loginRule',
-        'smsVerifyCode', 'password', 'tel_number', 'inviteCode', 'statusString', 'head');
+        'smsVerifyCode', 'password', 'tel_number', 'inviteCode', 'statusString', 'head', 'source');
       if (!requestEntity) {
         return;
       }
@@ -127,6 +128,7 @@ class authController extends Controller {
         role: '用户',
         tel_number: requestEntity.tel_number,
         Bcoins: initialBcoin,
+        source: this.ctx.helper.isEmpty(requestEntity.source) ? '平台' : requestEntity.source,
       };
       let promise_2 = null;
       await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
