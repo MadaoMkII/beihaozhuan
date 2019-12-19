@@ -108,7 +108,7 @@ class homeCreditController extends baseController {
       doubleDec.userUUid = user.uuid;
       doubleDec.status = '未审核';
       if (!ctx.helper.isEmpty(files)) {
-        if (files.length < 3) {
+        if (files.length !== 1) {
           return this.failure('图片数量不对');
         }
         for (const fileObj of files) {
