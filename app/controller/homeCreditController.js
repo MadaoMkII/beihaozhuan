@@ -57,7 +57,7 @@ class homeCreditController extends baseController {
 
   async checkProofsStatus(ctx) {
     try {
-      const result = await ctx.model.DoubleDec.findOne({ userUUid: ctx.user.uuid }, {}, { sort: { created_at: -1 } });
+      const result = await ctx.model.DoubleDec.findOne({ userUUid: ctx.user.uuid, loginPicUrl: { $ne: null } }, {}, { sort: { created_at: -1 } });
       if (!ctx.helper.isEmpty(result)) {
         return this.success({ status: result.status });
       }
