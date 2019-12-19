@@ -10,6 +10,18 @@ class homeCreditController extends baseController {
     this.success(link);
   }
 
+  async setDownload(ctx) {
+    try {
+      const doubleDec = {};
+      doubleDec.tel_number_verify = ctx.user.tel_number;
+      doubleDec.hasDownload = true;
+      await ctx.service.doubleDecService.createDoubleDec(doubleDec.tel_number_verify, doubleDec);
+      this.success();
+    } catch (e) {
+      this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
 
   async verifyProofs(ctx) {
     try {
@@ -29,7 +41,11 @@ class homeCreditController extends baseController {
         await ctx.service.analyzeService.dataIncrementRecord('活动奖励-双十二', 5000, 'bcoin', '活动');
         await this.ctx.service.userService.setUserBcionChange(doubleDec.userUUid, '活动奖励-双十二',
           '获得', 5000, newBcoin);
-        await this.ctx.app.eventEmitter.emit('normalMissionCount', user.referrer, '活动—双十二邀请好友得现金');
+
+        let doubleDec = await this.ctx.model.DoubleDec.findOne({ tel_number_verify: user.tel_number, hasDownload: true });
+        if (!this.ctx.helper.isEmpty(doubleDec)) {
+          await this.ctx.app.eventEmitter.emit('normalMissionCount', user.referrer, '活动—双十二邀请好友得现金');
+        }
       }
       this.success();
     } catch (e) {
@@ -78,7 +94,6 @@ class homeCreditController extends baseController {
       if (!condition) {
         return;
       }
-
       const result = await ctx.model.DoubleDec.findOne({ userUUid: ctx.user.uuid, status: '审核通过' });
       if (!ctx.helper.isEmpty(result)) {
         return this.success({ status: result.status });
@@ -89,6 +104,7 @@ class homeCreditController extends baseController {
       doubleDec.account = condition.account;
       doubleDec.tel_number_verify = user.tel_number;
       doubleDec.userUUid = user.uuid;
+      doubleDec.status = '未审核';
       if (!ctx.helper.isEmpty(files)) {
         if (files.length < 3) {
           return this.failure('图片数量不对');

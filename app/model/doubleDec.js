@@ -11,6 +11,7 @@ module.exports = app => {
     bindingPicUrl: String,
     userUUid: { type: String, required: true },
     status: { type: String, enum: [ '未审核', '审核通过', '审核不通过' ], default: '未审核' },
+    hasDownload: Boolean,
   }, {
     timestamps: {
       createdAt: 'created_at', updatedAt: 'updated_at', toObject: { virtuals: true },
