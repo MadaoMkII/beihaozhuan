@@ -15,6 +15,8 @@ class homeCreditController extends baseController {
       const doubleDec = {};
       doubleDec.tel_number_verify = ctx.user.tel_number;
       doubleDec.hasDownload = true;
+      doubleDec.userUUid = ctx.user.uuid;
+      doubleDec.status = '仅下载';
       await ctx.service.doubleDecService.createDoubleDec(doubleDec.tel_number_verify, doubleDec);
       this.success();
     } catch (e) {
@@ -44,7 +46,7 @@ class homeCreditController extends baseController {
         await ctx.service.analyzeService.dataIncrementRecord('活动奖励-双十二', 5000, 'bcoin', '活动');
         await this.ctx.service.userService.setUserBcionChange(doubleDec.userUUid, '活动奖励-双十二',
           '获得', 5000, newBcoin);
-        await ctx.model.DoubleDec.update({ _id: condition.id, hasDownload: true }, { $set: { status } });
+        await ctx.model.DoubleDec.updateOne({ _id: condition.id, hasDownload: true }, { $set: { status } });
         await this.ctx.app.eventEmitter.emit('normalMissionCount', user.referrer, '活动—双十二邀请好友得现金');
       }
       this.success();
