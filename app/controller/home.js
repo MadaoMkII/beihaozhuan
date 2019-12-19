@@ -6,16 +6,9 @@ class HomeController extends Controller {
 
   async test(ctx) {
 
+    const query = ctx.request.query;
 
-    const res = await ctx.model.DataAnalyze.updateMany({
-      content: 'userRegister',
-      // content: {
-      //     $in: ['完成任务-每日晒收入', '完成任务-完善用户信息', '完成任务-看一个广告', '完成任务-每日看广告',
-      //         '完成任务-每日签到', '完成任务-看一个广告', '广告收入', '完成任务-每日邀新人'],
-      // }
-    }, { $set: { category: '用户', content: '用户注册' } });
-
-    this.success(res);
+    this.success(query);
     // let requestObj_1 = {
     //     appid: ctx.app.config.wechatConfig.appid,
     //     secret: ctx.app.config.wechatConfig.secret,

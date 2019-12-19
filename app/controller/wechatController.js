@@ -143,6 +143,7 @@ class wechatController extends baseController {
 
       const urlQuery = url.parse(returnUrl, true).query;
       const { code, state } = urlQuery;
+
       if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
         ctx.throw('空值警告');
       }
@@ -160,7 +161,7 @@ class wechatController extends baseController {
       if (!ctx.helper.isEmpty(result_2.errcode)) {
         ctx.throw(405, result_2.errmsg);
       }
-      const OPENID = result_2.openid;// 微信登陆验证，如果有用户就登录
+      const OPENID = result_2.openid;
       const user = await this.ctx.service.userService.getUser({ OPENID });
       if (!ctx.helper.isEmpty(user)) {
         ctx.login(user);
@@ -184,12 +185,13 @@ class wechatController extends baseController {
         const statusString = ctx.helper.encrypt(OPENID);
         const head = ctx.helper.encrypt(result_3.headimgurl);
         const nickName = ctx.helper.encrypt(result_3.nickname);
-        let jumpTo = 'loginInfoBindPhone';
-        if (state === 'doubleDec') {
-          jumpTo = 'doubleDec';
+        let location = '';
+
+        if (state !== 'CHECK') {
+          location = state + '/';
         }
         ctx.status = 301;
-        ctx.redirect(`/index?statusString=${statusString}&jumpTo=${jumpTo}=&head=${head}&nickName=${nickName}`);
+        ctx.redirect(`/index/${location}?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`);
       }
     } catch (e) {
       this.app.logger.error(e, ctx);
