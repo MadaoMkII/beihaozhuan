@@ -185,13 +185,16 @@ class wechatController extends baseController {
         const statusString = ctx.helper.encrypt(OPENID);
         const head = ctx.helper.encrypt(result_3.headimgurl);
         const nickName = ctx.helper.encrypt(result_3.nickname);
-        let location = '';
 
+        let location = '';
         if (state !== 'CHECK') {
-          location = state + '/';
+          location = state;
+        } else {
+          location = 'index';
         }
+        const url = `/${location}/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`;
         ctx.status = 301;
-        ctx.redirect(`/index/${location}?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`);
+        return ctx.redirect(url);
       }
     } catch (e) {
       this.app.logger.error(e, ctx);
