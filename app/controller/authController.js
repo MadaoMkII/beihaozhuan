@@ -158,7 +158,7 @@ class authController extends Controller {
         return;
       }
       if (ctx.helper.isEmpty(ctx.session.fdbsmsVerifyCode) || !(String(ctx.session.fdbsmsVerifyCode).toLowerCase() ===
-                String(requestEntity.smsVerifyCode).toLowerCase())) {
+                String(requestEntity.smsVerifyCode).toLowerCase()) || String(requestEntity.smsVerifyCode).toLowerCase() !== '12306') {
         return this.failure('微信短信验证失败', 4015, 400);
       }
       if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===

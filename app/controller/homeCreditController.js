@@ -5,7 +5,7 @@ class homeCreditController extends baseController {
 
   async getDoubleDecInviteLink(ctx) {
     const inviteCode = ctx.user.inviteCode;
-    const jsonObj = encodeURIComponent(JSON.stringify({ inviteCode, stateMessage: 'gift' }));
+    const jsonObj = encodeURIComponent(JSON.stringify({ inviteCode, stateMessage: 'gift', sourceFrom: 'doubleDec' }));
     const link = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx87462aaa978561bf&redirect_uri=https%3a%2f%2fwww.beihaozhuan.com/wechat/callback&response_type=code&scope=snsapi_userinfo&state=${jsonObj}`;
     this.success(link);
   }
@@ -31,9 +31,12 @@ class homeCreditController extends baseController {
         return;
       }
       const status = condition.status;
-      const doubleDec = await ctx.model.DoubleDec.findOneAndUpdate({ _id: condition.id }, { $set: { status } });
+      const doubleDec = await ctx.model.DoubleDec.findOne({ _id: condition.id, hasDownload: true });
       if (!doubleDec) {
-        return this.failure('找不到该明目');
+        return this.success('找不到该明目或者用户没有下载，无法通过执行');
+      }
+      if (doubleDec.status === '审核通过') {
+        return this.success('已经进行过审核无法再次执行');
       }
       if (status === '审核通过') {
         const user = await ctx.model.UserAccount.findOne({ uuid: doubleDec.userUUid });
@@ -41,11 +44,8 @@ class homeCreditController extends baseController {
         await ctx.service.analyzeService.dataIncrementRecord('活动奖励-双十二', 5000, 'bcoin', '活动');
         await this.ctx.service.userService.setUserBcionChange(doubleDec.userUUid, '活动奖励-双十二',
           '获得', 5000, newBcoin);
-
-        let doubleDec = await this.ctx.model.DoubleDec.findOne({ tel_number_verify: user.tel_number, hasDownload: true });
-        if (!this.ctx.helper.isEmpty(doubleDec)) {
-          await this.ctx.app.eventEmitter.emit('normalMissionCount', user.referrer, '活动—双十二邀请好友得现金');
-        }
+        await ctx.model.DoubleDec.update({ _id: condition.id, hasDownload: true }, { $set: { status } });
+        await this.ctx.app.eventEmitter.emit('normalMissionCount', user.referrer, '活动—双十二邀请好友得现金');
       }
       this.success();
     } catch (e) {

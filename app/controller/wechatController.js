@@ -144,18 +144,17 @@ class wechatController extends baseController {
       const urlQuery = url.parse(returnUrl, true).query;
       const { code, state } = urlQuery;
       let stateMessage = '',
+        sourceFrom = '',
         inviteCode = '';
       try {
-        console.log(state);
         const stateObj = JSON.parse(state);
-        console.log(stateObj);
-        console.log(typeof stateObj);
         stateMessage = stateObj.stateMessage;
         inviteCode = stateObj.inviteCode;
+        sourceFrom = stateObj.source;
       } catch (e) {
-        console.log(e);
         stateMessage = state;
       }
+
       console.log(stateMessage);
       if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
         ctx.throw('空值警告');
@@ -204,8 +203,18 @@ class wechatController extends baseController {
         const statusString = ctx.helper.encrypt(OPENID);
         const head = ctx.helper.encrypt(result_3.headimgurl);
         const nickName = ctx.helper.encrypt(result_3.nickname);
-        // const jumpTo = stateMessage === 'CHECK' ? 'loginInfoBindPhone' : stateMessage;
-        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=doubleDec`;
+
+        let state,
+          source;
+        if (stateMessage !== 'CHECK') {
+
+          state = stateMessage;
+          source = sourceFrom;
+        } else {
+          source = 'origin';
+          state = '';
+        }
+        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=${source}&state=${state}}`;
         console.log(url);
         ctx.status = 301;
         ctx.redirect(url);
