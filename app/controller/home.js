@@ -3,7 +3,9 @@ const Controller = require('./baseController');
 
 class HomeController extends Controller {
 
-
+  async test(ctx) {
+    this.success();
+  }
   // let requestObj_1 = {
   //     appid: ctx.app.config.wechatConfig.appid,
   //     secret: ctx.app.config.wechatConfig.secret,
