@@ -214,7 +214,7 @@ class wechatController extends baseController {
           source = 'origin';
           state = '';
         }
-        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=${source}&state=${state}}`;
+        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=${source}&state=${state}`;
         console.log(url);
         ctx.status = 301;
         ctx.redirect(url);
