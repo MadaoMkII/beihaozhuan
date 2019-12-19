@@ -193,6 +193,7 @@ class wechatController extends baseController {
           location = 'index';
         }
         const url = `/${location}/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`;
+        console.log(url)
         ctx.status = 301;
         return ctx.redirect(url);
       }
