@@ -165,8 +165,14 @@ class wechatController extends baseController {
       const user = await this.ctx.service.userService.getUser({ OPENID });
       if (!ctx.helper.isEmpty(user)) {
         ctx.login(user);
+        let location = '';
+        if (state !== 'CHECK') {
+          location = state;
+        } else {
+          location = 'index';
+        }
         ctx.status = 301;
-        ctx.redirect('/index');
+        ctx.redirect(`/${location}`);
         await this.ctx.service.userService.updateUser(user.uuid, {
           'userStatus.hasVerifyWechat': 'enable',
         });
@@ -179,21 +185,14 @@ class wechatController extends baseController {
         const [ result_3 ] = await this.requestMethod(requestObj_3,
           'GET', 'https://api.weixin.qq.com/sns/userinfo');
         if (result_3.errcode) {
-          console.log(result_3.errcode);
           return;
         }
         // 去注册
         const statusString = ctx.helper.encrypt(OPENID);
         const head = ctx.helper.encrypt(result_3.headimgurl);
         const nickName = ctx.helper.encrypt(result_3.nickname);
-
-        let location = '';
-        if (state !== 'CHECK') {
-          location = state;
-        } else {
-          location = 'index';
-        }
-        const url = `/${location}/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`;
+        const jumpTo = state === 'CHECK' ? 'loginInfoBindPhone' : state;
+        const url = `/index/?statusString=${statusString}&jumpTo=${jumpTo}=&head=${head}&nickName=${nickName}`;
         console.log(url);
         ctx.status = 301;
         return ctx.redirect(url);
