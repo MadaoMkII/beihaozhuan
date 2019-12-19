@@ -185,6 +185,7 @@ class advertisementController extends Controller {
       });
 
     } catch (e) {
+      console.log(e)
       this.app.logger.error(e, ctx);
       this.failure();
     }

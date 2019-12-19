@@ -5,18 +5,24 @@ class HomeController extends Controller {
 
 
   async test(ctx) {
-
-    const { state } = ctx.request.query;
-    let location = '';
-    if (state !== 'CHECK') {
-      location = state;
-    } else {
-      location = 'index';
+    const { code, state } = ctx.request.query;
+    let stateMessage = '',
+      inviteCode = '';
+    try {
+      console.log(state);
+      const stateObj = JSON.parse(JSON.parse(state));
+      console.log(stateObj);
+      console.log(typeof stateObj);
+      stateMessage = stateObj.stateMessage;
+      inviteCode = stateObj.inviteCode;
+    } catch (e) {
+      console.log(e);
+      stateMessage = state;
     }
-    const url = `/${location}/?statusString=asdd`;
-    ctx.status = 301;
-    ctx.redirect(url);
 
+    console.log(inviteCode);
+    console.log(stateMessage);
+    this.success();
     // let requestObj_1 = {
     //     appid: ctx.app.config.wechatConfig.appid,
     //     secret: ctx.app.config.wechatConfig.secret,

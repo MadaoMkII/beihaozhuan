@@ -143,7 +143,20 @@ class wechatController extends baseController {
 
       const urlQuery = url.parse(returnUrl, true).query;
       const { code, state } = urlQuery;
-      console.log(state);
+      let stateMessage = '',
+        inviteCode = '';
+      try {
+        console.log(state);
+        const stateObj = JSON.parse(JSON.parse(state));
+        console.log(stateObj);
+        console.log(typeof stateObj);
+        stateMessage = stateObj.stateMessage;
+        inviteCode = stateObj.inviteCode;
+      } catch (e) {
+        console.log(e);
+        stateMessage = state;
+      }
+      console.log(stateMessage);
       if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
         ctx.throw('空值警告');
       }
@@ -166,8 +179,8 @@ class wechatController extends baseController {
       if (!ctx.helper.isEmpty(user)) {
         ctx.login(user);
         let location = '';
-        if (state !== 'CHECK') {
-          location = state;
+        if (stateMessage !== 'CHECK') {
+          location = stateMessage;
         } else {
           location = 'index';
         }
@@ -191,7 +204,7 @@ class wechatController extends baseController {
         const statusString = ctx.helper.encrypt(OPENID);
         const head = ctx.helper.encrypt(result_3.headimgurl);
         const nickName = ctx.helper.encrypt(result_3.nickname);
-        const jumpTo = state === 'CHECK' ? 'loginInfoBindPhone' : state;
+        const jumpTo = stateMessage === 'CHECK' ? 'loginInfoBindPhone' : stateMessage;
         const url = `/index/?statusString=${statusString}&jumpTo=${jumpTo}=&head=${head}&nickName=${nickName}`;
         console.log(url);
         ctx.status = 301;
