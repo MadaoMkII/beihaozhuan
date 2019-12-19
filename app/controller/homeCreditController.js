@@ -12,12 +12,15 @@ class homeCreditController extends baseController {
 
   async setDownload(ctx) {
     try {
-      const doubleDec = {};
-      doubleDec.tel_number_verify = ctx.user.tel_number;
-      doubleDec.hasDownload = true;
-      doubleDec.userUUid = ctx.user.uuid;
-      doubleDec.status = '仅下载';
-      await ctx.service.doubleDecService.createDoubleDec(doubleDec.tel_number_verify, doubleDec);
+      let doubleDec = await ctx.model.DoubleDec.findOne({ userUUid: ctx.user.uuid });
+      if (ctx.helper.isEmpty(doubleDec)) {
+        doubleDec = {};
+        doubleDec.tel_number_verify = ctx.user.tel_number;
+        doubleDec.hasDownload = true;
+        doubleDec.userUUid = ctx.user.uuid;
+        doubleDec.status = '仅下载';
+        await ctx.service.doubleDecService.createDoubleDec(doubleDec.tel_number_verify, doubleDec);
+      }
       this.success();
     } catch (e) {
       this.app.logger.error(e, ctx);
@@ -43,8 +46,8 @@ class homeCreditController extends baseController {
       if (status === '审核通过') {
         const user = await ctx.model.UserAccount.findOne({ uuid: doubleDec.userUUid });
         const newBcoin = Number(user.Bcoins) + 5000;
-        await ctx.service.analyzeService.dataIncrementRecord('活动奖励-双十二', 5000, 'bcoin', '活动');
-        await this.ctx.service.userService.setUserBcionChange(doubleDec.userUUid, '活动奖励-双十二',
+        await ctx.service.analyzeService.dataIncrementRecord('活动奖励-年终盛典', 5000, 'bcoin', '活动');
+        await this.ctx.service.userService.setUserBcionChange(doubleDec.userUUid, '活动奖励-年终盛典',
           '获得', 5000, newBcoin);
         await ctx.model.DoubleDec.updateOne({ _id: condition.id, hasDownload: true }, { $set: { status } });
         await this.ctx.app.eventEmitter.emit('normalMissionCount', user.referrer, '活动—双十二邀请好友得现金');
