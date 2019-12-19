@@ -179,6 +179,7 @@ class wechatController extends baseController {
         const [ result_3 ] = await this.requestMethod(requestObj_3,
           'GET', 'https://api.weixin.qq.com/sns/userinfo');
         if (result_3.errcode) {
+          console.log(result_3.errcode);
           return;
         }
         // 去注册
