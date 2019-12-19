@@ -205,7 +205,7 @@ class wechatController extends baseController {
         const head = ctx.helper.encrypt(result_3.headimgurl);
         const nickName = ctx.helper.encrypt(result_3.nickname);
         const jumpTo = stateMessage === 'CHECK' ? 'loginInfoBindPhone' : stateMessage;
-        const url = `/index/?statusString=${statusString}&jumpTo=${jumpTo}&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=doubleDec`;
+        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=doubleDec`;
         console.log(url);
         ctx.status = 301;
         ctx.redirect(url);
