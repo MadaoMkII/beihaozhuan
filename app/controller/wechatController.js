@@ -178,14 +178,14 @@ class wechatController extends baseController {
       const user = await this.ctx.service.userService.getUser({ OPENID });
       if (!ctx.helper.isEmpty(user)) {
         ctx.login(user);
-        let location = '';
+        let location_jump = '';
         if (stateMessage !== 'CHECK') {
-          location = stateMessage;
+          location_jump = stateMessage;
         } else {
-          location = 'index';
+          location_jump = 'index';
         }
         ctx.status = 301;
-        ctx.redirect(`/${location}`);
+        ctx.redirect(`/${location_jump}`);
         await this.ctx.service.userService.updateUser(user.uuid, {
           'userStatus.hasVerifyWechat': 'enable',
         });
@@ -205,11 +205,11 @@ class wechatController extends baseController {
         const head = ctx.helper.encrypt(result_3.headimgurl);
         const nickName = ctx.helper.encrypt(result_3.nickname);
         const jumpTo = stateMessage === 'CHECK' ? 'loginInfoBindPhone' : stateMessage;
-        const url = `/index/?statusString=${statusString}&jumpTo=${jumpTo}=&head=${head}&nickName=${nickName}
+        const url = `/index/?statusString=${statusString}&jumpTo=${jumpTo}&head=${head}&nickName=${nickName}
         &inviteCode=${inviteCode}&source=doubleDec`;
         console.log(url);
         ctx.status = 301;
-        return ctx.redirect(url);
+        ctx.redirect(url);
       }
     } catch (e) {
       this.app.logger.error(e, ctx);
