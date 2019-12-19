@@ -143,7 +143,7 @@ class wechatController extends baseController {
 
       const urlQuery = url.parse(returnUrl, true).query;
       const { code, state } = urlQuery;
-
+      console.log(state);
       if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
         ctx.throw('空值警告');
       }
@@ -193,7 +193,7 @@ class wechatController extends baseController {
           location = 'index';
         }
         const url = `/${location}/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`;
-        console.log(url)
+        console.log(url);
         ctx.status = 301;
         return ctx.redirect(url);
       }
