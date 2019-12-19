@@ -147,7 +147,7 @@ class wechatController extends baseController {
         inviteCode = '';
       try {
         console.log(state);
-        const stateObj = JSON.parse(JSON.parse(state));
+        const stateObj = JSON.parse(state);
         console.log(stateObj);
         console.log(typeof stateObj);
         stateMessage = stateObj.stateMessage;
@@ -205,7 +205,8 @@ class wechatController extends baseController {
         const head = ctx.helper.encrypt(result_3.headimgurl);
         const nickName = ctx.helper.encrypt(result_3.nickname);
         const jumpTo = stateMessage === 'CHECK' ? 'loginInfoBindPhone' : stateMessage;
-        const url = `/index/?statusString=${statusString}&jumpTo=${jumpTo}=&head=${head}&nickName=${nickName}`;
+        const url = `/index/?statusString=${statusString}&jumpTo=${jumpTo}=&head=${head}&nickName=${nickName}
+        &inviteCode=${inviteCode}&source=doubleDec`;
         console.log(url);
         ctx.status = 301;
         return ctx.redirect(url);

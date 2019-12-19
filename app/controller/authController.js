@@ -153,7 +153,7 @@ class authController extends Controller {
   async bindWechat(ctx) {
     try {
       const [ requestEntity ] = await this.cleanupRequestProperty('authRules.bindWechat',
-        'smsVerifyCode', 'tel_number', 'statusString', 'head', 'nickName');
+        'smsVerifyCode', 'tel_number', 'statusString', 'head', 'nickName', 'inviteCode');
       if (!requestEntity) {
         return;
       }
@@ -193,7 +193,7 @@ class authController extends Controller {
         newUser.Bcoins = initialBcoin;
         newUser.userStatus = {};
         newUser.userStatus.hasVerifyWechat = 'enable';
-        const newUser_login = await ctx.service.userService.addUser(newUser, null);
+        const newUser_login = await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
 
         if (initialBcoin !== 0) {
           promise = ctx.service.userService.setUserBcionChange(newUser.uuid, '注册奖励', '获得', initialBcoin,

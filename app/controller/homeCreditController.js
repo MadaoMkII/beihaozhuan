@@ -3,6 +3,14 @@ const baseController = require('../controller/baseController');
 
 class homeCreditController extends baseController {
 
+  async getDoubleDecInviteLink(ctx) {
+    const inviteCode = ctx.user.inviteCode;
+    const jsonObj = encodeURIComponent(JSON.stringify({ inviteCode, stateMessage: 'gift' }));
+    const link = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx87462aaa978561bf&redirect_uri=https%3a%2f%2fwww.beihaozhuan.com/wechat/callback&response_type=code&scope=snsapi_userinfo&state=${jsonObj}`;
+    this.success(link);
+  }
+
+
   async verifyProofs(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('homeCreditRules.verifyProofRule',
