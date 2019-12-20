@@ -7,6 +7,12 @@ module.exports = app => {
   router.get('/promotion/checkProofsStatus', app.middleware.authenticatedMiddleware('用户'),
     controller.homeCreditController.checkProofsStatus);
 
+  router.get('/promotion/getDoubleDecInviteLink', app.middleware.authenticatedMiddleware('用户'),
+    controller.homeCreditController.getDoubleDecInviteLink);
+
+  router.get('/promotion/setDownload', app.middleware.authenticatedMiddleware('用户'),
+    controller.homeCreditController.setDownload);
+
   router.post('/promotion/createPromotionProof',
     controller.homeCreditController.createPromotionProof);
 

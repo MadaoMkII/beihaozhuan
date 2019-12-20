@@ -1,6 +1,14 @@
 'use strict';
 
 const rule = {
+  source: [
+    { required: false, message: '' },
+    { type: 'string', message: '格式不正确' },
+  ],
+  state: [
+    { required: false, message: '' },
+    { type: 'string', message: '格式不正确' },
+  ],
   statusString: [
     { required: true, message: '' },
     { type: 'string', message: '格式不正确' },

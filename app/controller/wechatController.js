@@ -143,7 +143,19 @@ class wechatController extends baseController {
 
       const urlQuery = url.parse(returnUrl, true).query;
       const { code, state } = urlQuery;
+      let stateMessage = '',
+        sourceFrom = '',
+        inviteCode = '';
+      try {
+        const stateObj = JSON.parse(state);
+        stateMessage = stateObj.stateMessage;
+        inviteCode = stateObj.inviteCode;
+        sourceFrom = stateObj.source;
+      } catch (e) {
+        stateMessage = state;
+      }
 
+      console.log(stateMessage);
       if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
         ctx.throw('空值警告');
       }
@@ -165,8 +177,14 @@ class wechatController extends baseController {
       const user = await this.ctx.service.userService.getUser({ OPENID });
       if (!ctx.helper.isEmpty(user)) {
         ctx.login(user);
+        let location_jump = '';
+        if (stateMessage !== 'CHECK') {
+          location_jump = stateMessage;
+        } else {
+          location_jump = 'index';
+        }
         ctx.status = 301;
-        ctx.redirect('/index');
+        ctx.redirect(`/${location_jump}`);
         await this.ctx.service.userService.updateUser(user.uuid, {
           'userStatus.hasVerifyWechat': 'enable',
         });
@@ -185,8 +203,21 @@ class wechatController extends baseController {
         const statusString = ctx.helper.encrypt(OPENID);
         const head = ctx.helper.encrypt(result_3.headimgurl);
         const nickName = ctx.helper.encrypt(result_3.nickname);
+
+        let state,
+          source;
+        if (stateMessage !== 'CHECK') {
+
+          state = stateMessage;
+          source = sourceFrom;
+        } else {
+          source = 'origin';
+          state = '';
+        }
+        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=${source}&state=${state}`;
+        console.log(url);
         ctx.status = 301;
-        ctx.redirect(`/index?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}`);
+        ctx.redirect(url);
       }
     } catch (e) {
       this.app.logger.error(e, ctx);

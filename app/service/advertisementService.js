@@ -1,55 +1,55 @@
 'use strict';
-const {Service} = require('egg');
+const { Service } = require('egg');
 
 class advertisementService extends Service {
 
-    async createAdvertisement(advertising) {
-        advertising.uuid = `ADV` + require('cuid')();
-        let advertisingObj = new this.ctx.model.Advertisement(advertising);
-        advertisingObj.save();
-    };
+  async createAdvertisement(advertising) {
+    advertising.uuid = 'ADV' + require('cuid')();
+    const advertisingObj = new this.ctx.model.Advertisement(advertising);
+    advertisingObj.save();
+  }
 
-    async updateAdvertisement(uuid, advertising) {
-        delete advertising.uuid;
-        return this.ctx.model.Advertisement.findOneAndUpdate({uuid: uuid}, {$set: advertising});
-    };
+  async updateAdvertisement(uuid, advertising) {
+    delete advertising.uuid;
+    return this.ctx.model.Advertisement.findOneAndUpdate({ uuid }, { $set: advertising });
+  }
 
-    async deleteAdvertisement(uuid,) {
-        return this.ctx.model.Advertisement.deleteOne({uuid: uuid});
-    };
+  async deleteAdvertisement(uuid) {
+    return this.ctx.model.Advertisement.deleteOne({ uuid });
+  }
 
-    async getAdvertisement(advertising, options) {
-        return this.ctx.model.Advertisement.find(advertising, {}, options);
-    };
-    async getOneAdvertisement(advertising, options) {
+  async getAdvertisement(advertising, options) {
+    return this.ctx.model.Advertisement.find(advertising, {}, options);
+  }
+  async getOneAdvertisement(advertising, options) {
 
-        return this.ctx.model.Advertisement.findOne(advertising, {}, options);
-    };
+    return this.ctx.model.Advertisement.findOne(advertising, {}, options);
+  }
 
-    async getAdvertisementByPosition(positionName) {
+  async getAdvertisementByPosition(positionName) {
 
-        if (positionName === `任务频道`) {
-            return this.ctx.model.Advertisement.find({positionName: positionName});
-        } else {
-            return this.ctx.model.Advertisement.aggregate([{
-                $match: {
-                    positionName: positionName,
-                    activity: "enable"
-                }
-            },
-                {
-                    $group:
+    if (positionName === '任务频道') {
+      return this.ctx.model.Advertisement.find({ positionName });
+    }
+    return this.ctx.model.Advertisement.aggregate([{
+      $match: {
+        positionName,
+        activity: 'enable',
+      },
+    },
+    {
+      $group:
                         {
-                            _id: "$positionName",
-                            advertisements: {$push: {carouselUrl: "$carouselUrl", source: "$source", uuid: "$uuid"}},
-                            length: {$avg: "$length"},
-                            width: {$avg: "$width"}
-                        }
-                }
-            ]);
-        }
+                          _id: '$positionName',
+                          advertisements: { $push: { carouselUrl: '$carouselUrl', source: '$source', uuid: '$uuid' } },
+                          length: { $avg: '$length' },
+                          width: { $avg: '$width' },
+                        },
+    },
+    ]);
 
-    };
+
+  }
 
 }
 

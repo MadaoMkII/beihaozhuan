@@ -60,11 +60,7 @@ module.exports = app => {
       unique: true,
       sparse: true,
     },
-    // email_address: {
-    //     type: String,
-    //     unique: true
-    // },
-    // referrer: {type: referer},
+    source: String,
     nickName: { type: String, default: '无名氏' },
     realName: { type: String },
     inviteCode: { type: String, default: app.getInviteCode },
