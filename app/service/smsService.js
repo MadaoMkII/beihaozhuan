@@ -15,7 +15,13 @@ class smsService extends Service {
   async sendSmsMessage(code, telNumber) {
     telNumber = '' + telNumber;
     this.smsObj.setProject(this.modelCode).addRecipient(telNumber, { code });
-    const result = await this.smsObj.send(null);
+    let result = [];
+    const resultSend = await this.smsObj.send(null);
+    if(resultSend){
+      result[0] = resultSend;
+    }else {
+      result[0] = {};
+    }
     return result[0].status === 'success';
   }
 

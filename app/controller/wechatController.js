@@ -93,10 +93,10 @@ class wechatController extends baseController {
         return this.success(msg, 'OK', 400);
       }
 
-      const newBcoin = Number(ctx.user.Bcoins) - Number(option.amount * 100);
-      if (newBcoin < 0) {
-        return this.success('你的钱不够', 'OK', 400);
-      }
+      // const newBcoin = Number(ctx.user.Bcoins) - Number(option.amount * 100);
+      // if (newBcoin < 0) {
+      //   return this.success('你的钱不够', 'OK', 400);
+      // }
 
       if (ctx.helper.isEmpty(option)) {
         return this.failure('输入type错误');

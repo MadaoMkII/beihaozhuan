@@ -34,7 +34,7 @@ module.exports = app => {
     recommendGood: { type: mongoose.Schema.Types.ObjectId },
     advertisementSetting: { type: mongoose.Schema.Types.Mixed },
     token: { type: mongoose.Schema.Types.Mixed },
-    access_token: { tokenStr: String, createTime: Date },
+    access_token: { type: mongoose.Schema.Types.Mixed },
     withDrewSetting: [ withDrewSetting ],
   }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },

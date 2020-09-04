@@ -30,7 +30,7 @@ module.exports = options => {
 
     if (ctx.helper.isEmpty(ctx.user) || getPrivilege(options) > getPrivilege(ctx.user.role)) {
       ctx.response.body = {
-        code: 403,
+        code: 401,
         msg: '未登录或者权限不足', // 'Insufficient privilege',
       };
       ctx.response.status = 401;
