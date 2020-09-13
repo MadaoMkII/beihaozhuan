@@ -45,6 +45,7 @@ class WeChatService extends Service {
             openid: this.ctx.user.OPENID,
             lang: 'zh_CN',
         };
+        console.log(requestObj_3)
         const [result_3] = await this.app.requestMethod(requestObj_3,
             'GET', 'https://api.weixin.qq.com/cgi-bin/user/info');
         console.log(result_3)
@@ -110,7 +111,8 @@ class WeChatService extends Service {
 
     async withdrew(amount, desc, ip, partner_trade_no, newBcoin) {
         const user = this.ctx.user;
-        if (Number(this.ctx.user.Bcoins) < Number(amount)) {
+        let recentUserAccount = await this.ctx.model.UserAccount.findOne({tel_number: user.tel_number});
+        if (Number(recentUserAccount.Bcoins) < Number(amount)) {
             this.ctx.throw(200, `用户余额不足`);
         }
         const inputObj = {
@@ -204,10 +206,12 @@ class WeChatService extends Service {
     // }
     async get_access_token() {
         try {
+            const {isEmpty} = this.ctx.helper;
+            const end = DateTime.fromJSDate(new Date());
             const appSystemSetting = await this.ctx.model.SystemSetting.findOne({}, {}, {sort: {created_at: -1}});
-            if (this.app.isEmpty(appSystemSetting) ||
-                this.app.isEmpty(appSystemSetting.access_token) ||
-                end.diff(DateTime.fromJSDate(appSystemSetting.access_token.updateTime)).as('hours') >= 2) {
+            if (isEmpty(appSystemSetting) ||
+                isEmpty(appSystemSetting.accessToken) ||
+                end.diff(DateTime.fromJSDate(appSystemSetting.accessToken.updateTime)).as('hours') >= 2) {
                 const requestObj = {
                     secret: this.ctx.app.config.wechatConfig.secret,
                     grant_type: 'client_credential',
@@ -216,7 +220,7 @@ class WeChatService extends Service {
 
                 const [result_1] = await this.ctx.app.requestMethod(requestObj,
                     'GET', 'https://api.weixin.qq.com/cgi-bin/token');
-
+                console.log(result_1);
                 if (!this.ctx.helper.isEmpty(result_1.errcode)) {
                     this.ctx.throw(400, result_1.errmsg);
                 }
@@ -224,13 +228,17 @@ class WeChatService extends Service {
                     updateTime: new Date(),
                     tokenStr: result_1.access_token,
                 };
-                await this.ctx.model.SystemSetting.findOneAndUpdate({}, {$sort: {created_at: -1}}, {$set: {access_token: settObj}},);
-                return body.access_token;
+                let x = await this.ctx.model.SystemSetting.findOneAndUpdate({_id: appSystemSetting._id}, {$set: {accessToken: settObj}}, {
+                    upsert: true,
+                    new: true
+                });
+
+                return settObj.tokenStr;
             } else {
-                return appSystemSetting.access_token;
+                return appSystemSetting.accessToken.tokenStr;
             }
         } catch (e) {
-            console.log(e);
+
         }
     }
 
@@ -251,7 +259,7 @@ class WeChatService extends Service {
         // await this.ctx.model.Setting.findOneAndUpdate({ }, { $set: { access_token: result_1.access_token } }, { upsert: true });
 
         // '26_EpDz1uSWyf3ZQPW2ZCmN49rx8RlPXSA6z_e8NKSHGbUFCbiJWJFDWvfSLKKIg8FCkz2_XEuxNoEsRgPhy0SEeQU60H2kuceAXVjOHjgzSGGd7PrW9vh5OqwgPaq7AoiYpOB9Wpsd0og6UdMoFDGdAIAYWZ'
-        let token =await this.get_access_token();
+        let token = await this.get_access_token();
         const requestObj_2 = {
             access_token: token,
             type: 'jsapi',

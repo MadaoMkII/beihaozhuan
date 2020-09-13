@@ -29,7 +29,7 @@ class LoggerController extends Controller {
       const result = await ctx.model.Logger.find(condition, { _id: 0 }, option);
       this.success([ result, count ]);
     } catch (e) {
-      console.log(e);
+
     }
 
   }

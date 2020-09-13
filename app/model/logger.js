@@ -1,7 +1,7 @@
 'use strict';
 module.exports = app => {
   const mongoose = app.mongoose;
-  const connection = app.mongooseDB.get('loggerConnection');
+  const connection = app.mongooseDB.get('beihaozhuan');
   const logger = new mongoose.Schema({
     level: String,
     message: String,

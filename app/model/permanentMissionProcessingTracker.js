@@ -3,7 +3,7 @@ module.exports = app => {
   const mongoose = app.mongoose;
   // mongoose.set('useCreateIndex', true);
   // mongoose.set('useFindAndModify', false);
-  const connection = app.mongooseDB.get('missionTracker');
+  const connection = app.mongooseDB.get('beihaozhuan');
   const structure = {
     userID: { type: app.mongoose.Schema.Types.ObjectId, ref: 'UserAccount' }, // 者ref会不会有问题
     missionID: { type: app.mongoose.Schema.Types.ObjectId },

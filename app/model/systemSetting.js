@@ -3,7 +3,7 @@ module.exports = app => {
   const mongoose = app.mongoose;
   // mongoose.set('useCreateIndex', true);
   // mongoose.set('useFindAndModify', false);
-  const connection = app.mongooseDB.get('commonConnection');
+  const connection = app.mongooseDB.get('beihaozhuan');
 
 
   const withDrewSetting = mongoose.Schema(
@@ -34,7 +34,7 @@ module.exports = app => {
     recommendGood: { type: mongoose.Schema.Types.ObjectId },
     advertisementSetting: { type: mongoose.Schema.Types.Mixed },
     token: { type: mongoose.Schema.Types.Mixed },
-    access_token: { type: mongoose.Schema.Types.Mixed },
+    accessToken: { type: mongoose.Schema.Types.Mixed },
     withDrewSetting: [ withDrewSetting ],
   }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },

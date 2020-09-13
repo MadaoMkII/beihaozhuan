@@ -4,7 +4,8 @@ const Controller = require('./baseController');
 class HomeController extends Controller {
 
   async test(ctx) {
-    this.success();
+let x = this.app.encrypt(10000);
+    this.success(x);
   }
   // let requestObj_1 = {
   //     appid: ctx.app.config.wechatConfig.appid,

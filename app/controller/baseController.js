@@ -1,9 +1,22 @@
 'use strict';
-
+const { DateTime } = require('luxon');
 const { Controller } = require('egg');
 
 class BaseController extends Controller {
 
+  async checkTimeInterval(interval) {
+    const ctx = this.ctx;
+    let lastTime = ctx.cookies.get('lastCallTime');
+    if (!ctx.helper.isEmpty(lastTime)) {
+      lastTime = DateTime.fromMillis(Number(lastTime));
+      const nowDate = DateTime.fromJSDate(new Date());
+      const diffTime = nowDate.diff(lastTime, 'minutes');
+      if (diffTime.minutes < interval) {
+        return ctx.throw(200, `接口调用间隔必须大于${interval}分钟`);
+      }
+    }
+    ctx.cookies.set('lastCallTime', Date.now().toString());
+  }
 
   requestMethod(JSONObject, method, url) {
     const request_ = require('request');
@@ -59,15 +72,23 @@ class BaseController extends Controller {
     ctx.status = 200;
   }
 
-  failure(msg, msgState, state = 503) {
+  failure(message, msgState, state = 503) {
     const { ctx } = this;
     // const defaultCode = (state >= 200 && state < 300) ? 0 : state;
+    if (typeof message === 'object') {
+      ctx.body = {
+        code: message.status, // String(code || defaultCode),
+        message: message.message,
+      };
+      if (message.status) { ctx.status = message.status; } else { ctx.status = 503; }
 
-    ctx.body = {
-      code: msgState, // String(code || defaultCode),
-      msg: msg || ctx.helper.errorCode[String(state)],
-    };
-    ctx.status = state;
+    } else {
+      ctx.body = {
+        code: msgState, // String(code || defaultCode),
+        message: message || ctx.helper.errorCode[String(state)],
+      };
+      ctx.status = state;
+    }
   }
 
   deepCleanUp(object, newProperty, ...properties) {

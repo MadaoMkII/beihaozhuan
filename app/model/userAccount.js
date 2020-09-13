@@ -3,7 +3,7 @@ module.exports = app => {
   const mongoose = app.mongoose;
   // mongoose.set('useCreateIndex', true);
   // mongoose.set('useFindAndModify', false);
-  const connection = app.mongooseDB.get('userConnection');
+  const connection = app.mongooseDB.get('beihaozhuan');
   const balanceRecord = new mongoose.Schema({
     category: { type: String, required: true },
     income: {

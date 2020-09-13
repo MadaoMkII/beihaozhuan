@@ -69,7 +69,7 @@ class analyzeService extends Service {
     const categories = [];
     let innerIndex = 0;
     let total = 0;
-    console.log(aggregateResult);
+
     aggregateResult = aggregateResult.sort((a, b) => {
       const aDate = DateTime.local(Number(a._id.year), Number(a._id.month), 1);
       const bDate = DateTime.local(Number(b._id.year), Number(b._id.month), 1);

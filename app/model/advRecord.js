@@ -1,7 +1,7 @@
 'use strict';
 module.exports = app => {
   const mongoose = app.mongoose;
-  const connection = app.mongooseDB.get('analyze');
+  const connection = app.mongooseDB.get('beihaozhuan');
   const advRecord = new mongoose.Schema({
     userID: {
       required: true,

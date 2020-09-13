@@ -1,7 +1,7 @@
 'use strict';
 module.exports = app => {
   const mongoose = app.mongoose;
-  const connection = app.mongooseDB.get('analyze');
+  const connection = app.mongooseDB.get('beihaozhuan');
   const advertisement = new mongoose.Schema({
     title: { type: String, required: true },
     positionName: { type: String, required: true },

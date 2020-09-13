@@ -76,10 +76,7 @@ class SystemSettingService extends Service {
 
 
     // settingObj.advertisementSetting = {square: fs.readFileSync(path.resolve(__dirname, '../public/admin.html'))};
-    const systemSettingObj = new this.ctx.model.SystemSetting(
-      settingObj
-    );
-    systemSettingObj.save();
+    this.ctx.model.SystemSetting.findOneAndUpdate({_id:lastSettingObj._id}, {$set: settingObj});
   }
 }
 

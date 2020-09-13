@@ -1,7 +1,7 @@
 'use strict';
 module.exports = app => {
   const mongoose = app.mongoose;
-  const connection = app.mongooseDB.get('promotionConnection');
+  const connection = app.mongooseDB.get('beihaozhuan');
   const goodSchema = new mongoose.Schema({
     account: { type: String, required: true },
     tel_number_verify: { type: String, required: true },

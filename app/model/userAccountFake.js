@@ -1,6 +1,6 @@
 module.exports = app => {
   const mongoose = app.mongoose;
-  const connection = app.mongooseDB.get('userConnection');
+  const connection = app.mongooseDB.get('beihaozhuan');
   const userAccountSchema = new mongoose.Schema({
     uuid: {
       required: true,

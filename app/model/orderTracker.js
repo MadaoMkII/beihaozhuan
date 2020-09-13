@@ -1,7 +1,7 @@
 'use strict';
 module.exports = app => {
   const mongoose = app.mongoose;
-  const connection = app.mongooseDB.get('orderGoodConnection');
+  const connection = app.mongooseDB.get('beihaozhuan');
   const orderTracker = new mongoose.Schema({
     customer_ID: { type: mongoose.Schema.Types.ObjectId, required: true },
     goodID: { type: mongoose.Schema.Types.ObjectId, required: true },

@@ -3,7 +3,7 @@ module.exports = app => {
   const mongoose = app.mongoose;
   // mongoose.set('useCreateIndex', true);
   // mongoose.set('useFindAndModify', false);
-  const connection = app.mongooseDB.get('missionTracker');
+  const connection = app.mongooseDB.get('beihaozhuan');
   const mission = new mongoose.Schema({
     missionType: { required: true, type: String, enum: [ 'Weekly', 'Daily', 'Permanent' ] },
     title: { required: true, type: String, unique: true, sparse: true },

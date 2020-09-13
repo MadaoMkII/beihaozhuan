@@ -1,7 +1,7 @@
 'use strict';
 module.exports = app => {
   const mongoose = app.mongoose;
-  const connection = app.mongooseDB.get('orderGoodConnection');
+  const connection = app.mongooseDB.get('beihaozhuan');
   const goodSchema = new mongoose.Schema({
     uuid: {
       required: true,

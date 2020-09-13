@@ -77,6 +77,7 @@ class wechatController extends baseController {
 
   async withdrew(ctx) {
     try {
+      await this.checkTimeInterval(0.2);
       const user = ctx.user;
       const [ condition ] = await this.cleanupRequestProperty('wechatRules.withdrewRule',
         'type');
@@ -93,10 +94,10 @@ class wechatController extends baseController {
         return this.success(msg, 'OK', 400);
       }
 
-      // const newBcoin = Number(ctx.user.Bcoins) - Number(option.amount * 100);
-      // if (newBcoin < 0) {
-      //   return this.success('你的钱不够', 'OK', 400);
-      // }
+      const newBcoin = Number(ctx.user.Bcoins) - Number(option.amount * 100);
+      if (newBcoin < 0) {
+        return this.success('金币余额不足', 'OK', 400);
+      }
 
       if (ctx.helper.isEmpty(option)) {
         return this.failure('输入type错误');
@@ -155,7 +156,7 @@ class wechatController extends baseController {
         stateMessage = state;
       }
 
-      console.log(stateMessage);
+
       if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
         ctx.throw('空值警告');
       }
@@ -215,7 +216,6 @@ class wechatController extends baseController {
           state = '';
         }
         const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=${source}&state=${state}`;
-        console.log(url);
         ctx.status = 301;
         ctx.redirect(url);
       }
