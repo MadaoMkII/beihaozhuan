@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>banner-video</title>
+</head>
+<body>
+<div style="margin-top: 40%" id="ad_placeholder_148334"></div>
+<script type="text/javascript" src="//vijs.rayjump.com/bin/vijs.js" onload="Vijs.init(this);" sign="fe0957f687afc0fabade21937de9e4bc" appid="118856"></script>
+<script type="text/javascript">
+  if (window.Vijs) {
+    var myAd148334 = Vijs.setAD({
+      unitid: 148334,
+      view: 286,
+      placeholderid: 'ad_placeholder_148334',
+      loadedCallback: function() {
+        console.log('success');
+        parent.checkAdvertisement();
+      },
+      errorCallback:function () {
+        parent.showNoAdsTip();
+      }
+    });
+  }
+
+
+</script>
+</body>
+</html>

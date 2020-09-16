@@ -1,0 +1,328 @@
+.all {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  font-size: 0.24rem;
+}
+.lottery {
+  width: 100%;
+  padding: 0.2rem;
+  box-sizing: border-box;
+  font-size: 0.24rem;
+}
+.lottery_times {
+  padding: 0.2rem 0.2rem 0;
+  text-align: center;
+  color: #074f82;
+}
+.lottery_times .num {
+  display: inline-block;
+  margin: 0 0.05rem;
+  font-weight: bold;
+}
+.shanDeng {
+  width: 100%;
+  margin: 0 auto;
+  background: url(../images/zward_new_2.png) no-repeat;
+  background-size: 100% 100%;
+  padding: 1.25em;
+  box-sizing: border-box;
+}
+.shanDeng #luck {
+  width: 100%;
+  overflow: hidden;
+}
+.shanDeng table {
+  width: 100%;
+  box-sizing: border-box;
+}
+.shanDeng table td {
+  width: 33.33%;
+  height: 0.6rem;
+  padding: 0.12rem 0;
+  box-sizing: border-box;
+  font-size: 0.16rem;
+  text-align: center;
+  background-image: url(../images/zward_init.png);
+  background-size: 100% 100%;
+}
+.shanDeng img {
+  width: auto;
+  height: 1rem;
+  margin: 0.08rem auto;
+}
+#btn.cjBtn {
+  background-image: url(../images/zWARDSbtn.png);
+  background-size: 100% 100%;
+}
+#btn.cjBtnDom {
+  background-image: url(../images/buttonDown.png);
+}
+#luck .active {
+  background-image: url(../images/active.png);
+}
+.shanDeng table {
+  margin: 0 auto;
+}
+.my_gift {
+  padding: 0.2rem;
+}
+.my_gift .title_block {
+  position: relative;
+  width: 100%;
+  height: 0.4rem;
+  margin: 0.3rem auto 0;
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
+}
+.my_gift .title {
+  position: absolute;
+  top: -0.2rem;
+  left: 0%;
+  width: 100%;
+  background: #6dcaf2;
+}
+.my_gift .title:before {
+  position: absolute;
+  left: 0;
+  top: -0.15rem;
+  display: block;
+  content: "";
+  width: 140px;
+  height: 40px;
+  background: url(../images/title-before.png) no-repeat;
+  background-size: cover;
+}
+.my_gift .title:after {
+  position: absolute;
+  right: 0;
+  top: -0.15rem;
+  display: block;
+  content: "";
+  width: 140px;
+  height: 40px;
+  background: url(../images/title-after.png) no-repeat;
+  background-size: cover;
+}
+.my_gift table {
+  width: 100%;
+  padding: 0.15rem 0;
+  background: #fff;
+  border-radius: 0.1rem;
+}
+.my_gift table th {
+  font-weight: normal;
+  color: #bbb;
+}
+.my_gift table th,
+.my_gift table td {
+  padding: 0.15rem 0.15rem;
+  text-align: center;
+  font-size: 0.22rem;
+}
+.my_gift table th:nth-child(3n+3),
+.my_gift table td:nth-child(3n+3) {
+  text-align: right;
+}
+.my_gift table a {
+  display: inline-block;
+  width: 60%;
+  box-sizing: border-box;
+  text-align: center;
+  color: #d8271c;
+  background: transparent;
+  border-radius: 0.1rem;
+}
+.winner_list table td {
+  width: 33.33%;
+  box-sizing: border-box;
+  text-align: center;
+  color: #bbb;
+}
+.draw-container {
+  position: relative;
+  width: 100%;
+  height: 0.7rem;
+  overflow: hidden;
+  margin: 0.1rem 0 0.2rem;
+  background: #fff;
+  border-radius: 0.1rem;
+}
+.draw-container .swiper-slide {
+  border: none;
+}
+.adv_list {
+  width: 100%;
+  overflow: hidden;
+}
+.adv_list li {
+  display: inline-block;
+  opacity: 1 !important;
+  text-align: left;
+  margin: 0 0.15rem;
+}
+.adv_list a {
+  display: block;
+  font-size: 0.22rem;
+  color: #6c6b6b;
+}
+.cover {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+}
+.cover_box,
+.result_box {
+  z-index: 1002;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
+.cover_box .close,
+.result_box .close {
+  position: absolute;
+  top: calc(80%);
+  left: 50%;
+  width: 0.5rem;
+  margin-left: -0.25rem;
+}
+.card_box {
+  position: absolute;
+  z-index: 1003;
+  top: 50%;
+  transform: translateY(-55%);
+  width: 86%;
+  left: 7%;
+  padding-bottom: 0.2rem;
+  box-sizing: border-box;
+  font-size: 0.24rem;
+  background: #fff;
+  border-radius: 0.1rem;
+}
+.card_box .card_top {
+  padding: 0.4rem 0.4rem;
+  text-align: center;
+  background: -webkit-linear-gradient(#7bd3fa, #67c4ed);
+  border-top-left-radius: 0.1rem;
+  border-top-right-radius: 0.1rem;
+}
+.card_box .title {
+  font-size: 0.26rem;
+  color: #fff;
+}
+.card_box .title img {
+  display: inline-block;
+  vertical-align: middle;
+  width: 0.4rem;
+}
+.card_box .title span {
+  display: inline-block;
+  vertical-align: middle;
+}
+.card_box .card_tips {
+  padding: 0.2rem 0;
+  font-size: 0.22rem;
+  color: #fff;
+}
+.card_box .card_form {
+  width: 90%;
+  margin: 0.2rem auto;
+}
+.card_box .card_form li {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0.2rem;
+  padding: 0.2rem;
+  box-sizing: border-box;
+  background: transparent;
+  border-bottom: 1px solid #ddd;
+}
+.card_box .card_form input {
+  border: none;
+  width: 100%;
+  background: transparent;
+  border-radius: 0;
+}
+.card_box .card_form .send_code {
+  position: absolute;
+  right: 0.2rem;
+  top: 0.2rem;
+  color: #19ABDC;
+}
+.card_box .card_form .pic_code {
+  position: absolute;
+  right: 0.2rem;
+  top: 0rem;
+  width: 1.2rem;
+  height: 0.7rem;
+}
+.card_box .btn_default {
+  border: none;
+  display: block;
+  width: 90%;
+  margin: 0.2rem auto;
+  padding: 0.2rem 0;
+  font-weight: bold;
+  color: #fff;
+  background: #5bbbe5;
+  border: 1px solid #19ABDC;
+  border-radius: 0.5rem;
+}
+.card_box .tips {
+  padding: 0.1rem 0;
+  text-align: center;
+  font-size: 0.22rem;
+  color: red;
+}
+.result_box .card_top {
+  padding: 0.4rem 0.4rem;
+  text-align: center;
+  background: -webkit-linear-gradient(#7bd3fa, #67c4ed);
+  border-top-left-radius: 0.1rem;
+  border-top-right-radius: 0.1rem;
+}
+.result_box .title {
+  font-size: 0.26rem;
+  color: #fff;
+}
+.result_box .title img {
+  display: inline-block;
+  vertical-align: middle;
+  width: 0.4rem;
+}
+.result_box .title span {
+  display: inline-block;
+  vertical-align: middle;
+}
+.result_box .card_tips {
+  padding: 0.4rem 0.4rem 0.3rem;
+  text-align: center;
+  font-size: 0.22rem;
+  color: #999;
+}
+.result_box .btn_default {
+  border: none;
+  display: block;
+  width: 90%;
+  margin: 0.2rem auto;
+  padding: 0.2rem 0;
+  font-weight: bold;
+  color: #19ABDC;
+  background: #fff;
+  border: 1px solid #19ABDC;
+  border-radius: 0.5rem;
+}
+.dis_no {
+  display: none;
+}

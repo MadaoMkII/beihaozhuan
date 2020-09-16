@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no">
+		<meta http-equiv="Expires" content="-1">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Pragma" content="no-cache">
+		<link rel="stylesheet" type="text/css" href="css/public.css">
+		<link rel="stylesheet" type="text/css" href="swiper/swiper.min.css" />
+		<link rel="stylesheet" type="text/css" href="swiper/swiper_style.css" />
+		<link rel="stylesheet" type="text/css" href="css/lottery.css" />
+		<script src="js/jquery-1.10.2.min.js"></script>
+		<script src="swiper/swiper.min.js"></script>
+		<title>抽奖</title>
+    <style>
+      html {
+        font-size: 50px;
+        height: 100%;
+      }
+    </style>
+	</head>
+
+	<body>
+		<div class="all">
+			<div class="lottery_banner">
+				<img src="images/banner.png" alt="" />
+			</div>
+			<div class="lottery_times">你有<span class="num" id="rewardNum">1</span>次抽奖机会</div>
+			<div class="lottery">
+				<div class="shanDeng" id="deng">
+					<div id="luck">
+						<table style="border-spacing:.1rem .1rem;">
+							<tr>
+								<td class="luck-unit luck-unit-0">
+									<img src="images/l_gift3.png" alt="" />
+									<div>3元红包</div>
+								</td>
+								<td class="luck-unit luck-unit-1">
+									<img src="images/l_gift5.png" alt="" />
+									<div>10元红包</div>
+								</td>
+								<td class="luck-unit luck-unit-2">
+									<img src="images/l_gift1.png" alt="" />
+									<div>0.8元红包</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="luck-unit luck-unit-7">
+									<img src="images/l_gift2.png" alt="" />
+									<div>1元红包</div>
+								</td>
+								<td class="cjBtn" id="btn"></td>
+								<td class="luck-unit luck-unit-3">
+									<img src="images/l_gift4.png" alt="" />
+									<div>5元红包</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="luck-unit luck-unit-6">
+									<img src="images/l_gift5.png" alt="" />
+									<div>10元红包</div>
+								</td>
+								<td class="luck-unit luck-unit-5">
+									<img src="images/l_gift2.png" alt="" />
+									<div>1元红包</div>
+								</td>
+								<td class="luck-unit luck-unit-4">
+									<img src="images/l_gift5.png" alt="" />
+									<div>10元红包</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<!--我的奖品-->
+			<div class="my_gift">
+				<div class="title_block">
+					<div class="title">我的奖品</div>
+				</div>
+				<table border="0" cellspacing="0" cellpadding="0">
+					<tbody>
+						<tr>
+							<th>序号</th>
+							<th>奖品名称</th>
+							<th></th>
+						</tr>
+						<tr id="oneAward" style="display: none">
+							<td>1</td>
+							<td>1元现金红包</td>
+						</tr>
+						<tr id="twoAward" style="display: none">
+							<td>2</td>
+							<td>1元现金红包</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="cover dis_no"></div>
+		<!--弹窗开始-->
+		<div class="cover_box dis_no">
+			<div class="card_box">
+				<div class="card_top">
+					<div class="title">
+						<img src="images/icon-note.png" alt="" />
+						<span>提示</span>
+					</div>
+					<div class="card_tips">恭喜获得现金红包</div>
+				</div>
+				<ul class="card_form">
+					<li>
+						<input type="number" id="tel_number" placeholder="手机号" oninput="if(value>11) value=value.slice(0,11); ">
+<!--						<span class="send_code">发送验证码</span>-->
+					</li>
+<!--					<li>-->
+<!--						<input type="text" placeholder="验证码" maxlength="6">-->
+<!--					</li>-->
+
+				</ul>
+<!--				<div class="tips">手机号不能为空</div>-->
+				<input type="button" value="确认" class="btn_default" id="form_insure">
+        <input type="button" value="去注册" class="btn_default" id="goRegister" style="display: none;">
+			</div>
+			<img src="images/icon-close.png" alt="" class="close">
+		</div>
+		<!--弹窗结束-->
+
+		<!--结果弹窗开始-->
+<!--		<div class="result_box dis_no">-->
+<!--			<div class="card_box">-->
+<!--				<div class="card_top">-->
+<!--					<div class="title">-->
+<!--						<img src="images/icon-note.png" alt="" />-->
+<!--						<span>提示</span>-->
+<!--					</div>-->
+
+<!--				</div>-->
+<!--				<div class="card_tips">恭喜获得现金红包，点击领取即可提现至零钱哦！欢迎继续体验线上预约纪特邮票。</div>-->
+<!--				<input type="button" value="确认" class="btn_default">-->
+<!--			</div>-->
+<!--		</div>-->
+		<!--结果弹窗结束-->
+
+		<script>
+			var luck = {
+				index: 0, //当前转动到哪个位置，起点位置
+				count: 0, //总共有多少个位置
+				timer: 0, //setTimeout的ID，用clearTimeout清除
+				speed: 20, //初始转动速度
+				times: 0, //转动次数
+				cycle: 50, //转动基本次数：即至少需要转动多少次再进入抽奖环节
+				prize: -1, //中奖位置
+				init: function(id) {
+					if($("#" + id).find(".luck-unit").length > 0) {
+						$luck = $("#" + id);
+						$units = $luck.find(".luck-unit");
+						this.obj = $luck;
+						this.count = $units.length;
+						$luck.find(".luck-unit-" + this.index).addClass("active");
+					};
+				},
+
+				roll: function() {
+					var index = this.index;
+					var count = this.count;
+					var luck = this.obj;
+					$(luck).find(".luck-unit-" + index).removeClass("active");
+					index += 1;
+					if(index > count - 1) {
+						index = 0;
+					};
+					$(luck).find(".luck-unit-" + index).addClass("active");
+					this.index = index;
+					return false;
+				},
+				stop: function(index) {
+					this.prize = index;
+					return false;
+				}
+			};
+
+			function roll() {
+				luck.times += 1;
+				luck.roll();
+				if(luck.times > luck.cycle + 10 && luck.prize == luck.index) {
+					clearTimeout(luck.timer);
+					luck.prize = -1;
+					luck.times = 0;
+					click = false;
+				} else {
+					if(luck.times < luck.cycle) {
+						luck.speed -= 10;
+					} else if(luck.times == luck.cycle) {
+						var index = Math.random() * (luck.count) | 0;
+						if(index > 5) {
+							index = 7;
+						} else {
+							index = 5;
+						}
+						luck.prize = index; //最终中奖位置
+					} else {
+						if(luck.times > luck.cycle + 10 && ((luck.prize == 0 && luck.index == 7) || luck.prize == luck.index + 1)) {
+							luck.speed += 110;
+						} else {
+							luck.speed += 20;
+						}
+					}
+					if(luck.speed < 40) {
+						luck.speed = 40;
+					};
+
+					luck.timer = setTimeout(roll, luck.speed);
+				}
+				return false;
+			}
+
+			var click = false;
+			window.onload = function() {
+				luck.init('luck');
+				$("#btn").click(function() {
+          $('#rewardNum').html('0');
+					setTimeout(function() {
+            click = true
+						$(".cover").removeClass("dis_no");
+						$(".cover_box").removeClass("dis_no");
+						$("body,html").css({
+							"height": "100%",
+							"overflow": "hidden"
+						})
+					}, 5000);
+
+					if(click) {
+						return false;
+					} else {
+						luck.speed = 100;
+						roll();
+						click = true;
+						return false;
+					}
+
+				});
+			};
+
+			//			轮播图
+			var swiper = new Swiper('.draw-container', {
+				direction: "vertical",
+				autoplay: true,
+				loop: true,
+			});
+
+			//ios弹窗位置调整
+			$("input").bind('focus', function() {
+				var top = document.body.scrollTop;
+				$(window).scrollTop(top);
+			})
+			$("input").bind('blur', function() {
+				var top = document.body.scrollTop;
+				$(window).scrollTop(top);
+			})
+			//关闭弹窗
+			$(".close").on("click", function() {
+				$(".cover").addClass("dis_no");
+				$(".cover_box").addClass("dis_no");
+				$("body,html").css({
+					"height": "100%",
+					"overflow": "auto"
+				})
+			})
+      //点击弹窗中的确定按钮
+			$("#form_insure").on("click", function() {
+          var tel_number = $('#tel_number').val();
+          $.ajax({
+            type: "get",
+            // url: "http://192.168.1.183:3000/user/lottery?tel_number=" + tel_number,
+            url: "https://www.beihaozhuan.com/user/lottery?tel_number=" + tel_number,
+            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+            success: function(res){
+              if(res.code == 404){
+                console.log('找不到这个用户，请注册')
+                $('#form_insure').hide();
+                $('#goRegister').show();
+              }else if(res.code == 0){
+                let count = res.data.count;
+                if(count == 1){
+                  $('#oneAward').show();
+                }else if(count == 2){
+                  $('#oneAward').show();
+                  $('#twoAward').show();
+                }
+                $(".cover").addClass("dis_no");
+                $(".cover_box").addClass("dis_no");
+                $("body,html").css({
+                  "height": "100%",
+                  "overflow": "auto"
+                })
+                alert('恭喜您获得1元现金红包')
+              }
+              else if(res.code == 201){
+                let count = res.data.count;
+                if(count == 1){
+                  $('#oneAward').show();
+                }else if(count == 2){
+                  $('#oneAward').show();
+                  $('#twoAward').show();
+                }
+                $(".cover").addClass("dis_no");
+                $(".cover_box").addClass("dis_no");
+                $("body,html").css({
+                  "height": "100%",
+                  "overflow": "auto"
+                })
+                alert('抽奖机会已用尽')
+              }
+            },
+             error:function(e){
+               console.log(e);
+             }
+          });
+
+			})
+      //去注册
+
+      $("#goRegister").on("click", function() {
+        window.open('https://www.beihaozhuan.com');
+      });
+		</script>
+	</body>
+
+</html>
