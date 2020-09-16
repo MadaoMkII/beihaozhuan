@@ -117,7 +117,7 @@ class WeChatService extends Service {
         if (Number(recentUserAccount.Bcoins) < Number(amount)) {
             this.ctx.throw(200, `用户余额不足`);
         }
-        const newBcoin = Number(recentUserAccount.Bcoins) - Number(option.amount * 100);
+        const newBcoin = Number(recentUserAccount.Bcoins) - Number(amount * 100);
         if (newBcoin < 0) {
             return this.success('金币余额不足', 'OK', 400);
         }
