@@ -84,16 +84,13 @@ class AppBootHook {
 
   async serverDidReady() {
     // Server is listening.
-
-    this.app.passport.serializeUser((ctx, user) => {
+    this.app.passport.serializeUser(async (ctx, user) => {
       return { uuid: user.uuid, password: user.password };
     });
     this.app.passport.deserializeUser(async (ctx, user) => {
       // console.log('deserializeUser', user);
       return ctx.model.UserAccount.findOne(user);
     });
-
-
   }
 
   async beforeClose() {

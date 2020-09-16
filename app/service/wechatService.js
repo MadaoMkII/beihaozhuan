@@ -109,11 +109,17 @@ class WeChatService extends Service {
         return [pass, msg];
     }
 
-    async withdrew(amount, desc, ip, partner_trade_no, newBcoin) {
+    async withdrew(amount, desc, ip, partner_trade_no) {
+
+
         const user = this.ctx.user;
         let recentUserAccount = await this.ctx.model.UserAccount.findOne({tel_number: user.tel_number});
         if (Number(recentUserAccount.Bcoins) < Number(amount)) {
             this.ctx.throw(200, `用户余额不足`);
+        }
+        const newBcoin = Number(recentUserAccount.Bcoins) - Number(option.amount * 100);
+        if (newBcoin < 0) {
+            return this.success('金币余额不足', 'OK', 400);
         }
         const inputObj = {
             mch_appid: this.ctx.app.config.wechatConfig.appid,
@@ -157,7 +163,7 @@ class WeChatService extends Service {
             nickName: user.nickName,
             userUUid: user.uuid,
             withdrewResult,
-            return_msg: withdrewResult.return_msg,
+            return_msg: !this.isEmpty(withdrewResult.return_msg) ? withdrewResult.return_msg : '支付成功',
             result_code: withdrewResult.result_code,
         };
         const withDrewObj = this.ctx.model.Withdrew(withDrewEntity);

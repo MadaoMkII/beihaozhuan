@@ -13,72 +13,12 @@ module.exports = appInfo => {
   const config = exports = {};
   config.mongoose = {
     clients: {
-      userConnection: {
+      beihaozhuan: {
         url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
         options: {
           poolSize: 6,
           keepAlive: true,
-          dbName: 'beihaozhuan_userConnection',
-          useCreateIndex: true,
-          useFindAndModify: false,
-        },
-      },
-      orderGoodConnection: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
-        options: {
-          poolSize: 6,
-          keepAlive: true,
-          dbName: 'beihaozhuan_orderGood',
-          useCreateIndex: true,
-          useFindAndModify: false,
-        },
-      },
-      loggerConnection: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
-        options: {
-          poolSize: 6,
-          keepAlive: true,
-          dbName: 'beihaozhuan_logger',
-          useCreateIndex: true,
-          useFindAndModify: false,
-        },
-      },
-      missionTracker: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
-        options: {
-          poolSize: 6,
-          keepAlive: true,
-          dbName: 'beihaozhuan_missionTracker',
-          useCreateIndex: true,
-          useFindAndModify: false,
-        },
-      },
-      commonConnection: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
-        options: {
-          poolSize: 6,
-          keepAlive: true,
-          dbName: 'beihaozhuan_common',
-          useCreateIndex: true,
-          useFindAndModify: false,
-        },
-      },
-      analyze: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
-        options: {
-          poolSize: 6,
-          keepAlive: true,
-          dbName: 'beihaozhuan_analyzeData',
-          useCreateIndex: true,
-          useFindAndModify: false,
-        },
-      },
-      promotionConnection: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
-        options: {
-          poolSize: 6,
-          keepAlive: true,
-          dbName: 'beihaozhuan_promotion',
+          dbName: 'beihaozhuan',
           useCreateIndex: true,
           useFindAndModify: false,
         },
