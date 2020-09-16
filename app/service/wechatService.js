@@ -163,7 +163,7 @@ class WeChatService extends Service {
             nickName: user.nickName,
             userUUid: user.uuid,
             withdrewResult,
-            return_msg: !this.isEmpty(withdrewResult.return_msg) ? withdrewResult.return_msg : '支付成功',
+            return_msg: !this.ctx.helper.isEmpty(withdrewResult.return_msg) ? withdrewResult.return_msg : '支付成功',
             result_code: withdrewResult.result_code,
         };
         const withDrewObj = this.ctx.model.Withdrew(withDrewEntity);
