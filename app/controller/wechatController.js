@@ -94,6 +94,10 @@ class wechatController extends baseController {
         return this.success(msg, 'OK', 400);
       }
 
+      const newBcoin = Number(ctx.user.Bcoins) - Number(option.amount * 100);
+      if (newBcoin < 0) {
+        return this.success('金币余额不足', 'OK', 400);
+      }
 
       if (ctx.helper.isEmpty(option)) {
         return this.failure('输入type错误');
@@ -104,7 +108,7 @@ class wechatController extends baseController {
 
       const ip = ctx.app.getIP(ctx.request);
       const partner_trade_no = 100 + ctx.helper.randomNumber(10);
-      const result = await ctx.service.wechatService.withdrew(option.amount, option.category, ip, partner_trade_no);
+      const result = await ctx.service.wechatService.withdrew(option.amount, option.category, ip, partner_trade_no, newBcoin);
       //
       // {
       //     "return_code": "SUCCESS",
