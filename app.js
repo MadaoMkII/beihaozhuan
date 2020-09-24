@@ -47,11 +47,13 @@ class AppBootHook {
     this.app.eventEmitter = new EventEmitter();
     const ctx = this.app.createAnonymousContext();
     this.app.eventEmitter.on('normalMissionCount', async (userId, missionName) => {
-      const missionObj = await ctx.model.Mission.findOne({ title: missionName, status: 'enable' });
-      if (ctx.helper.isEmpty(missionObj)) {
+      const missionObj = await ctx.model.Mission.findOne({ title: missionName});
+      if (ctx.helper.isEmpty(missionObj) || missionObj.status === `disable`) {
         // ctx.throw(`监听器任务名匹配有问题，值为${missionName}`);
         console.log(`监听器任务名匹配有问题或者任务没有开启，值为${missionName}`);
+        return;
       }
+
       let effectDay;
       switch (missionObj.missionType) {
         case 'Permanent':

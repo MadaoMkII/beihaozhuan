@@ -2,6 +2,20 @@
 const crypto = require('crypto');
 const setting = require(process.cwd() + '/config/cryptoConfig')();
 module.exports = {
+  isEmpty(obj) {
+    if (obj === undefined) return true;
+    if (obj === '') return true;
+    if (obj === {}) return true;
+    if (obj === []) return true;
+    if (obj === null) return true;
+    if (Array.isArray(obj) && obj.length === 0) return true;
+    if (obj.constructor.name === 'Array' || obj.constructor.name === 'String') return obj.length === 0;
+    // for (let key in obj) {
+    //     if (obj.hasOwnProperty(key) && isEmpty(obj[key])) return true;
+    // }
+
+    return false;
+  },
   encrypt(plain_text) {
     if (plain_text === undefined || plain_text === '') {
       return;

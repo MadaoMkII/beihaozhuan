@@ -20,7 +20,12 @@ class picService extends Service {
 
     return await this.ctx.oss.deleteMulti(deleteUrlArray);
   }
+  async putImages(stream, path = 'images') {
 
+    const filename = `${path}/` + (Math.random() * Date.now() * 10).toFixed(0) + '.jpg';
+    const result = await this.ctx.oss.put(filename, stream.filepath);
+    return result.url;
+  }
   async putImgs(stream, path = 'images') {
 
     const filename = `${path}/` + (Math.random() * Date.now() * 10).toFixed(0) + '.jpg';

@@ -77,7 +77,7 @@ class wechatController extends baseController {
 
   async withdrew(ctx) {
     try {
-      await this.checkTimeInterval(0.2);
+      await this.checkTimeInterval(0.5);
       const user = ctx.user;
       const [ condition ] = await this.cleanupRequestProperty('wechatRules.withdrewRule',
         'type');
@@ -88,11 +88,11 @@ class wechatController extends baseController {
       const settingArray = await ctx.service.systemSettingService.getWithDrewSetting();
       const option = settingArray.withDrewSetting.find(entity => entity.optionType === condition.type);
 
-      const [ pass, msg ] = await ctx.service.wechatService.withdrewConstraint(ctx.user, option.category);
-
-      if (!pass) {
-        return this.success(msg, 'OK', 400);
-      }
+      // const [ pass, msg ] = await ctx.service.wechatService.withdrewConstraint(ctx.user, option.category);
+      //
+      // if (!pass) {
+      //   return this.success(msg, 'OK', 400);
+      // }
 
       const newBcoin = Number(ctx.user.Bcoins) - Number(option.amount * 100);
       if (newBcoin < 0) {

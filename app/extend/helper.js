@@ -18,7 +18,34 @@ module.exports = {
 
     return str;
   },
-
+  exchangeRating(rating) {
+    if (!rating) {
+      return '未提交';
+    }
+    if (isNaN(rating)) {
+      switch (rating) {
+        case '审核未通过':
+          return 3;
+        case '审核通过':
+          return 2;
+        case '未审核':
+          return 1;
+        default:
+          return 0;
+      }
+    } else {
+      switch (rating) {
+        case 3:
+          return '审核未通过';
+        case 2:
+          return '审核通过';
+        case 1:
+          return '未审核';
+        default:
+          return '其他';
+      }
+    }
+  },
   sliceArray(result, option) {
     const endIndex = (option.skip + option.limit) > result.length ? result.length : (option.skip + option.limit);
     return result.slice(option.skip, endIndex);

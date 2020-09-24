@@ -150,7 +150,7 @@ class BaseController extends Controller {
     }
 
     if (properties.includes('unit') || properties.includes('page')) {
-      validateResult = validateResult && await this.ctx.validate('pageAndUnitRule', requestEntity);
+      // validateResult = validateResult && await this.ctx.validate('pageAndUnitRule', requestEntity);
       option = this.operatorGenerator(Number(requestEntity.unit), Number(requestEntity.page));
     }
 

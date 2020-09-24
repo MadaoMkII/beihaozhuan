@@ -33,7 +33,24 @@ class picController extends Controller {
       this.failure();
     }
   }
-
+  async uploadImages(ctx) {
+    try {
+      const files = ctx.request.files;
+      // const stream = await ctx.getFileStream();
+      const imageUrl = [];
+      for (const file of files) {
+        const url = await ctx.service.picService.putImages(file, 'EventProof');
+        imageUrl.push(url);
+      }
+      if (imageUrl.length === 1) {
+        return this.success(imageUrl[0]);
+      }
+      this.success(imageUrl);
+    } catch (e) {
+      this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
   async uploadImgs(ctx) {
     try {
       const files = ctx.request.files;
