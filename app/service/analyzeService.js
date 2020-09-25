@@ -203,7 +203,6 @@ class analyzeService extends Service {
 
     matcher.DogDay = rezoned.day;
     matcher.DogMonth = rezoned.month;
-    console.log(matcher);
     let aggregateResult = await this.ctx.model.DataAnalyze.aggregate([
       {
         $project: {

@@ -271,7 +271,7 @@ class GameEventController extends Controller {
       if (!ctx.app.isEmpty(condition.tel_number)) {
         condition.tel_number = { $regex: `.*${condition.tel_number}.*` };
       }
-      option.sort = { status: -1 };
+      option.sort = { status: 1, created_at: -1 };
       const result = await ctx.service.gameEventService.getAuditUploadRecordList(condition, option);
       const count = await this.getFindModelCount('AuditUploadRecord', condition);
       this.success([ result, count ]);

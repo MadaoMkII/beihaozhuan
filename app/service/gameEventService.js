@@ -748,9 +748,21 @@ class gameEventService extends BaseService {
 
       const setter = {};
       setter[`content.$.complete_mission_${oldAuditUploadRecord.sub_title}`] = true;
-      if (oldAuditUploadRecord.sub_title === 'B' || oldAuditUploadRecord.category === 'STEP1') {
+      const gameEvent = await this.ctx.model.GameEvent.findOne({ category: oldAuditUploadRecord.category });
+      if (oldAuditUploadRecord.category === 'STEP1') {
         setter['content.$.done'] = true;
         setter.status = '已完成';
+      } else {
+        const gameSetting = gameEvent.gameSetting.find(e => e.uuid === oldAuditUploadRecord.missionUUid);
+        if (gameSetting.subsequent_A.available && gameSetting.subsequent_B.available && oldAuditUploadRecord.sub_title === 'B') {
+          setter['content.$.done'] = true;
+        }
+        if (gameSetting.subsequent_A.available && !gameSetting.subsequent_B.available && oldAuditUploadRecord.sub_title === 'A') {
+          setter['content.$.done'] = true;
+        }
+        if (!gameSetting.subsequent_A.available && !gameSetting.subsequent_B.available && oldAuditUploadRecord.sub_title === 'try') {
+          setter['content.$.done'] = true;
+        }
       }
 
       const newGameProcess = await this.ctx.model.GameProcess.findOneAndUpdate({
@@ -760,6 +772,15 @@ class gameEventService extends BaseService {
       },
       { $set: setter, $inc: { currentIncoming: oldAuditUploadRecord.increaseAmount } }, { new: true });
 
+      const newContent = newGameProcess.content.find(e => e.done === false);
+      if (this.isEmpty(newContent)) {
+        await this.ctx.model.GameProcess.updateOne({
+          category: oldAuditUploadRecord.category,
+          tel_number: oldAuditUploadRecord.tel_number,
+          'content.uuid': oldAuditUploadRecord.missionUUid,
+        },
+        { $set: { status: '已完成' } });
+      }
       if (newGameProcess.currentIncoming >= newGameProcess.requiredIncoming) {
         await this.ctx.model.GameProcess.updateOne({
           category: oldAuditUploadRecord.category,

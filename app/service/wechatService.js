@@ -45,10 +45,10 @@ class WeChatService extends Service {
       openid: this.ctx.user.OPENID,
       lang: 'zh_CN',
     };
-    console.log(requestObj_3);
+
     const [ result_3 ] = await this.app.requestMethod(requestObj_3,
       'GET', 'https://api.weixin.qq.com/cgi-bin/user/info');
-    console.log(result_3);
+
     if (result_3.errcode) {
       return;
     }
@@ -80,7 +80,7 @@ class WeChatService extends Service {
         // eslint-disable-next-line no-case-declarations
 
         const local = DateTime.fromJSDate(new Date()).reconfigure({ locale: 'zh-CN' });
-        const records = await this.ctx.model.Withdrew.find({
+        await this.ctx.model.Withdrew.find({
           created_at: {
             $gte: local.startOf('day').toJSDate(),
             $lte: local.endOf('day').toJSDate(),
@@ -108,24 +108,54 @@ class WeChatService extends Service {
 
     return [ pass, msg ];
   }
+  async getWithdrewStatus() {
 
-  async withdrew(amount, desc, ip, partner_trade_no) {
+    const user = this.ctx.user;
+    const recentUserAccount = await this.ctx.model.UserAccount.findOne({ tel_number: user.tel_number });
+
+    const withdrewRecord = await this.ctx.model.Withdrew.find({ userUUid: user.uuid });
+    const setting = await this.ctx.model.SystemSetting.findOne({}, {}, { $sort: { updated_at: -1 } });
+    const withDrewSetting = setting.withDrewSetting;
+    const result = [];
+    console.log(recentUserAccount.Bcoins);
+
+    for (const setting of withDrewSetting) {
+      const tempObj = {
+        enough: true,
+        alreadyWithdrew: false,
+        amount: setting.amount,
+        type: setting.optionType,
+      };
+      const record = withdrewRecord.find(e => Number(e.amount) === Number(setting.amount));
+      if (!this.ctx.helper.isEmpty(record)) {
+        tempObj.alreadyWithdrew = true;
+      }
+      if (Number(recentUserAccount.Bcoins) < Number(setting.amount)) {
+        tempObj.enough = false;
+      }
+      result.push(tempObj);
+    }
+    return result;
+  }
+  async withdrew(amount, desc = '平台提现', ip, partner_trade_no, category) {
 
 
     const user = this.ctx.user;
-    const lastWithDrew = this.ctx.model.Withdrew.findOne({
+    const lastWithDrew = await this.ctx.model.Withdrew.findOne({
       result_code: 'SUCCESS',
-      desc,
+      category,
       userUUid: user.uuid });
     if (!this.ctx.helper.isEmpty(lastWithDrew)) {
       this.ctx.throw(400, '您已经提过这个档位的钱了');
     }
 
     const recentUserAccount = await this.ctx.model.UserAccount.findOne({ tel_number: user.tel_number });
-    if (Number(recentUserAccount.Bcoins) < Number(amount * 100)) {
+    console.log(recentUserAccount.Bcoins);
+    console.log(amount);
+    if (Number(recentUserAccount.Bcoins) < Number(amount)) {
       this.ctx.throw(200, '用户余额不足');
     }
-    const newBcoin = Number(recentUserAccount.Bcoins) - Number(amount * 100);
+    const newBcoin = Number(recentUserAccount.Bcoins) - Number(amount);
     if (newBcoin < 0) {
       this.ctx.throw(200, '用户所剩的余额不足');
     }
@@ -137,7 +167,7 @@ class WeChatService extends Service {
       openid: user.OPENID,
       check_name: 'NO_CHECK',
       re_user_name: '',
-      amount,
+      amount: amount / 100,
       desc,
       spbill_create_ip: ip,
     };
@@ -157,12 +187,14 @@ class WeChatService extends Service {
     const parser = new xml2js.Parser({ explicitArray: false, explicitRoot: false });
     const withdrewResult = await parser.parseStringPromise(result);
     if (!this.ctx.helper.isEmpty(withdrewResult) && withdrewResult.result_code !== 'FAIL') {
+      console.log('OK');
       await this.ctx.service.analyzeService.dataIncrementRecord('提现',
-        -amount * 100, 'bcoin', '提现');
+        -amount, 'bcoin', '提现');
       await this.ctx.service.userService.setUserBcionChange(user.uuid, '提现',
-        '消费', -amount * 100, newBcoin);
+        '消费', -amount, newBcoin);
     }
     const withDrewEntity = {
+      category,
       guestIP: ip,
       desc,
       amount,
@@ -174,7 +206,7 @@ class WeChatService extends Service {
       return_msg: !this.ctx.helper.isEmpty(withdrewResult.return_msg) ? withdrewResult.return_msg : '支付成功',
       result_code: withdrewResult.result_code,
     };
-    const withDrewObj = this.ctx.model.Withdrew(withDrewEntity);
+    const withDrewObj = new this.ctx.model.Withdrew(withDrewEntity);
     await withDrewObj.save();
     return withdrewResult;
   }
@@ -219,41 +251,37 @@ class WeChatService extends Service {
   //   return result;
   // }
   async get_access_token() {
-    try {
-      const { isEmpty } = this.ctx.helper;
-      const end = DateTime.fromJSDate(new Date());
-      const appSystemSetting = await this.ctx.model.SystemSetting.findOne({}, {}, { sort: { created_at: -1 } });
-      if (isEmpty(appSystemSetting) ||
+    const { isEmpty } = this.ctx.helper;
+    const end = DateTime.fromJSDate(new Date());
+    const appSystemSetting = await this.ctx.model.SystemSetting.findOne({}, {}, { sort: { created_at: -1 } });
+    if (isEmpty(appSystemSetting) ||
                 isEmpty(appSystemSetting.accessToken) ||
                 end.diff(DateTime.fromJSDate(appSystemSetting.accessToken.updateTime)).as('hours') >= 2) {
-        const requestObj = {
-          secret: this.ctx.app.config.wechatConfig.secret,
-          grant_type: 'client_credential',
-          appid: this.ctx.app.config.wechatConfig.appid,
-        };
+      const requestObj = {
+        secret: this.ctx.app.config.wechatConfig.secret,
+        grant_type: 'client_credential',
+        appid: this.ctx.app.config.wechatConfig.appid,
+      };
 
-        const [ result_1 ] = await this.ctx.app.requestMethod(requestObj,
-          'GET', 'https://api.weixin.qq.com/cgi-bin/token');
-        console.log(result_1);
-        if (!this.ctx.helper.isEmpty(result_1.errcode)) {
-          this.ctx.throw(400, result_1.errmsg);
-        }
-        const settObj = {
-          updateTime: new Date(),
-          tokenStr: result_1.access_token,
-        };
-        const x = await this.ctx.model.SystemSetting.findOneAndUpdate({ _id: appSystemSetting._id }, { $set: { accessToken: settObj } }, {
-          upsert: true,
-          new: true,
-        });
+      const [ result_1 ] = await this.ctx.app.requestMethod(requestObj,
+        'GET', 'https://api.weixin.qq.com/cgi-bin/token');
 
-        return settObj.tokenStr;
+      if (!this.ctx.helper.isEmpty(result_1.errcode)) {
+        this.ctx.throw(400, result_1.errmsg);
       }
-      return appSystemSetting.accessToken.tokenStr;
+      const settObj = {
+        updateTime: new Date(),
+        tokenStr: result_1.access_token,
+      };
+      await this.ctx.model.SystemSetting.findOneAndUpdate({ _id: appSystemSetting._id }, { $set: { accessToken: settObj } }, {
+        upsert: true,
+        new: true,
+      });
 
-    } catch (e) {
-
+      return settObj.tokenStr;
     }
+    return appSystemSetting.accessToken.tokenStr;
+
   }
 
   async setToken() {

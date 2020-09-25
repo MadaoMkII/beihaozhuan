@@ -3,6 +3,7 @@ module.exports = app => {
   const mongoose = app.mongoose;
   const connection = app.mongooseDB.get('beihaozhuan');
   const goodSchema = new mongoose.Schema({
+    category: String,
     guestIP: String,
     desc: String,
     amount: Number,
@@ -39,6 +40,7 @@ module.exports = app => {
       if (doc.created_at) {
         ret.created_at = app.getLocalTime(doc.created_at);
       }
+      doc.amount = ret.amount / 100;
       delete ret.updated_at;
     },
   });

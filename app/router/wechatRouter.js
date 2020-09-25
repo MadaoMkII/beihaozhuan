@@ -7,7 +7,8 @@ module.exports = app => {
   //     controller[`systemSettingController`].setBannerGood);
   router.post('/wechat/getWithDrewByAdmin', app.middleware.authenticatedMiddleware('运营'),
     controller.wechatController.getWithDrewByAdmin);
-
+  router.get('/wechat/getWithdrewStatus', app.middleware.authenticatedMiddleware('用户'),
+    controller.wechatController.getWithdrewStatus);
 
   router.post('/wechat/getWithDrewByUser', app.middleware.authenticatedMiddleware('用户'),
     controller.wechatController.getWithDrewByUser);

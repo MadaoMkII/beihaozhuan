@@ -74,10 +74,19 @@ class wechatController extends baseController {
       url,
     });
   }
-
+  async getWithdrewStatus(ctx) {
+    try {
+      // await this.checkTimeInterval(0.5);
+      const settingArray = await ctx.service.wechatService.getWithdrewStatus();
+      this.success(settingArray);
+    } catch (e) {
+      console.log(e);
+      this.failure(e);
+    }
+  }
   async withdrew(ctx) {
     try {
-      await this.checkTimeInterval(0.5);
+      // await this.checkTimeInterval(0.5);
       const user = ctx.user;
       const [ condition ] = await this.cleanupRequestProperty('wechatRules.withdrewRule',
         'type');
@@ -93,12 +102,7 @@ class wechatController extends baseController {
       // if (!pass) {
       //   return this.success(msg, 'OK', 400);
       // }
-
-      const newBcoin = Number(ctx.user.Bcoins) - Number(option.amount * 100);
-      if (newBcoin < 0) {
-        return this.success('金币余额不足', 'OK', 400);
-      }
-
+      console.log(option);
       if (ctx.helper.isEmpty(option)) {
         return this.failure('输入type错误');
       }
@@ -108,7 +112,7 @@ class wechatController extends baseController {
 
       const ip = ctx.app.getIP(ctx.request);
       const partner_trade_no = 100 + ctx.helper.randomNumber(10);
-      const result = await ctx.service.wechatService.withdrew(option.amount, option.category, ip, partner_trade_no, newBcoin);
+      const result = await ctx.service.wechatService.withdrew(option.amount, option.desc, ip, partner_trade_no, condition.type);
       //
       // {
       //     "return_code": "SUCCESS",
@@ -143,7 +147,8 @@ class wechatController extends baseController {
 
 
       const urlQuery = url.parse(returnUrl, true).query;
-      const { code, state } = urlQuery;
+      const { code, state, redirect } = urlQuery;
+      console.log(redirect);
       let stateMessage = '',
         sourceFrom = '',
         inviteCode = '';
@@ -185,7 +190,7 @@ class wechatController extends baseController {
           location_jump = 'index';
         }
         ctx.status = 301;
-        ctx.redirect(`/${location_jump}`);
+        ctx.redirect(`/${location_jump}?redirect=${redirect}`);
         await this.ctx.service.userService.updateUser(user.uuid, {
           'userStatus.hasVerifyWechat': 'enable',
         });
@@ -215,7 +220,7 @@ class wechatController extends baseController {
           source = 'origin';
           state = '';
         }
-        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=${source}&state=${state}`;
+        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=${source}&state=${state}&redirect=${redirect}`;
         ctx.status = 301;
         ctx.redirect(url);
       }

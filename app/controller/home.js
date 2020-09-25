@@ -4,7 +4,9 @@ const Controller = require('./baseController');
 class HomeController extends Controller {
 
   async test(ctx) {
-let x = this.app.decrypt("a69ded101126994c7eab1e20d7883159");
+    const x = this.app.decrypt('a69ded101126994c7eab1e20d7883159');
+    const y = this.app.encrypt(900000);
+    console.log(y);
     this.success(x);
   }
   // let requestObj_1 = {
