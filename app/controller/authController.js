@@ -268,8 +268,13 @@ class authController extends Controller {
 
   async biefanle(ctx) {
     try {
+      const [ condition ] = await this.cleanupRequestProperty('userAccountController.biefanleRule',
+        'day');
+      if (!condition) {
+        return;
+      }
       const fs = require('fs');
-      const fileName = await ctx.service.excelService.getUserInfoExecl();
+      const fileName = await ctx.service.excelService.getUserInfoExecl(condition.day);
       ctx.status = 200;
       await ctx.downloader(fileName);
       await fs.unlinkSync(fileName);

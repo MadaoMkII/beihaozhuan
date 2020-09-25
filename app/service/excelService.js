@@ -171,11 +171,11 @@ class excelService extends BaseService {
     console.log(users);
     return users;
   }
-  async getUserInfoExecl() {
+  async getUserInfoExecl(day) {
     const XLSX = require('xlsx');
     const app = this.ctx.app;
     const resultData = [];
-    const users = await this.getUserList('昨日', {}, null);
+    const users = await this.getUserList(day, {}, null);
     users.forEach(user => {
       const element = {};
       // if (user.tel_number !== '13602012967') { return; }
