@@ -57,10 +57,9 @@ class excelService extends BaseService {
 
 
   async getUserList(day, condition, option) {
-    console.log(condition);
     const thisDay = this.getTimeQueryByPeriod(day);
-    const optionLimit = option ? { $limit: option.limit + option.skip } : {};
-    const optionSkip = option ? { $skip: option.skip } : {};
+    const optionLimit = !this.ctx.helper.isEmpty(option) ? { $limit: option.limit + option.skip } : { $limit: 100000 };
+    const optionSkip = !this.ctx.helper.isEmpty(option) ? { $skip: option.skip } : { $skip: 0 };
     const users = await this.ctx.model.UserAccount.aggregate([
 
       { $match: condition },
@@ -175,20 +174,14 @@ class excelService extends BaseService {
   async getUserInfoExecl() {
     const XLSX = require('xlsx');
     const app = this.ctx.app;
-
-
-    // const users = await ctx.model.UserAccount.find({ nickName: '老司机', balanceList:
-    //       { $elemMatch: { createTime: { $gte: yesterday } } } });
     const resultData = [];
-
-    const yesterday = this.getTimeQueryByPeriod('本日');
-    console.log(yesterday);
-    const users = await this.getUserList(yesterday);
+    const users = await this.getUserList('昨日', {}, null);
     users.forEach(user => {
       const element = {};
-      if (user.tel_number !== '13602012967') { return; }
-      element.今日收入 = this.ctx.helper.isEmpty(user.todayIncoming) ? 0 : user.todayIncoming;
+      // if (user.tel_number !== '13602012967') { return; }
       element.用户昵称 = user.nickName;
+      element.用户账号 = user.tel_number;
+      element.今日收入 = !this.ctx.helper.isEmpty(user.todayIncoming) ? user.todayIncoming : 0;
       element.金币余额 = app.decrypt(user.Bcoins);
       element.注册时间 = app.getLocalTimeForFileName(user.created_at);
       resultData.push(element);
@@ -203,16 +196,16 @@ class excelService extends BaseService {
       { wch: 10 },
       { wch: 10 },
     ];
-    // const workbook = XLSX.utils.book_new();
-    // const tempRowInfo = Array.from(rowInfo);
-    // tempRowInfo.push({ hpx: 20 });
-    // const worksheet = await XLSX.utils.json_to_sheet(resultData);
-    // worksheet['!cols'] = wsCols;
-    // worksheet['!rows'] = tempRowInfo;
-    // XLSX.utils.book_append_sheet(workbook, worksheet, '商品订单列表');
-    // const fileName = path.resolve(__dirname, `../public/file/${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
-    // XLSX.writeFile(workbook, fileName);
-    // return fileName;
+    const workbook = XLSX.utils.book_new();
+    const tempRowInfo = Array.from(rowInfo);
+    tempRowInfo.push({ hpx: 20 });
+    const worksheet = await XLSX.utils.json_to_sheet(resultData);
+    worksheet['!cols'] = wsCols;
+    worksheet['!rows'] = tempRowInfo;
+    XLSX.utils.book_append_sheet(workbook, worksheet, '商品订单列表');
+    const fileName = path.resolve(__dirname, `../public/file/${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
+    XLSX.writeFile(workbook, fileName);
+    return fileName;
   }
   async getUserInfoExecl_today() {
     const XLSX = require('xlsx');

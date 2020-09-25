@@ -175,7 +175,8 @@ class userAccount extends baseController {
             created_at: this.app.getLocalTime(e.created_at),
           };
         });
-        this.success(newResult);
+        const count = await this.getFindModelCount('UserAccount', condition);
+        this.success([ newResult, count ]);
       }
     } catch (e) {
       this.app.logger.error(e, ctx);

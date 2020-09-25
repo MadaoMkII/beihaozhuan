@@ -270,10 +270,9 @@ class authController extends Controller {
     try {
       const fs = require('fs');
       const fileName = await ctx.service.excelService.getUserInfoExecl();
-      // ctx.status = 200;
-      // await ctx.downloader(fileName);
-      // await fs.unlinkSync(fileName);
-      this.success();
+      ctx.status = 200;
+      await ctx.downloader(fileName);
+      await fs.unlinkSync(fileName);
     } catch (e) {
       this.app.logger.error(e, ctx);
       this.failure();
