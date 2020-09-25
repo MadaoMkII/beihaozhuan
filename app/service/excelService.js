@@ -1,9 +1,9 @@
 'use strict';
-const { Service } = require('egg');
+const BaseService = require('./baseService');
 const XLSX = require('xlsx');
 const path = require('path');
 
-class excelService extends Service {
+class excelService extends BaseService {
   async createExcel(dataArray) {
     const workbook = XLSX.utils.book_new();
     const rowInfo = [
@@ -55,18 +55,17 @@ class excelService extends Service {
     return fileName;
   }
 
-  async getUserInfoExecl() {
-    const XLSX = require('xlsx');
-    const app = this.ctx.app;
 
-
-    // const users = await ctx.model.UserAccount.find({ nickName: '老司机', balanceList:
-    //       { $elemMatch: { createTime: { $gte: yesterday } } } });
-    const resultData = [];
-
-    const yesterday = app.modifyDate('day', -1);
+  async getUserList(day, condition, option) {
+    console.log(condition);
+    const thisDay = this.getTimeQueryByPeriod(day);
+    const optionLimit = option ? { $limit: option.limit + option.skip } : {};
+    const optionSkip = option ? { $skip: option.skip } : {};
     const users = await this.ctx.model.UserAccount.aggregate([
-      // { $match: { nickName: '老司机' } },
+
+      { $match: condition },
+      optionLimit,
+      optionSkip,
       //
       // {
       //     $unwind: {
@@ -122,6 +121,7 @@ class excelService extends Service {
           realName: 1,
           Bcoins: 1,
           created_at: '$created_at',
+          userStatus: 1,
           balanceList: 1,
         },
       },
@@ -133,10 +133,11 @@ class excelService extends Service {
               as: 'item',
               cond: {
                 $and:
-                                    [
-                                      { $gte: [ '$$item.createTime', yesterday.startOf('day').toJSDate() ] },
-                                      { $lte: [ '$$item.createTime', yesterday.endOf('day').toJSDate() ] },
-                                    ],
+                    [
+                      { $gte: [ '$$item.createTime', thisDay.created_at.$gte ] },
+                      { $lte: [ '$$item.createTime', thisDay.created_at.$lte ] },
+                      { $eq: [ '$$item.income', '获得' ] },
+                    ],
               },
             },
           },
@@ -145,6 +146,7 @@ class excelService extends Service {
           nickName: 1,
           realName: 1,
           Bcoins: 1,
+          userStatus: 1,
           created_at: 1,
         },
       },
@@ -154,6 +156,7 @@ class excelService extends Service {
           preserveNullAndEmptyArrays: true,
         },
       },
+      // { $match: { '$items.income': '消费' } },
       {
         $group: {
           _id: '$uuid',
@@ -161,21 +164,35 @@ class excelService extends Service {
           tel_number: { $first: '$tel_number' },
           nickName: { $first: '$nickName' },
           Bcoins: { $first: '$Bcoins' },
+          userStatus: { $first: '$userStatus' },
           created_at: { $first: '$created_at' },
         },
       },
     ]);
+    console.log(users);
+    return users;
+  }
+  async getUserInfoExecl() {
+    const XLSX = require('xlsx');
+    const app = this.ctx.app;
 
+
+    // const users = await ctx.model.UserAccount.find({ nickName: '老司机', balanceList:
+    //       { $elemMatch: { createTime: { $gte: yesterday } } } });
+    const resultData = [];
+
+    const yesterday = this.getTimeQueryByPeriod('本日');
+    console.log(yesterday);
+    const users = await this.getUserList(yesterday);
     users.forEach(user => {
       const element = {};
-      element.用户电话 = user.tel_number;
-      element.用户昵称 = user.nickName;
+      if (user.tel_number !== '13602012967') { return; }
       element.今日收入 = this.ctx.helper.isEmpty(user.todayIncoming) ? 0 : user.todayIncoming;
+      element.用户昵称 = user.nickName;
       element.金币余额 = app.decrypt(user.Bcoins);
       element.注册时间 = app.getLocalTimeForFileName(user.created_at);
       resultData.push(element);
     });
-
     const rowInfo = [
       { hpx: 30 },
     ];
@@ -186,16 +203,16 @@ class excelService extends Service {
       { wch: 10 },
       { wch: 10 },
     ];
-    const workbook = XLSX.utils.book_new();
-    const tempRowInfo = Array.from(rowInfo);
-    tempRowInfo.push({ hpx: 20 });
-    const worksheet = await XLSX.utils.json_to_sheet(resultData);
-    worksheet['!cols'] = wsCols;
-    worksheet['!rows'] = tempRowInfo;
-    XLSX.utils.book_append_sheet(workbook, worksheet, '商品订单列表');
-    const fileName = path.resolve(__dirname, `../public/file/${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
-    XLSX.writeFile(workbook, fileName);
-    return fileName;
+    // const workbook = XLSX.utils.book_new();
+    // const tempRowInfo = Array.from(rowInfo);
+    // tempRowInfo.push({ hpx: 20 });
+    // const worksheet = await XLSX.utils.json_to_sheet(resultData);
+    // worksheet['!cols'] = wsCols;
+    // worksheet['!rows'] = tempRowInfo;
+    // XLSX.utils.book_append_sheet(workbook, worksheet, '商品订单列表');
+    // const fileName = path.resolve(__dirname, `../public/file/${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
+    // XLSX.writeFile(workbook, fileName);
+    // return fileName;
   }
   async getUserInfoExecl_today() {
     const XLSX = require('xlsx');

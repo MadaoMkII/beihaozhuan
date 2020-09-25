@@ -150,19 +150,32 @@ class userAccount extends baseController {
         'tel_number', 'hasPaid', 'nickName', 'activity', 'hasVerifyWechat', 'unit', 'page');
       if (condition !== false) {
         this.deepCleanUp(condition, 'userStatus', 'activity', 'hasPaid', 'hasVerifyWechat');
-        const [ result, count ] = await this.ctx.service.userService.getManyUser(condition,
-          option, {
-            created_at: 1,
-            Bcoins: 1,
-            tel_number: 1,
-            loginTimes: 1,
-            nickName: 1,
-            avatar: 1,
-            balanceList: 1,
-            userStatus: 1,
-            uuid: 1,
-          });
-        this.success([ result, count ]);
+        // const [ result, count ] = await this.ctx.service.userService.getManyUser(condition,
+        //   option, {
+        //     created_at: 1,
+        //     Bcoins: 1,
+        //     tel_number: 1,
+        //     loginTimes: 1,
+        //     nickName: 1,
+        //     avatar: 1,
+        //     balanceList: 1,
+        //     userStatus: 1,
+        //     uuid: 1,
+        //   });
+        const result = await ctx.service.excelService.getUserList('本日', condition, option);
+        console.log(result);
+        const newResult = result.map(e => {
+
+          return {
+            tel_number: e.tel_number,
+            nickName: e.nickName,
+            todayIncoming: e.todayIncoming,
+            Bcoins: this.app.decrypt(e.Bcoins),
+            userStatus: e.userStatus,
+            created_at: this.app.getLocalTime(e.created_at),
+          };
+        });
+        this.success(newResult);
       }
     } catch (e) {
       this.app.logger.error(e, ctx);

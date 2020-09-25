@@ -54,6 +54,10 @@ class BaseService extends Service {
         thisPeriod.endTime = dataTimeOfReferenceDay.endOf('day').toJSDate();
         thisPeriod.beginTime = dataTimeOfReferenceDay.startOf('day').toJSDate();
         break;
+      case '昨日':
+        thisPeriod.endTime = dataTimeOfReferenceDay.minus({ day: 1 }).endOf('day').toJSDate();
+        thisPeriod.beginTime = dataTimeOfReferenceDay.minus({ day: 1 }).startOf('day').toJSDate();
+        break;
       default:
         this.ctx.throw(400, '输入period错误');
         break;
