@@ -202,7 +202,7 @@ class excelService extends BaseService {
     const worksheet = await XLSX.utils.json_to_sheet(resultData);
     worksheet['!cols'] = wsCols;
     worksheet['!rows'] = tempRowInfo;
-    XLSX.utils.book_append_sheet(workbook, worksheet, '商品订单列表');
+    XLSX.utils.book_append_sheet(workbook, worksheet, '用户信息列表');
     const fileName = path.resolve(__dirname, `../public/file/${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
     XLSX.writeFile(workbook, fileName);
     return fileName;

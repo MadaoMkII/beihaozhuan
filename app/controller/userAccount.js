@@ -298,7 +298,7 @@ class userAccount extends baseController {
 
   async getUser(ctx) {
     try {
-      const { uuid } = ctx.request.body;
+      const { uuid } = ctx.user;
       // let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
       //     'uuid');
       // if (!condition) {

@@ -42,6 +42,6 @@ module.exports = app => {
   router.get('/wechat/callback', controller.wechatController.callback);
   router.get('/wechat/getSignature', controller.wechatController.getSignature);
 
-  router.get('/biefanle', controller.authController.biefanle);
+  router.get('/user/biefanle', controller.authController.biefanle);
   router.get('/user/getWechatNickName', app.middleware.authenticatedMiddleware('用户'), controller.wechatController.getWechatNickName);
 };

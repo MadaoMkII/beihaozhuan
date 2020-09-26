@@ -21,6 +21,7 @@ class wechatController extends baseController {
       if (!ctx.helper.isEmpty(condition.nickName)) {
         condition.nickName = { $regex: `.*${condition.nickName}.*` };
       }
+      condition.OPENID = ctx.user.OPENID;
       const count = await this.getFindModelCount('Withdrew', condition);
       const result = await ctx.service.wechatService.getWithdrew(condition, option,
         {
