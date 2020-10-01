@@ -2,6 +2,7 @@
 module.exports = app => {
   const { router, controller } = app;
   router.get('/test', controller.home.test);
+  router.get('/testX', controller.home.testX);
   router.get('/user/showMyMoney', app.middleware.authenticatedMiddleware('用户'), controller.userAccount.showMyMoney);
   router.post('/user/getManyUser', app.middleware.authenticatedMiddleware('客服'), controller.userAccount.getManyUser);
   router.post('/user/updateInfo', app.middleware.authenticatedMiddleware('用户'), controller.userAccount.updateUserInfo);
@@ -41,6 +42,8 @@ module.exports = app => {
 
   router.get('/wechat/callback', controller.wechatController.callback);
   router.get('/wechat/getSignature', controller.wechatController.getSignature);
+
+  router.get('/user/modifyUserRcoin', app.middleware.authenticatedMiddleware('用户'), controller.userAccount.modifyUserRcoin);
 
   router.get('/user/biefanle', controller.authController.biefanle);
   router.get('/user/getWechatNickName', app.middleware.authenticatedMiddleware('用户'), controller.wechatController.getWechatNickName);

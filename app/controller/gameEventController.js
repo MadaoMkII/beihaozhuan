@@ -25,7 +25,6 @@ class GameEventController extends Controller {
       const result = await ctx.service.gameEventService.getGameProcessByUUid(condition);
       this.success(result);
     } catch (e) {
-      console.log(e);
       this.failure(e);
     }
   }

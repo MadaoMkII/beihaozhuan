@@ -48,7 +48,7 @@ class WeChatService extends Service {
 
     const [ result_3 ] = await this.app.requestMethod(requestObj_3,
       'GET', 'https://api.weixin.qq.com/cgi-bin/user/info');
-
+    console.log(result_3);
     if (result_3.errcode) {
       return;
     }

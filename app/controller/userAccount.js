@@ -120,6 +120,20 @@ class userAccount extends baseController {
       this.failure();
     }
   }
+  async modifyUserRcoin(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('userAccountController.modifyUserRcoinRule',
+        'tel_number', 'amount', 'content');
+      if (!condition) {
+        return;
+      }
+      await this.ctx.service.userService.modifyUserRcoin(condition);
+      this.success();
+    } catch (e) {
+      this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
 
   async updateUserInfo(ctx) {
     try {
@@ -167,6 +181,7 @@ class userAccount extends baseController {
         const newResult = result.map(e => {
 
           return {
+            uuid: e.uuid,
             tel_number: e.tel_number,
             nickName: e.nickName,
             todayIncoming: e.todayIncoming,
@@ -298,13 +313,12 @@ class userAccount extends baseController {
 
   async getUser(ctx) {
     try {
-      const { uuid } = ctx.user;
-      // let [condition,] = await this.cleanupRequestProperty('userAccountController.getManagementUserInfo',
-      //     'uuid');
-      // if (!condition) {
-      //     return;
-      // }
-      const result = await ctx.service.userService.getUser({ uuid }, { uuid: 0, password: 0 });
+      const [ condition ] = await this.cleanupRequestProperty('userAccountController.setUserStatusRule',
+        'uuid');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.userService.getUser({ uuid: condition.uuid }, { uuid: 0, password: 0 });
       this.success(result);
     } catch (e) {
       this.app.logger.error(e, ctx);

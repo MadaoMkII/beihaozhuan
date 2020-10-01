@@ -1,3 +1,5 @@
+'use strict';
+
 const rule = {
   activity: [
     { required: false, message: 'role不能为空' },

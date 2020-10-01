@@ -165,10 +165,10 @@ class excelService extends BaseService {
           Bcoins: { $first: '$Bcoins' },
           userStatus: { $first: '$userStatus' },
           created_at: { $first: '$created_at' },
+          uuid: { $first: '$uuid' },
         },
       },
     ]);
-    console.log(users);
     return users;
   }
   async getUserInfoExecl(day) {

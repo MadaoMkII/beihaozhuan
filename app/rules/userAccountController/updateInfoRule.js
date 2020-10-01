@@ -1,3 +1,5 @@
+'use strict';
+
 const rule = {
   gender: [
     { required: false, message: '不能为空' },

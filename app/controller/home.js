@@ -2,7 +2,17 @@
 const Controller = require('./baseController');
 
 class HomeController extends Controller {
+  async testX(ctx) {
+    try {
+      // ctx.throw(500, '测试日志');
+      await this.service.autoBackUpService.dbAutoBackUp();
+      this.success();
+    } catch (e) {
+      console.log(e);
+      this.failure(e);
+    }
 
+  }
   async test(ctx) {
     const x = this.app.decrypt('a69ded101126994c7eab1e20d7883159');
     const y = this.app.encrypt(900000);

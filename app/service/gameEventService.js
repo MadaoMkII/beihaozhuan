@@ -753,16 +753,27 @@ class gameEventService extends BaseService {
         setter['content.$.done'] = true;
         setter.status = '已完成';
       } else {
+        const oldProcess = await this.ctx.model.GameProcess.findOne({
+          category: oldAuditUploadRecord.category,
+          tel_number: oldAuditUploadRecord.tel_number,
+          'content.uuid': oldAuditUploadRecord.missionUUid,
+        });
         const gameSetting = gameEvent.gameSetting.find(e => e.uuid === oldAuditUploadRecord.missionUUid);
-        if (gameSetting.subsequent_A.available && gameSetting.subsequent_B.available && oldAuditUploadRecord.sub_title === 'B') {
-          setter['content.$.done'] = true;
-        }
-        if (gameSetting.subsequent_A.available && !gameSetting.subsequent_B.available && oldAuditUploadRecord.sub_title === 'A') {
-          setter['content.$.done'] = true;
-        }
+        const gameProcess = oldProcess.content.find(e => e.uuid === oldAuditUploadRecord.missionUUid);
         if (!gameSetting.subsequent_A.available && !gameSetting.subsequent_B.available && oldAuditUploadRecord.sub_title === 'try') {
           setter['content.$.done'] = true;
         }
+        if (gameProcess.complete_mission_try && gameProcess.complete_mission_B && oldAuditUploadRecord.sub_title === 'A') {
+          setter['content.$.done'] = true;
+        }
+        if (gameProcess.complete_mission_try && gameProcess.complete_mission_A && oldAuditUploadRecord.sub_title === 'B') {
+          setter['content.$.done'] = true;
+        }
+
+        // if (gameSetting.subsequent_A.available && !gameSetting.subsequent_B.available && oldAuditUploadRecord.sub_title === 'A') {
+        //   setter['content.$.done'] = true;
+        // }
+
       }
 
       const newGameProcess = await this.ctx.model.GameProcess.findOneAndUpdate({

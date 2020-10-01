@@ -47,7 +47,7 @@ class authController extends Controller {
 
       if (ctx.helper.isEmpty(userResult.userStatus) ||
                 (ctx.helper.isEmpty(userResult.userStatus.activity) ||
-                    userResult.userStatus.activity === 'disable')) {
+                    String(userResult.userStatus.activity) === 'disable')) {
         return this.failure('这个用户已经被停权', 4003, 400);
       }
       if (userResult || verifyFlag) {
@@ -115,7 +115,7 @@ class authController extends Controller {
       if (!this.ctx.helper.isEmpty(result.registerMission) &&
                 !this.ctx.helper.isEmpty(result.registerMission.activity) &&
                 !this.ctx.helper.isEmpty(result.registerMission.reward)) {
-        initialBcoin = result.registerMission.activity !== 'disable' ? result.registerMission.reward : 0;
+        initialBcoin = String(result.registerMission.activity) !== 'disable' ? result.registerMission.reward : 0;
       } else {
         initialBcoin = 0;
       }
@@ -175,7 +175,7 @@ class authController extends Controller {
       if (!this.ctx.helper.isEmpty(result.registerMission) &&
           !this.ctx.helper.isEmpty(result.registerMission.activity) &&
           !this.ctx.helper.isEmpty(result.registerMission.reward)) {
-        initialBcoin = result.registerMission.activity === 'disable' ? 0 : result.registerMission.reward;
+        initialBcoin = String(result.registerMission.activity) === 'disable' ? 0 : result.registerMission.reward;
       } else {
         initialBcoin = 0;
       }

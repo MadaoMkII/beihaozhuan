@@ -1,8 +1,8 @@
 'use strict';
-const Service = require('egg').Service;
+const BaseService = require('./baseService');
 require('moment-timezone');
 
-class UserService extends Service {
+class UserService extends BaseService {
 
   async setUserBcionChange(user_uuid, category, income, amount, tempBcoin) {
     const newBcionChange = {
@@ -135,6 +135,24 @@ class UserService extends Service {
     return [ slicedArray, count ];
   }
 
+  async modifyUserRcoin(condition) {
+    const user = await this.ctx.model.UserAccount.findOne({ tel_number: condition.tel_number });
+    if (this.app.isEmpty(user)) {
+      this.ctx.throw(400, '找不到该用户');
+    }
+    const newMoney = Number(user.Bcoins) + Number(condition.amount);
+    console.log(newMoney);
+    const content = condition.content ? condition.content : '活动奖励-人工设置';
+    let income;
+    if (condition.amount > 0) {
+      income = '获得';
+    } else {
+      income = '消费';
+    }
+    await this.dataIncrementRecord(content, condition.amount, 'bcoin', '活动');
+    await this.setUserBcionChange(user.uuid, content, income, condition.amount, newMoney);
+
+  }
   async getManyUser(conditions, option, project = {}) {
     if (!this.ctx.helper.isEmpty(conditions.nickName)) {
       conditions.nickName = { $regex: `.*${conditions.nickName}.*` };

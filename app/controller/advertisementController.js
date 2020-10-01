@@ -56,7 +56,7 @@ class advertisementController extends Controller {
       // const promise_4 = ctx.service.userService.changeBcoin(ctx.user._id, newBcoin + '');
       this.success();
 
-      ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '看一个广告');
+      // ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '看一个广告');
       ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '每周看广告');
       ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '每日看广告');
       ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '每日看广告_高级');

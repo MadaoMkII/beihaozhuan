@@ -1,3 +1,5 @@
+'use strict';
+
 const rule = {
   role: [
     { required: true, message: 'role不能为空' },

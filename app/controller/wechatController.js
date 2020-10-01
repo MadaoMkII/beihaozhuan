@@ -7,7 +7,10 @@ class wechatController extends baseController {
 
   async getWechatNickName(ctx) {
     const name = await ctx.service.wechatService.getRealNickName();
-    this.success(name.nickname);
+    if (!ctx.app.isEmpty(name)) {
+      return this.success(name.nickname);
+    }
+    this.success();
   }
 
 
@@ -103,7 +106,6 @@ class wechatController extends baseController {
       // if (!pass) {
       //   return this.success(msg, 'OK', 400);
       // }
-      console.log(option);
       if (ctx.helper.isEmpty(option)) {
         return this.failure('输入type错误');
       }
@@ -149,7 +151,7 @@ class wechatController extends baseController {
 
       const urlQuery = url.parse(returnUrl, true).query;
       const { code, state, redirect } = urlQuery;
-      console.log(redirect);
+      console.log('callback');
       let stateMessage = '',
         sourceFrom = '',
         inviteCode = '';
@@ -175,8 +177,6 @@ class wechatController extends baseController {
 
       const [ result_2 ] = await this.requestMethod(requestObj_2,
         'GET', 'https://api.weixin.qq.com/sns/oauth2/access_token');
-
-
       if (!ctx.helper.isEmpty(result_2.errcode)) {
         ctx.throw(405, result_2.errmsg);
       }
@@ -203,6 +203,7 @@ class wechatController extends baseController {
         };
         const [ result_3 ] = await this.requestMethod(requestObj_3,
           'GET', 'https://api.weixin.qq.com/sns/userinfo');
+        console.log(result_3);
         if (result_3.errcode) {
           return;
         }
