@@ -6,7 +6,7 @@ class advertisementController extends Controller {
   async checkAdvertisement(ctx) {
     try {
       const [ advertisement ] = await this.cleanupRequestProperty('advertisementRules.checkAdvRule',
-        'sign', 'uuid', 'userUUid', 'timeStamp');
+        'sign', 'userUUid', 'uuid', 'timeStamp');
       if (!advertisement) {
         return;
       }
@@ -44,16 +44,24 @@ class advertisementController extends Controller {
       if (ctx.helper.isEmpty(advertisementObj)) {
         return this.failure('找不到目标广告', 4041, 400);
       }
-      const promise_1 = ctx.service.analyzeService.recordAdvIncrease(advertisementObj._id, userObj._id, 1,
-        'close');
-      const promise_2 = ctx.service.analyzeService.dataIncrementRecord('广告收入',
-        advertisementObj.reward, 'bcoin', '广告');
+      const promiseArray = [];
+      const promise_1 = this.ctx.service.userService.modifyUserRcoin({
+        tel_number: ctx.user.tel_number,
+        amount: Number(advertisementObj.reward),
+        content: '广告收入',
+        type: '广告',
+        _id: advertisementObj._id,
+      });
+      // const promise_1 = ctx.service.analyzeService.recordAdvIncrease(advertisementObj._id, userObj._id, 1,
+      //   'close');
+      // const promise_2 = ctx.service.analyzeService.dataIncrementRecord('广告收入',
+      //   advertisementObj.reward, 'bcoin', '广告');
+      //
+      // const newBcoin = Number(ctx.user.Bcoins) + Number(advertisementObj.reward);
+      // const promise_3 = ctx.service.userService.setUserBcionChange(userObj.uuid, '广告收入',
+      //   '获得', advertisementObj.reward, newBcoin);
 
-      const newBcoin = Number(ctx.user.Bcoins) + Number(advertisementObj.reward);
-      const promise_3 = ctx.service.userService.setUserBcionChange(userObj.uuid, '广告收入',
-        '获得', advertisementObj.reward, newBcoin);
 
-      // const promise_4 = ctx.service.userService.changeBcoin(ctx.user._id, newBcoin + '');
       this.success();
 
       // ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '看一个广告');
@@ -61,7 +69,7 @@ class advertisementController extends Controller {
       ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '每日看广告');
       ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '每日看广告_高级');
       // ctx.app.eventEmitter.emit(`normalMissionCount`, ctx.user._id, `看一些广告`); //以后需要动态配置 任务没有开启不需要监听器
-      promiseArray.push(promise_1, promise_2, promise_3);
+      promiseArray.push(promise_1);
       Promise.all(promiseArray).catch(error => {
         ctx.throw(500, error);
       });

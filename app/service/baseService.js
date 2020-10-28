@@ -66,29 +66,29 @@ class BaseService extends Service {
     return returnValue;
   }
 
-  async dataIncrementRecord(content, amount, type, category) {
-
-    const date = this.getAbsoluteDate(true);
-    const res = await this.ctx.model.DataAnalyze.findOneAndUpdate({
-      absoluteDate: date,
-      content,
-      type, category,
-    }, { $inc: { amount } }, { upsert: true, new: true });
-
-    console.log(res);
-
-  }
-  async setUserBcionChange(tel_number, category, income, amount, tempBcoin) {
-    const newBcionChange = {
-      category,
-      income,
-      amount,
-      createTime: new Date(), // 必须加入那些代码
-    };
-    return this.ctx.model.UserAccount.findOneAndUpdate({ tel_number },
-      { $push: { balanceList: newBcionChange }, $set: { Bcoins: tempBcoin } }, { new: true });
-
-  }
+  // async dataIncrementRecord(content, amount, type, category, tel_number) {
+  //
+  //   const date = this.getAbsoluteDate(true);
+  //   const res = await this.ctx.model.DataAnalyze.findOneAndUpdate({
+  //     absoluteDate: date,
+  //     content,
+  //     type, category, tel_number,
+  //   }, { $inc: { amount } }, { upsert: true, new: true });
+  //
+  //   console.log(res);
+  //
+  // }
+  // async setUserBcionChange(tel_number, category, income, amount, tempBcoin) {
+  //   const newBcionChange = {
+  //     category,
+  //     income,
+  //     amount,
+  //     createTime: new Date(), // 必须加入那些代码
+  //   };
+  //   return this.ctx.model.UserAccount.findOneAndUpdate({ tel_number },
+  //     { $push: { balanceList: newBcionChange }, $set: { Bcoins: tempBcoin } }, { new: true });
+  //
+  // }
 }
 
 module.exports = BaseService;

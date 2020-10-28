@@ -34,7 +34,7 @@ exports.validatePlus = {
   package: 'egg-validate-plus',
 };
 exports.alinode = {
-  enable: true,
+  enable: process.platform !== 'win32',
   package: 'egg-alinode',
 };
 exports.downloader = {

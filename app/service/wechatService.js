@@ -188,10 +188,17 @@ class WeChatService extends Service {
     const withdrewResult = await parser.parseStringPromise(result);
     if (!this.ctx.helper.isEmpty(withdrewResult) && withdrewResult.result_code !== 'FAIL') {
       console.log('OK');
-      await this.ctx.service.analyzeService.dataIncrementRecord('提现',
-        -amount, 'bcoin', '提现');
-      await this.ctx.service.userService.setUserBcionChange(user.uuid, '提现',
-        '消费', -amount, newBcoin);
+      //   await this.ctx.service.analyzeService.dataIncrementRecord('提现',
+      //     -amount, 'bcoin', '提现');
+      //   await this.ctx.service.userService.setUserBcionChange(user.uuid, '提现',
+      //     '消费', -amount, newBcoin);
+      // }
+      await this.ctx.service.userService.modifyUserRcoin({
+        tel_number: user.tel_number,
+        amount: Number(amount.reward),
+        content: '提现',
+        type: '提现',
+      });
     }
     const withDrewEntity = {
       category,

@@ -36,6 +36,8 @@ module.exports = app => {
     token: { type: mongoose.Schema.Types.Mixed },
     access_token: { tokenStr: String, createTime: Date },
     withDrewSetting: [ withDrewSetting ],
+    rewardPercent: { type: Number, default: 0.5 },
+    gameEventReward: [{ category: String, amount: Number }],
   }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   });

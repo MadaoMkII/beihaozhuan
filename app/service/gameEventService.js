@@ -434,12 +434,18 @@ class gameEventService extends BaseService {
       category: condition.category },
     { $set: { complete_mission_watchVideo: true }, $inc: { currentIncoming: oldGameProcess.amount_mission_watchVideo } });
     const increaseAmount = oldGameProcess.amount_mission_watchVideo;
-    const user = await this.ctx.model.UserAccount.findOne({ tel_number });
-    const newMoney = Number(user.Bcoins) + increaseAmount;
-    await this.dataIncrementRecord(`活动奖励-${oldGameProcess.category}-首次观看视频奖励`, increaseAmount, 'bcoin', '活动');
-    await this.setUserBcionChange(tel_number,
-      `活动奖励-${oldGameProcess.category}-首次观看视频奖励`,
-      '获得', increaseAmount, newMoney);
+
+    await this.ctx.service.userService.modifyUserRcoin({
+      tel_number,
+      amount: Number(increaseAmount),
+      content: `活动奖励-${oldGameProcess.category}-首次观看视频奖励`,
+      type: '活动',
+    });
+
+    // await this.dataIncrementRecord(`活动奖励-${oldGameProcess.category}-首次观看视频奖励`, increaseAmount, 'bcoin', '活动');
+    // await this.setUserBcionChange(tel_number,
+    //   `活动奖励-${oldGameProcess.category}-首次观看视频奖励`,
+    //   '获得', increaseAmount, newMoney);
 
   }
   async initialGameEventByStep(condition) {
@@ -784,7 +790,7 @@ class gameEventService extends BaseService {
       { $set: setter, $inc: { currentIncoming: oldAuditUploadRecord.increaseAmount } }, { new: true });
 
       const newContent = newGameProcess.content.find(e => e.done === false);
-      if (this.isEmpty(newContent)) {
+      if (this.isEmpty(newContent) || (newGameProcess.currentIncoming >= newGameProcess.requiredIncoming)) {
         await this.ctx.model.GameProcess.updateOne({
           category: oldAuditUploadRecord.category,
           tel_number: oldAuditUploadRecord.tel_number,
@@ -792,23 +798,22 @@ class gameEventService extends BaseService {
         },
         { $set: { status: '已完成' } });
       }
-      if (newGameProcess.currentIncoming >= newGameProcess.requiredIncoming) {
-        await this.ctx.model.GameProcess.updateOne({
-          category: oldAuditUploadRecord.category,
-          tel_number: oldAuditUploadRecord.tel_number,
-          'content.uuid': oldAuditUploadRecord.missionUUid,
-        }, { $set: { status: '已完成' } });
-      }
-
 
       const user = await this.ctx.model.UserAccount.findOne({ tel_number: oldAuditUploadRecord.tel_number });
-      const newMoney = Number(user.Bcoins) + oldAuditUploadRecord.increaseAmount;
+      // const newMoney = Number(user.Bcoins) + oldAuditUploadRecord.increaseAmount;
 
       await this.ctx.model.AuditUploadRecord.updateOne({ uuid: condition.uuid }, { $set: { status: '审核通过' } });
-      await this.dataIncrementRecord(`活动奖励-${oldAuditUploadRecord.category}-${oldAuditUploadRecord.name}`, oldAuditUploadRecord.increaseAmount, 'bcoin', '活动');
-      await this.setUserBcionChange(oldAuditUploadRecord.tel_number,
-        `活动奖励-${oldAuditUploadRecord.category}-${oldAuditUploadRecord.name}`,
-        '获得', oldAuditUploadRecord.increaseAmount, newMoney);
+      // await this.dataIncrementRecord(`活动奖励-${oldAuditUploadRecord.category}-${oldAuditUploadRecord.name}`, oldAuditUploadRecord.increaseAmount, 'bcoin', '活动');
+      // await this.setUserBcionChange(oldAuditUploadRecord.tel_number,
+      //   `活动奖励-${oldAuditUploadRecord.category}-${oldAuditUploadRecord.name}`,
+      //   '获得', oldAuditUploadRecord.increaseAmount, newMoney);
+
+      await this.ctx.service.userService.modifyUserRcoin({
+        tel_number: user.user.tel_number,
+        amount: Number(oldAuditUploadRecord.increaseAmount),
+        content: `活动奖励-${oldAuditUploadRecord.category}-${oldAuditUploadRecord.name}`,
+        type: '活动',
+      });
     } else {
       await this.ctx.model.AuditUploadRecord.updateOne({ uuid: condition.uuid }, { $set: { status: '审核未通过' } });
     }

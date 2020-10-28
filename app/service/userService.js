@@ -122,19 +122,95 @@ class UserService extends BaseService {
   }
 
   async getMyTeam(user_uuid, option) {
-    const result = await this.ctx.model.UserAccount.findOne({ uuid: user_uuid }, { referrals: 1 }).populate({
-      path: 'referrals',
-      model: this.ctx.model.UserAccount,
-      select: 'nickName -_id created_at avatar tel_number',
-    });
-    if (this.ctx.helper.isEmpty(result)) {
-      return [[], 0 ];
+    const result = await this.ctx.model.UserAccount.findOne({ uuid: user_uuid });
+    console.log(user_uuid);
+    const userAmount = await this.ctx.model.UserAccount.aggregate([
+
+      { $match: { uuid: user_uuid } },
+      { $project: {
+        tel_number: 1,
+        balanceList: 1,
+      } },
+      { $unwind: '$balanceList' },
+      { $project: {
+        tel_number: 1,
+        amount: '$balanceList.amount',
+        category: '$balanceList.category',
+      } },
+      { $match: { category: '活动奖励-邀请返利' } },
+      { $group: {
+        _id: '$category',
+        totalAmount: { $sum: '$amount' },
+      } },
+    ]);
+    const totalAmount = 0;
+    if (!this.app.isEmpty(userAmount) && !this.app.isEmpty(userAmount.totalAmount)) {
+      totalAmount = userAmount.totalAmount;
     }
     const count = result.referrals.length;
     const slicedArray = this.ctx.helper.sliceArray(result.referrals, option);
-    return [ slicedArray, count ];
-  }
+    let membersInfo = await this.ctx.model.UserAccount.aggregate([
+      { $match: { _id: { $in: slicedArray } } },
+      { $project: {
+        tel_number: 1,
+        avatar: 1,
+        created_at: 1,
+        nickName: 1,
+        balanceList: 1,
+      },
+      },
+      { $unwind: '$balanceList' },
+      { $project: {
+        tel_number: 1,
+        avatar: 1,
+        created_at: 1,
+        nickName: 1,
+        amount: '$balanceList.amount',
+      } },
+      { $match: { amount: { $gte: 0 } } },
+      { $group: {
+        _id: '$tel_number',
+        amount: { $sum: '$amount' },
+        tel_number: { $first: '$tel_number' },
+        avatar: { $first: '$avatar' },
+        created_at: { $first: '$created_at' },
+        nickName: { $first: '$nickName' },
+      } },
+    ]);
+    membersInfo = membersInfo.map(element => {
+      return {
+        tel_number: element._id,
+        avatar: element.avatar,
+        created_at: this.app.getLocalTime(element.created_at),
+        nickName: element.nickName,
+        amount: element.amount,
+      };
+    });
+    console.log(membersInfo);
+    // const result = await this.ctx.model.UserAccount.findOne({ uuid: user_uuid }, { referrals: 1 }).populate({
+    //   path: 'referrals',
+    //   model: this.ctx.model.UserAccount,
+    //   select: 'nickName -_id created_at avatar tel_number',
+    // });
+    // if (this.ctx.helper.isEmpty(result)) {
+    //   return [[], 0 ];
+    // }
 
+
+    return { data: membersInfo, count, totalAmount };
+  }
+  async referrerReward(userID, reward) {
+    const referrer = await this.ctx.model.UserAccount.findOne({ _id: userID });
+    if (this.app.isEmpty(referrer)) {
+      this.ctx.throw(400, '找不到该用户');
+    }
+
+    const newMoney = Number(referrer.Bcoins) + Number(reward);
+    const content = '活动奖励-邀请返利';
+    const category = '返利';
+    await this.ctx.service.analyzeService.dataIncrementRecord(content, reward, 'bcoin', category);
+    await this.setUserBcionChange(referrer.uuid, content, '获得', reward, newMoney);
+  }
   async modifyUserRcoin(condition) {
     const user = await this.ctx.model.UserAccount.findOne({ tel_number: condition.tel_number });
     if (this.app.isEmpty(user)) {
@@ -142,15 +218,24 @@ class UserService extends BaseService {
     }
     const newMoney = Number(user.Bcoins) + Number(condition.amount);
     console.log(newMoney);
-    const content = condition.content ? condition.content : '活动奖励-人工设置';
+    const content = !this.app.isEmpty(condition.content) ? condition.content : '活动奖励-人工设置';
+    const category = !this.app.isEmpty(condition.category) ? condition.category : '活动';
     let income;
     if (condition.amount > 0) {
       income = '获得';
     } else {
       income = '消费';
     }
-    await this.dataIncrementRecord(content, condition.amount, 'bcoin', '活动');
+    await this.ctx.service.analyzeService.dataIncrementRecord(content, condition.amount, 'bcoin', category);
     await this.setUserBcionChange(user.uuid, content, income, condition.amount, newMoney);
+    if (condition.category === '广告') {
+      await this.ctx.service.analyzeService.recordAdvIncrease(condition._id, user._id, 1, 'close');
+    }
+    if (!this.app.isEmpty(user.referrer)) {
+      const reward = 0.5 * Number(condition.amount);// TODO
+      await this.referrerReward(user.referrer, reward);
+    }
+
 
   }
   async getManyUser(conditions, option, project = {}) {
@@ -216,18 +301,6 @@ class UserService extends BaseService {
     return [];
   }
 
-  // async changeBcoin(_id, newBasin_unencrypted) {
-  //   await this.setUser(_id, { Bcoins: newBasin_unencrypted });
-  // }
-
-
-  // {$set: {Bcoins: newBasin_unencrypted}, $push: {missionTrackers: missionEvent}}, {new: true});
-  //     async changeUserMoney(_id, newBasin_unencrypted, missionEvent) {
-  //         if (!missionEvent) {
-  //             this.ctx.throw(400, `missionEvent missing!`);
-  //         }
-  //         this.setUser(_id, {Bcoins: newBasin_unencrypted}, {missionTrackers: missionEvent})
-  //     }
   async setUserStatus(id, setObj, pushObj) {
     return this.ctx.model.UserAccount.findOneAndUpdate({ _id: id },
       { $set: setObj, $push: pushObj }, { new: true });

@@ -35,16 +35,16 @@ module.exports = app => {
     ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/gift.html'));
     // ctx.redirect('/index.html')
   });
-  router.get('/index', async ctx => {
-    ctx.response.type = 'html';
-    ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
-    // ctx.redirect('/index.html')
-  });
-  router.get('/admin', async ctx => {
-    ctx.response.type = 'html';
-    ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/admin.html'));
-    // ctx.redirect('/index.html')
-  });
+  // router.get('/index', async ctx => {
+  //   ctx.response.type = 'html';
+  //   ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/index.html'));
+  //   // ctx.redirect('/index.html')
+  // });
+  // router.get('/admin', async ctx => {
+  //   ctx.response.type = 'html';
+  //   ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/admin.html'));
+  //   // ctx.redirect('/index.html')
+  // });
   // router.get('/', async (ctx) => {
   //     ctx.response.type = 'html';
   //     ctx.body = fs.readFileSync(path.resolve(__dirname, '../public/prepare.html'));

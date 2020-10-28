@@ -5,6 +5,7 @@ module.exports = app => {
   const analyzeData = new mongoose.Schema({
     absoluteDate: Date,
     amount: Number,
+    tel_number: String,
     content: {
       type: String,
     },

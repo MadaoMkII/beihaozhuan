@@ -54,7 +54,7 @@ class SystemSettingService extends Service {
 
     const lastSettingObj = await this.getSetting();
     const settingObj = {};
-
+    console.log(settingEntity);
     Object.keys(lastSettingObj._doc).forEach(key => {
       settingObj[key] = this.setValue(lastSettingObj._doc, settingEntity, key);
       if (typeof lastSettingObj._doc[key] === 'object' && (Object.keys(lastSettingObj._doc[key]).length >= 2)) {
@@ -74,9 +74,7 @@ class SystemSettingService extends Service {
     delete settingObj.created_at;
     delete settingObj.updated_at;
 
-
-    // settingObj.advertisementSetting = {square: fs.readFileSync(path.resolve(__dirname, '../public/admin.html'))};
-    this.ctx.model.SystemSetting.findOneAndUpdate({_id:lastSettingObj._id}, {$set: settingObj});
+    await this.ctx.model.SystemSetting.updateOne({ _id: lastSettingObj._id }, { $set: settingEntity });
   }
 }
 

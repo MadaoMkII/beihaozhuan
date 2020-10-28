@@ -303,8 +303,10 @@ class userAccount extends baseController {
       if (ctx.helper.isEmpty(condition.uuid) || ctx.user.role === '用户') {
         condition.uuid = ctx.user.uuid;
       }
-      const result = await ctx.service.userService.getMyTeam(condition.uuid, option);
-      this.success(result);
+      ctx.body = await ctx.service.userService.getMyTeam(condition.uuid, option);
+      ctx.body.code = '0';
+      ctx.body.msg = 'OK';
+      // this.success(result);
     } catch (e) {
       this.app.logger.error(e, ctx);
       this.failure();

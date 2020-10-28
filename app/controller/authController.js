@@ -130,17 +130,23 @@ class authController extends Controller {
         Bcoins: initialBcoin,
         source: this.ctx.helper.isEmpty(requestEntity.source) ? '平台' : requestEntity.source,
       };
-      let promise_2 = null;
+      // let promise_2 = null;
       await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
       const promise_1 = ctx.service.analyzeService.dataIncrementRecord('userRegister', 1, 'user', '用户');
 
       if (initialBcoin !== 0) {
-        promise_2 = ctx.service.userService.setUserBcionChange(newUser.uuid,
-          '注册奖励', '获得', initialBcoin, initialBcoin);
+        await this.ctx.service.userService.modifyUserRcoin({
+          tel_number: ctx.user.tel_number,
+          amount: Number(initialBcoin),
+          content: '注册奖励',
+          type: '注册',
+        });
+        // promise_2 = ctx.service.userService.setUserBcionChange(newUser.uuid,
+        //   '注册奖励', '获得', initialBcoin, initialBcoin);
       }
       delete newUser.password;
 
-      Promise.all([ promise_1, promise_2 ]).catch(error => {
+      Promise.all([ promise_1 ]).catch(error => {
         ctx.throw(503, error);
       });
       this.success();
@@ -166,7 +172,7 @@ class authController extends Controller {
         return this.failure('注册号码未验证或者不存在', 4012, 400);
       }
 
-      let promise = {};
+      // const promise = {};
       ctx.session.tel_number = null;
       ctx.session.fdbsmsVerifyCode = null;
       const user = await ctx.service.userService.getUser({ tel_number: requestEntity.tel_number });
@@ -198,8 +204,14 @@ class authController extends Controller {
         const newUser_login = await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
 
         if (initialBcoin !== 0) {
-          promise = ctx.service.userService.setUserBcionChange(newUser.uuid, '注册奖励', '获得', initialBcoin,
-            initialBcoin);
+          await this.ctx.service.userService.modifyUserRcoin({
+            tel_number: ctx.user.tel_number,
+            amount: Number(initialBcoin),
+            content: '注册奖励',
+            type: '注册',
+          });
+          // promise = ctx.service.userService.setUserBcionChange(newUser.uuid, '注册奖励', '获得', initialBcoin,
+          //   initialBcoin);
         }
         ctx.login(newUser_login);
         delete newUser.password;
@@ -214,7 +226,6 @@ class authController extends Controller {
         ctx.login(newUser_login);
       }
       this.success();
-      await promise;
     } catch (e) {
       this.app.logger.error(e, ctx);
       this.failure();
