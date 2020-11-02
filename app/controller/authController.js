@@ -136,7 +136,7 @@ class authController extends Controller {
 
       if (initialBcoin !== 0) {
         await this.ctx.service.userService.modifyUserRcoin({
-          tel_number: ctx.user.tel_number,
+          tel_number: requestEntity.tel_number,
           amount: Number(initialBcoin),
           content: '注册奖励',
           type: '注册',
@@ -205,7 +205,7 @@ class authController extends Controller {
 
         if (initialBcoin !== 0) {
           await this.ctx.service.userService.modifyUserRcoin({
-            tel_number: ctx.user.tel_number,
+            tel_number: requestEntity.tel_number,
             amount: Number(initialBcoin),
             content: '注册奖励',
             type: '注册',

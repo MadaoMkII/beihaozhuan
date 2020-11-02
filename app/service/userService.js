@@ -123,7 +123,6 @@ class UserService extends BaseService {
 
   async getMyTeam(user_uuid, option) {
     const result = await this.ctx.model.UserAccount.findOne({ uuid: user_uuid });
-    console.log(user_uuid);
     const userAmount = await this.ctx.model.UserAccount.aggregate([
 
       { $match: { uuid: user_uuid } },
@@ -143,7 +142,7 @@ class UserService extends BaseService {
         totalAmount: { $sum: '$amount' },
       } },
     ]);
-    const totalAmount = 0;
+    let totalAmount = 0;
     if (!this.app.isEmpty(userAmount) && !this.app.isEmpty(userAmount.totalAmount)) {
       totalAmount = userAmount.totalAmount;
     }
@@ -186,7 +185,6 @@ class UserService extends BaseService {
         amount: element.amount,
       };
     });
-    console.log(membersInfo);
     // const result = await this.ctx.model.UserAccount.findOne({ uuid: user_uuid }, { referrals: 1 }).populate({
     //   path: 'referrals',
     //   model: this.ctx.model.UserAccount,
@@ -217,7 +215,6 @@ class UserService extends BaseService {
       this.ctx.throw(400, '找不到该用户');
     }
     const newMoney = Number(user.Bcoins) + Number(condition.amount);
-    console.log(newMoney);
     const content = !this.app.isEmpty(condition.content) ? condition.content : '活动奖励-人工设置';
     const category = !this.app.isEmpty(condition.category) ? condition.category : '活动';
     let income;

@@ -501,7 +501,6 @@ class analyzeService extends Service {
       type, category,
     }, { $inc: { amount } }, { upsert: true, new: true });
 
-    console.log(res);
 
   }
 

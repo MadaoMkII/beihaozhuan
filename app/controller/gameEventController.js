@@ -12,6 +12,7 @@ class GameEventController extends Controller {
       await ctx.service.gameEventService.completeDownload(condition);
       this.success();
     } catch (e) {
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -25,6 +26,7 @@ class GameEventController extends Controller {
       const result = await ctx.service.gameEventService.getGameProcessByUUid(condition);
       this.success(result);
     } catch (e) {
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -42,7 +44,7 @@ class GameEventController extends Controller {
       }
       this.success(result);
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -61,6 +63,7 @@ class GameEventController extends Controller {
       // });
       this.success(result);
     } catch (e) {
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -82,7 +85,7 @@ class GameEventController extends Controller {
       // }
       this.success();
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       // this.app.logger.error(e, ctx);
       this.failure(e);
     }
@@ -98,7 +101,7 @@ class GameEventController extends Controller {
       await ctx.service.gameEventService.submitScreenshot(condition);
       this.success();
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -112,6 +115,7 @@ class GameEventController extends Controller {
       await ctx.service.gameEventService.completeWatchingMission(condition);
       this.success();
     } catch (e) {
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -128,7 +132,7 @@ class GameEventController extends Controller {
       }
       this.success();
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -137,7 +141,7 @@ class GameEventController extends Controller {
       const result = await ctx.service.gameEventService.getThisMonthIncoming();
       this.success(result);
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -153,7 +157,7 @@ class GameEventController extends Controller {
       const result = await ctx.service.gameEventService.getGameSetting(condition);
       this.success(result);
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -167,7 +171,7 @@ class GameEventController extends Controller {
       await ctx.service.gameEventService.approveAuditUploadRecord(condition);
       this.success();
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -186,7 +190,7 @@ class GameEventController extends Controller {
       await ctx.service.gameEventService.createEventGameSetting(condition);
       this.success();
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -200,17 +204,23 @@ class GameEventController extends Controller {
       const result = await ctx.service.gameEventService.deleteEventGameSetting(condition);
       this.success(result);
     } catch (e) {
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
   async getEventGameByCategory(ctx) {
-    const [ condition ] = await this.cleanupRequestProperty('gameEventRules.getEventGameSettingListRule',
-      'category');
-    if (!condition) {
-      return;
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('gameEventRules.getEventGameSettingListRule',
+        'category');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.gameEventService.getEventGameSettingList(condition, { gameSetting: 0 });
+      this.success(result);
+    } catch (e) {
+      this.app.logger.error(e, ctx);
+      this.failure(e);
     }
-    const result = await ctx.service.gameEventService.getEventGameSettingList(condition, { gameSetting: 0 });
-    this.success(result);
   }
   async getEventGameSettingList(ctx) {
     try {
@@ -223,6 +233,7 @@ class GameEventController extends Controller {
       // result = result.sort((a, b) => a.updated_at - b.updated_at);
       this.success(result);
     } catch (e) {
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -241,7 +252,7 @@ class GameEventController extends Controller {
       await ctx.service.gameEventService.updateEventGameSetting(condition);
       this.success();
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -255,7 +266,7 @@ class GameEventController extends Controller {
       await ctx.service.gameEventService.setGameEvent(condition);
       this.success();
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
@@ -275,7 +286,7 @@ class GameEventController extends Controller {
       const count = await this.getFindModelCount('AuditUploadRecord', condition);
       this.success([ result, count ]);
     } catch (e) {
-      console.log(e);
+      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }

@@ -21,6 +21,7 @@ module.exports = appInfo => {
           dbName: 'beihaozhuan',
           useCreateIndex: true,
           useFindAndModify: false,
+          useUnifiedTopology: true,
         },
       },
     },
@@ -63,6 +64,8 @@ module.exports = appInfo => {
     secret: '9205cff5cae37c4d7539822650ad9dc5', // `b6b0fb92a432acb9963bc4cf54e507fc`,
     key: 'sC4X531K4MHWDSujZCqJ91qRgFof2r12',
     mchid: '1546748521',
+
+    messageData_approveResult_template_id: '_m9tJ6b52DqgMfqGEEfGgRt8oFbc5n4j72vTZDRGCgg',
   };
   config.session = {
     key: 'yhbSen',

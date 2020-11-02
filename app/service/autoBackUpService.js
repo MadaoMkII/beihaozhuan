@@ -71,9 +71,7 @@ class EvaluationMissionService extends BaseService {
       }
       const cmd = 'mongodump --host ' + dbOptions.host + ' --port ' + dbOptions.port + ' --db ' + dbOptions.database + ' --username ' + dbOptions.user + ' --password ' + dbOptions.pass + ' --out ' + newBackupPath; // Command for mongodb dump process
       exec(cmd, function(error, stdout, stderr) {
-        console.log(error);
-        console.log(stdout);
-        console.log(stderr);
+
         if (!error) {
           console.log(stdout);
           // check for remove old backup after keeping # of days given in configuration

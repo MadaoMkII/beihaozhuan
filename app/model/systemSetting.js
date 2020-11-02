@@ -34,10 +34,10 @@ module.exports = app => {
     recommendGood: { type: mongoose.Schema.Types.ObjectId },
     advertisementSetting: { type: mongoose.Schema.Types.Mixed },
     token: { type: mongoose.Schema.Types.Mixed },
-    access_token: { tokenStr: String, createTime: Date },
+    accessToken: { tokenStr: String, updateTime: Date },
     withDrewSetting: [ withDrewSetting ],
     rewardPercent: { type: Number, default: 0.5 },
-    gameEventReward: [{ category: String, amount: Number }],
+    gameEventReward: [{ category: String, amount: Number, limitNumber: Number }],
   }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   });

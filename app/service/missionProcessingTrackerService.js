@@ -59,7 +59,7 @@ class MissionEventManager extends Service {
         completed: false,
         effectDay,
       }, { $set: { completed: true } }, { new: true });
-      Promise.all([ promise_2, promise_3, promise_4 ]).catch(error => {
+      Promise.all([ promise_4 ]).catch(error => {
         this.app.logger.error(error, this.ctx);
       });
       return true;

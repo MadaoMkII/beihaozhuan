@@ -117,7 +117,6 @@ class WeChatService extends Service {
     const setting = await this.ctx.model.SystemSetting.findOne({}, {}, { $sort: { updated_at: -1 } });
     const withDrewSetting = setting.withDrewSetting;
     const result = [];
-    console.log(recentUserAccount.Bcoins);
 
     for (const setting of withDrewSetting) {
       const tempObj = {
@@ -150,8 +149,7 @@ class WeChatService extends Service {
     }
 
     const recentUserAccount = await this.ctx.model.UserAccount.findOne({ tel_number: user.tel_number });
-    console.log(recentUserAccount.Bcoins);
-    console.log(amount);
+
     if (Number(recentUserAccount.Bcoins) < Number(amount)) {
       this.ctx.throw(200, '用户余额不足');
     }
@@ -195,7 +193,7 @@ class WeChatService extends Service {
       // }
       await this.ctx.service.userService.modifyUserRcoin({
         tel_number: user.tel_number,
-        amount: Number(amount.reward),
+        amount: Number(amount),
         content: '提现',
         type: '提现',
       });
@@ -260,10 +258,13 @@ class WeChatService extends Service {
   async get_access_token() {
     const { isEmpty } = this.ctx.helper;
     const end = DateTime.fromJSDate(new Date());
+
     const appSystemSetting = await this.ctx.model.SystemSetting.findOne({}, {}, { sort: { created_at: -1 } });
+
+    const accessToken = appSystemSetting._doc.accessToken;
     if (isEmpty(appSystemSetting) ||
-                isEmpty(appSystemSetting.accessToken) ||
-                end.diff(DateTime.fromJSDate(appSystemSetting.accessToken.updateTime)).as('hours') >= 2) {
+                isEmpty(accessToken) || isNaN(accessToken.updateTime) ||
+                end.diff(DateTime.fromJSDate(accessToken.updateTime)).as('hours') >= 2) {
       const requestObj = {
         secret: this.ctx.app.config.wechatConfig.secret,
         grant_type: 'client_credential',
@@ -280,11 +281,10 @@ class WeChatService extends Service {
         updateTime: new Date(),
         tokenStr: result_1.access_token,
       };
-      await this.ctx.model.SystemSetting.findOneAndUpdate({ _id: appSystemSetting._id }, { $set: { accessToken: settObj } }, {
-        upsert: true,
-        new: true,
-      });
-
+      const x = await this.ctx.model.SystemSetting.findOneAndUpdate({ 'accessToken.updateTime': accessToken.updateTime }, { $set: {
+        accessToken: { updateTime: new Date(), tokenStr: result_1.access_token },
+      } }, { new: true });
+      console.log(x);
       return settObj.tokenStr;
     }
     return appSystemSetting.accessToken.tokenStr;
@@ -323,6 +323,49 @@ class WeChatService extends Service {
     // await this.ctx.model.Setting.findOneAndUpdate({ jsapi_ticket: null }, { $set: { jsapi_ticket: result_2.ticket } });
     return result_2.ticket;
   }
+
+
+  async sendMessageCard(nickName, uuid, category, content, result, OPENID) {
+    const token = await this.get_access_token();
+
+    const urlFull = `https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=${token}`;
+
+    const requestObj_1 = {
+      touser: OPENID,
+      template_id: this.app.config.wechatConfig.messageData_approveResult_template_id,
+      url: `https://www.beihaozhuan.com/cashback-activity/tasks/${uuid}?stepText=${category}`,
+      data: {
+        first: {
+          value: '您好,审核结果通知:',
+          color: '#173177',
+        },
+        keyword1: {
+          value: nickName,
+          color: '#173177',
+        },
+        keyword2: {
+          value: content,
+          color: '#173177',
+        },
+        keyword3: {
+          value: result,
+          color: '#173177',
+        },
+        keyword4: {
+          value: this.app.getLocalTime(new Date()),
+          color: '#173177',
+        },
+        remark: {
+          value: '感谢您的参与',
+          color: '#173177',
+        },
+      },
+
+
+    };
+    await this.ctx.app.requestMethod(requestObj_1, 'POST', urlFull);
+  }
+
 
 }
 

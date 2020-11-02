@@ -54,7 +54,6 @@ class SystemSettingService extends Service {
 
     const lastSettingObj = await this.getSetting();
     const settingObj = {};
-    console.log(settingEntity);
     Object.keys(lastSettingObj._doc).forEach(key => {
       settingObj[key] = this.setValue(lastSettingObj._doc, settingEntity, key);
       if (typeof lastSettingObj._doc[key] === 'object' && (Object.keys(lastSettingObj._doc[key]).length >= 2)) {

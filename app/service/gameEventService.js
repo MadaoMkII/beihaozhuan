@@ -740,6 +740,49 @@ class gameEventService extends BaseService {
     await this.ctx.model.GameEvent.updateOne({ gameSetting: { $elemMatch: { uuid: condition.uuid } } },
       { $pull: { gameSetting: { uuid: condition.uuid } } });
   }
+
+
+  async checkShareReward(userObj, setting) {
+    const refUserID = userObj.referrer;
+
+    if (refUserID) {
+      const user_B = await this.ctx.model.UserAccount.findOne({ _id: refUserID }, { tel_number: 1, referrer: 1 });
+      if (user_B && user_B.referrer) {
+        const user_C = await this.ctx.model.UserAccount.findOne({ _id: user_B.referrer }, { tel_number: 1, uuid: 1 });
+        if (!this.isEmpty(user_C)) {
+          const hide1Process = await this.ctx.model.GameProcess.findOne({
+            tel_number: user_C.tel_number,
+            category: 'HIDE1',
+          });
+          const limitNumber = setting.limitNumber;
+          const reward = setting.amount;
+          if (hide1Process && hide1Process.currentIncoming >= limitNumber - 1) {
+            await this.ctx.service.userService.modifyUserRcoin({
+              tel_number: user_C.tel_number,
+              amount: Number(reward),
+              content: '活动奖励-邀请用户完成活动-',
+              type: '活动',
+            });
+            await this.ctx.model.GameProcess.deleteOne({
+              tel_number: user_C.tel_number,
+              category: 'HIDE1' });
+          } else {
+            await this.ctx.model.GameProcess.updateOne({
+              tel_number: user_C.tel_number,
+              category: 'HIDE1',
+            }, {
+              $set: {
+                status: '其他',
+                content: [],
+                requiredIncoming: 5,
+              },
+              $inc: { currentIncoming: 1 } }, { upsert: true });
+          }
+        }
+      }
+    }
+
+  }
   async approveAuditUploadRecord(condition) {
     const oldAuditUploadRecord = await this.ctx.model.AuditUploadRecord.findOne({ uuid: condition.uuid });
 
@@ -750,6 +793,7 @@ class gameEventService extends BaseService {
     // if (oldAuditUploadRecord.status !== '未审核') {
     //   this.ctx.throw(400, '只有未审核状态的记录才能审批');
     // }
+    const user = await this.ctx.model.UserAccount.findOne({ tel_number: oldAuditUploadRecord.tel_number });
     if (condition.decision) {
 
       const setter = {};
@@ -758,12 +802,18 @@ class gameEventService extends BaseService {
       if (oldAuditUploadRecord.category === 'STEP1') {
         setter['content.$.done'] = true;
         setter.status = '已完成';
+        await this.ctx.service.wechatService.sendMessageCard(user.nickName,
+          oldAuditUploadRecord.missionUUid, oldAuditUploadRecord.category,
+          oldAuditUploadRecord.name, '通过', user.OPENID);
+
       } else {
+
         const oldProcess = await this.ctx.model.GameProcess.findOne({
           category: oldAuditUploadRecord.category,
           tel_number: oldAuditUploadRecord.tel_number,
           'content.uuid': oldAuditUploadRecord.missionUUid,
         });
+
         const gameSetting = gameEvent.gameSetting.find(e => e.uuid === oldAuditUploadRecord.missionUUid);
         const gameProcess = oldProcess.content.find(e => e.uuid === oldAuditUploadRecord.missionUUid);
         if (!gameSetting.subsequent_A.available && !gameSetting.subsequent_B.available && oldAuditUploadRecord.sub_title === 'try') {
@@ -775,10 +825,15 @@ class gameEventService extends BaseService {
         if (gameProcess.complete_mission_try && gameProcess.complete_mission_A && oldAuditUploadRecord.sub_title === 'B') {
           setter['content.$.done'] = true;
         }
+        const setting = await this.ctx.model.SystemSetting.findOne({}, {}, { sort: { created_at: -1 } });
+        if (!this.isEmpty(setting.gameEventReward)) {
+          const settingObj = setting.gameEventReward.find(element => { return element.category === oldAuditUploadRecord.category; });
+          await this.checkShareReward(user, settingObj);
+        }
 
-        // if (gameSetting.subsequent_A.available && !gameSetting.subsequent_B.available && oldAuditUploadRecord.sub_title === 'A') {
-        //   setter['content.$.done'] = true;
-        // }
+        await this.ctx.service.wechatService.sendMessageCard(user.nickName,
+          oldAuditUploadRecord.missionUUid, oldAuditUploadRecord.category,
+          oldAuditUploadRecord.name, '通过', user.OPENID);
 
       }
 
@@ -799,7 +854,7 @@ class gameEventService extends BaseService {
         { $set: { status: '已完成' } });
       }
 
-      const user = await this.ctx.model.UserAccount.findOne({ tel_number: oldAuditUploadRecord.tel_number });
+
       // const newMoney = Number(user.Bcoins) + oldAuditUploadRecord.increaseAmount;
 
       await this.ctx.model.AuditUploadRecord.updateOne({ uuid: condition.uuid }, { $set: { status: '审核通过' } });
@@ -809,12 +864,18 @@ class gameEventService extends BaseService {
       //   '获得', oldAuditUploadRecord.increaseAmount, newMoney);
 
       await this.ctx.service.userService.modifyUserRcoin({
-        tel_number: user.user.tel_number,
+        tel_number: user.tel_number,
         amount: Number(oldAuditUploadRecord.increaseAmount),
         content: `活动奖励-${oldAuditUploadRecord.category}-${oldAuditUploadRecord.name}`,
         type: '活动',
       });
+
+
     } else {
+
+      await this.ctx.service.wechatService.sendMessageCard(user.nickName,
+        oldAuditUploadRecord.missionUUid, oldAuditUploadRecord.category,
+        oldAuditUploadRecord.name, '不通过', user.OPENID);
       await this.ctx.model.AuditUploadRecord.updateOne({ uuid: condition.uuid }, { $set: { status: '审核未通过' } });
     }
   }
