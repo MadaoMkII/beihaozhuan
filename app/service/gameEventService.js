@@ -760,7 +760,7 @@ class gameEventService extends BaseService {
             await this.ctx.service.userService.modifyUserRcoin({
               tel_number: user_C.tel_number,
               amount: Number(reward),
-              content: '活动奖励-邀请用户完成活动-',
+              content: '活动奖励-邀请用户完成活动',
               type: '活动',
             });
             await this.ctx.model.GameProcess.deleteOne({
@@ -825,11 +825,7 @@ class gameEventService extends BaseService {
         if (gameProcess.complete_mission_try && gameProcess.complete_mission_A && oldAuditUploadRecord.sub_title === 'B') {
           setter['content.$.done'] = true;
         }
-        const setting = await this.ctx.model.SystemSetting.findOne({}, {}, { sort: { created_at: -1 } });
-        if (!this.isEmpty(setting.gameEventReward)) {
-          const settingObj = setting.gameEventReward.find(element => { return element.category === oldAuditUploadRecord.category; });
-          await this.checkShareReward(user, settingObj);
-        }
+
 
         await this.ctx.service.wechatService.sendMessageCard(user.nickName,
           oldAuditUploadRecord.missionUUid, oldAuditUploadRecord.category,
@@ -846,6 +842,12 @@ class gameEventService extends BaseService {
 
       const newContent = newGameProcess.content.find(e => e.done === false);
       if (this.isEmpty(newContent) || (newGameProcess.currentIncoming >= newGameProcess.requiredIncoming)) {
+        const setting = await this.ctx.model.SystemSetting.findOne({}, {}, { sort: { created_at: -1 } });
+        if (!this.isEmpty(setting.gameEventReward) && (oldAuditUploadRecord.category !== 'STEP1')) {
+          const settingObj = setting.gameEventReward.find(element => { return element.category === oldAuditUploadRecord.category; });
+          console.log(settingObj);
+          await this.checkShareReward(user, settingObj);
+        }
         await this.ctx.model.GameProcess.updateOne({
           category: oldAuditUploadRecord.category,
           tel_number: oldAuditUploadRecord.tel_number,

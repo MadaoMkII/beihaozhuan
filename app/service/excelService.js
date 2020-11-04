@@ -172,7 +172,6 @@ class excelService extends BaseService {
     return users;
   }
   async getUserInfoExecl(day) {
-    const XLSX = require('xlsx');
     const app = this.ctx.app;
     const resultData = [];
     const users = await this.getUserList(day, {}, null);
@@ -207,6 +206,30 @@ class excelService extends BaseService {
     XLSX.writeFile(workbook, fileName);
     return fileName;
   }
+
+  // const wsCols = [
+  //   { wch: 25 },
+  //   { wch: 20 },
+  //   { wch: 10 },
+  //   { wch: 10 },
+  //   { wch: 10 },
+  // ];
+  async makeDataToExcel(resultData, wsCols, sheetName) {
+    const workbook = XLSX.utils.book_new();
+    const rowInfo = [
+      { hpx: 30 },
+    ];
+    const tempRowInfo = Array.from(rowInfo);
+    tempRowInfo.push({ hpx: 20 });
+    const worksheet = await XLSX.utils.json_to_sheet(resultData);
+    worksheet['!cols'] = wsCols;
+    worksheet['!rows'] = tempRowInfo;
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+    const fileName = path.resolve(__dirname, `../public/file/sheetName-${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
+    XLSX.writeFile(workbook, fileName);
+    return fileName;
+  }
+
   async getUserInfoExecl_today() {
     const XLSX = require('xlsx');
     const app = this.ctx.app;

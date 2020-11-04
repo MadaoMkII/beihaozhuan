@@ -193,7 +193,7 @@ class WeChatService extends Service {
       // }
       await this.ctx.service.userService.modifyUserRcoin({
         tel_number: user.tel_number,
-        amount: Number(amount),
+        amount: -Number(amount),
         content: '提现',
         type: '提现',
       });

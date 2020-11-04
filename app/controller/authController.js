@@ -200,6 +200,7 @@ class authController extends Controller {
         newUser.Bcoins = initialBcoin;
         newUser.userStatus = {};
         newUser.userStatus.hasVerifyWechat = 'enable';
+        newUser.userStatus.activity = 'enable';
         newUser.source = ctx.helper.isEmpty(requestEntity.source) ? 'origin' : requestEntity.source;
         const newUser_login = await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
 
@@ -221,6 +222,7 @@ class authController extends Controller {
         newUser.avatar = ctx.helper.decrypt(requestEntity.head);
         newUser.nickName = ctx.helper.decrypt(requestEntity.nickName);
         newUser.userStatus = {};
+        newUser.userStatus.activity = 'enable';
         newUser.userStatus.hasVerifyWechat = 'enable';
         const newUser_login = await ctx.service.userService.updateUser(user.uuid, newUser);
         ctx.login(newUser_login);

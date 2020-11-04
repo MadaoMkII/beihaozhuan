@@ -136,15 +136,16 @@ class UserService extends BaseService {
         amount: '$balanceList.amount',
         category: '$balanceList.category',
       } },
-      { $match: { category: '活动奖励-邀请返利' } },
+      { $match: { category: { $regex: '.*活动奖励-邀请.*' } } },
       { $group: {
-        _id: '$category',
+        _id: '$tel_number',
         totalAmount: { $sum: '$amount' },
       } },
     ]);
+
     let totalAmount = 0;
-    if (!this.app.isEmpty(userAmount) && !this.app.isEmpty(userAmount.totalAmount)) {
-      totalAmount = userAmount.totalAmount;
+    if (!this.app.isEmpty(userAmount) && userAmount.length > 0) {
+      totalAmount = userAmount[0].totalAmount;
     }
     const count = result.referrals.length;
     const slicedArray = this.ctx.helper.sliceArray(result.referrals, option);
@@ -221,6 +222,9 @@ class UserService extends BaseService {
     if (condition.amount > 0) {
       income = '获得';
     } else {
+      if (Number(user.Bcoins) + Number(condition.amount) < 0) {
+        this.ctx.throw(200, '用户余额不足');
+      }
       income = '消费';
     }
     await this.ctx.service.analyzeService.dataIncrementRecord(content, condition.amount, 'bcoin', category);
@@ -228,8 +232,10 @@ class UserService extends BaseService {
     if (condition.category === '广告') {
       await this.ctx.service.analyzeService.recordAdvIncrease(condition._id, user._id, 1, 'close');
     }
+    const setting = await this.ctx.model.SystemSetting.findOne();
+    const rate = setting.rewardPercent / 100;
     if (!this.app.isEmpty(user.referrer)) {
-      const reward = 0.5 * Number(condition.amount);// TODO
+      const reward = rate * Number(condition.amount);
       await this.referrerReward(user.referrer, reward);
     }
 
