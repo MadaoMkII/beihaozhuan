@@ -2,8 +2,281 @@
 const BaseService = require('./baseService');
 const XLSX = require('xlsx');
 const path = require('path');
-
 class excelService extends BaseService {
+
+  async exportList_overview() {
+    const result = await this.ctx.model.AnalyzeLog.aggregate([
+      { $match: { category: { $in: [ '获得', '消费' ] } } },
+      {
+        $group: {
+          _id: {
+            day: { $dayOfYear: '$analyzeDate' },
+          },
+          totalGainAmount: { $sum: { $cond: [{ $gte: [ '$amount', 0 ] }, '$amount', 0 ] } },
+          totalWithdrewCount: { $sum: { $cond: [{ $eq: [ '$category', '消费' ] }, 1, 0 ] } },
+          activityUser: { $sum: 1 },
+        },
+      },
+    ]);
+    console.log(result);
+    const c = await this.ctx.model.UserAccount.find({}, { Bcoins: 1 });
+    const deepUserCount = c.filter(e => e.Bcoins > 10000).length;
+
+
+    const auditResult = await this.ctx.model.AuditUploadRecord.aggregate([
+      { $match: { status: 2 } },
+      { $group: {
+        _id: { day: { $dayOfYear: '$updated_at' } },
+        count: { $sum: 1 },
+      } },
+      { $project: {
+        _id: 0,
+        day: '$_id.day',
+        count: 1,
+      } },
+    ]);
+    const auditResultMap = new Map();
+    for (const element of auditResult) {
+      auditResultMap.set(element.day, element.count);
+    }
+
+    // console.log();
+    const resultArray = [];
+    for (const element of result) {
+      const tempObj = {
+        日期: this.formatDayOfYear(element._id.day),
+        总金币产出: element.totalGainAmount,
+        总提现数: element.totalWithdrewCount,
+        活跃用户数: element.activityUser,
+        深度用户数: deepUserCount,
+        总审核通过数: auditResultMap.get(element._id.day),
+      };
+      resultArray.push(tempObj);
+    }
+    const wsCols = [
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 20 },
+      { wch: 40 },
+    ];
+    await this.makeJsonToExcel(resultArray, wsCols, '数据总览');
+  }
+
+
+  async exportList_userDetail() {
+    const result = await this.ctx.model.AnalyzeLog.aggregate([
+      { $match: { category: { $in: [ '获得', '消费' ] } } },
+      {
+        $group: {
+          _id: {
+            category: '$category',
+            tel_number: '$tel_number',
+            analyzeDate: '$analyzeDate',
+          },
+          census: { $sum: '$amount' },
+          date: { $first: '$date_1' },
+          nickName: { $first: '$nickName' },
+          totalAmount: { $first: '$totalAmount' },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            tel_number: '$_id.tel_number',
+            analyzeDate: '$_id.analyzeDate',
+          },
+          res: { $push: { census: '$census', category: '$_id.category', totalAmount: '$totalAmount' } },
+          date: { $first: '$date' },
+          nickName: { $first: '$nickName' },
+          analyzeDate: { $first: '$analyzeDate' },
+          totalAmount: { $first: '$totalAmount' },
+        },
+
+      },
+    ]);
+    console.log(result);
+    const tableData = [];
+    for (const element of result) {
+      console.log(element.res);
+      const getObj = element.res.find(e => e.category === '获得');
+      // const customObj = element.res.find(e => e.category === '消费');
+      const tempObj = {
+        日期: this.app.getFormatDateForJSON(element._id.analyzeDate),
+        用户昵称: element.nickName,
+        用户账号: element._id.tel_number,
+        金币产出: getObj.census,
+        累计总产出: getObj.census,
+        累计提现: element.totalAmount,
+        注册日期: this.app.getLocalTime(element.date),
+      };
+      tableData.push(tempObj);
+    }
+
+    const wsCols = [
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 8 },
+      { wch: 40 },
+    ];
+    console.log(tableData);
+    await this.makeJsonToExcel(tableData, wsCols, '用户详细');
+  }
+
+  async exportList_gameDetail() {
+    const wscols = [
+      { wch: 20 },
+    ];
+    const gameNames = await this.ctx.model.GameEvent.aggregate([
+      { $unwind: '$gameSetting' },
+      { $project: {
+        _id: 0,
+        gameName: '$gameSetting.gameName',
+      } },
+      { $group: {
+        _id: 0,
+        gameNames: { $addToSet: '$gameName' },
+      } },
+    ]);
+
+    const header1 = gameNames[0].gameNames;
+    const gameList = Object.assign([], gameNames[0].gameNames);
+
+    const wsMerge = [ XLSX.utils.decode_range('A1:A2') ];
+    header1.map((res, idx, array) => {
+      const hdMergeObj = {
+        s: { r: 0 },
+        e: { r: 0 },
+      };
+      if ((idx + 2) % 1 === 0) {
+        array.splice(3 * idx + 1, 0, '', '');
+        hdMergeObj.s.c = 3 * idx + 1;
+        hdMergeObj.e.c = hdMergeObj.s.c + 2;
+        wsMerge.push(hdMergeObj);
+      }
+      return res;
+    });
+    const keyArray = [];
+    gameList.forEach(e => {
+      keyArray.push(e + '-try');
+      keyArray.push(e + '-A');
+      keyArray.push(e + '-B');
+    });
+
+    const header2 = Array(gameList.length).fill('任务-试玩'); // .concat('库存数量');
+    header2.map((res, idx, array) => {
+      if ((idx + 2) % 1 === 0) {
+        array.splice(3 * idx + 1, 0, '任务-A', '任务-B');
+      }
+      return res;
+    });
+    for (let i = 0; i < header2.length; i++) {
+      wscols.push({ wch: 12 });
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet([
+      [ '记录日期' ].concat(header1),
+      [ '' ].concat(header2),
+    ]);
+    ws['!cols'] = wscols;
+    ws['!merges'] = wsMerge;
+    let aggregateResult = await this.ctx.model.AuditUploadRecord.aggregate([
+      // { $match: { name: '放置三国名将' } },
+      { $group: {
+        _id: {
+          name: '$name',
+          sub_title: '$sub_title',
+          day: { $dayOfYear: '$created_at' },
+        },
+        play: { $addToSet: '$tel_number' },
+
+      } },
+
+      { $project: {
+        _id: 0,
+        dayList: 1,
+        day: '$_id.day',
+        key: { $concat: [ '$_id.name', '-', '$_id.sub_title' ] },
+        valueArray: '$play',
+      },
+      },
+      // { $match: { day: { $gte: '310' } } },
+      { $group: {
+        _id: '$day',
+        arrayList: { $addToSet: { key: '$key', valueArray: '$valueArray' } },
+      } },
+    ]);
+
+    aggregateResult = aggregateResult.sort((a, b) => { return -a._id + b._id; });
+    const resultArray = [];
+    for (const resultObj of aggregateResult) {
+      const dataMap = new Map();
+      let longestNumber = 0;
+      for (const obj of resultObj.arrayList) {
+        dataMap.set(obj.key, obj.valueArray);
+        longestNumber = Math.max(longestNumber, obj.valueArray.length);
+      }
+
+      // const totalArray = Array(keyArray.length + 1).fill(0);
+      // totalArray[0] = '总计';
+      const mapX = new Map();
+      for (let index = 0; index < longestNumber; index++) {
+        const tempArray = [];
+        for (let nameKeyIndex = 0; nameKeyIndex < keyArray.length; nameKeyIndex++) {
+          const nameKey = keyArray[nameKeyIndex];
+          const tempValueArray = dataMap.get(nameKey);
+          if (nameKey) {}
+
+
+          if (tempValueArray && (index <= tempValueArray.length - 1)) {
+            tempArray.push(tempValueArray[index]);
+            const count = mapX.get(nameKey) ? mapX.get(nameKey) : 0;
+            mapX.set(nameKey, count + 1);
+          } else {
+            // tempArray.push(nameKey);
+            // tempArray.push('');
+          }
+
+        }
+        resultArray.push([ this.formatDayOfYear(resultObj._id) ].concat(tempArray));
+      }
+      // resultArray.push(totalArray);
+      console.log(mapX);
+    }
+
+    // ws.B2.s = {									// 为某个单元格设置单独样式
+    //   font: {
+    //     name: '宋体',
+    //     sz: 100,
+    //     bold: true,
+    //     color: { rgb: '33FF33' },
+    //   },
+    //   alignment: { horizontal: 'center', vertical: 'center', wrap_text: true },
+    //   fill: { bgcolor: { rgb: '33FF33' } },
+    // };
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.sheet_add_aoa(ws, resultArray, { origin: 'A3' });
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    // wsMerge.push(XLSX.utils.decode_range('B1:D1')) // 测试数据 仓库1模拟数据
+    XLSX.writeFile(wb, '测试表1.xlsx');
+    await this.makeDataToExcel_new(resultArray, ws, '游戏详情');
+
+  }
+  async makeDataToExcel_new(resultData, ws, sheetName) {
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.sheet_add_aoa(ws, resultData, { origin: 'A3' });
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    const fileName = path.resolve(__dirname, `../public/file/${sheetName}-${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
+    XLSX.writeFile(wb, fileName);
+    return fileName;
+  }
+
   async createExcel(dataArray) {
     const workbook = XLSX.utils.book_new();
     const rowInfo = [
@@ -171,50 +444,42 @@ class excelService extends BaseService {
     ]);
     return users;
   }
-  async getUserInfoExecl(day) {
-    const app = this.ctx.app;
-    const resultData = [];
-    const users = await this.getUserList(day, {}, null);
-    users.forEach(user => {
-      const element = {};
-      // if (user.tel_number !== '13602012967') { return; }
-      element.用户昵称 = user.nickName;
-      element.用户账号 = user.tel_number;
-      element.今日收入 = !this.ctx.helper.isEmpty(user.todayIncoming) ? user.todayIncoming : 0;
-      element.金币余额 = app.decrypt(user.Bcoins);
-      element.注册时间 = app.getLocalTimeForFileName(user.created_at);
-      resultData.push(element);
-    });
-    const rowInfo = [
-      { hpx: 30 },
-    ];
-    const wsCols = [
-      { wch: 25 },
-      { wch: 20 },
-      { wch: 10 },
-      { wch: 10 },
-      { wch: 10 },
-    ];
-    const workbook = XLSX.utils.book_new();
-    const tempRowInfo = Array.from(rowInfo);
-    tempRowInfo.push({ hpx: 20 });
-    const worksheet = await XLSX.utils.json_to_sheet(resultData);
-    worksheet['!cols'] = wsCols;
-    worksheet['!rows'] = tempRowInfo;
-    XLSX.utils.book_append_sheet(workbook, worksheet, '用户信息列表');
-    const fileName = path.resolve(__dirname, `../public/file/${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
-    XLSX.writeFile(workbook, fileName);
-    return fileName;
-  }
-
-  // const wsCols = [
-  //   { wch: 25 },
-  //   { wch: 20 },
-  //   { wch: 10 },
-  //   { wch: 10 },
-  //   { wch: 10 },
-  // ];
-  async makeDataToExcel(resultData, wsCols, sheetName) {
+  // async getJsonToExcel(day) {
+  //   const app = this.ctx.app;
+  //   const resultData = [];
+  //   const users = await this.getUserList(day, {}, null);
+  //   users.forEach(user => {
+  //     const element = {};
+  //     // if (user.tel_number !== '13602012967') { return; }
+  //     element.用户昵称 = user.nickName;
+  //     element.用户账号 = user.tel_number;
+  //     element.今日收入 = !this.ctx.helper.isEmpty(user.todayIncoming) ? user.todayIncoming : 0;
+  //     element.金币余额 = app.decrypt(user.Bcoins);
+  //     element.注册时间 = app.getLocalTimeForFileName(user.created_at);
+  //     resultData.push(element);
+  //   });
+  //   const rowInfo = [
+  //     { hpx: 30 },
+  //   ];
+  //   const wsCols = [
+  //     { wch: 25 },
+  //     { wch: 20 },
+  //     { wch: 10 },
+  //     { wch: 10 },
+  //     { wch: 10 },
+  //   ];
+  //   const workbook = XLSX.utils.book_new();
+  //   const tempRowInfo = Array.from(rowInfo);
+  //   tempRowInfo.push({ hpx: 20 });
+  //   const worksheet = await XLSX.utils.json_to_sheet(resultData);
+  //   worksheet['!cols'] = wsCols;
+  //   worksheet['!rows'] = tempRowInfo;
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, '用户信息列表');
+  //   const fileName = path.resolve(__dirname, `../public/file/${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
+  //   XLSX.writeFile(workbook, fileName);
+  //   return fileName;
+  // }
+  async makeJsonToExcel(resultData, wsCols, sheetName) {
     const workbook = XLSX.utils.book_new();
     const rowInfo = [
       { hpx: 30 },
@@ -225,9 +490,20 @@ class excelService extends BaseService {
     worksheet['!cols'] = wsCols;
     worksheet['!rows'] = tempRowInfo;
     XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-    const fileName = path.resolve(__dirname, `../public/file/sheetName-${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
+    const fileName = path.resolve(__dirname, `../public/file/${sheetName}-${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
     XLSX.writeFile(workbook, fileName);
     return fileName;
+  }
+
+
+  async gameEventDetail() {
+    const thisDay = this.getTimeQueryByPeriod(day);
+    await this.ctx.model.GameEvent.aggregate([
+
+
+    ]);
+
+
   }
 
   async getUserInfoExecl_today() {
