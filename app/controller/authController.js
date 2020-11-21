@@ -1,5 +1,6 @@
 'use strict';
 const ms = require('ms');
+const fs = require('fs');
 const Controller = require('./baseController');
 
 class authController extends Controller {
@@ -299,7 +300,7 @@ class authController extends Controller {
 
   async biefanleToday(ctx) {
     try {
-      const fs = require('fs');
+
       const fileName = await ctx.service.excelService.getUserInfoExecl_today();
       ctx.status = 200;
       await ctx.downloader(fileName);

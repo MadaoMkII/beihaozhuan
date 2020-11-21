@@ -24,4 +24,6 @@ module.exports = app => {
   router.post('/gameEvent/getGameProcessByUUid', authenticatedMiddleware('职员'), gameEventController.getGameProcessByUUid);
   router.post('/gameEvent/completeDownload', authenticatedMiddleware('职员'), gameEventController.completeDownload);
   router.get('/gameEvent/getRenderData', gameEventController.getRenderData);
+
+  router.post('/gameEvent/recordDownload', gameEventController.recordDownload);
 };

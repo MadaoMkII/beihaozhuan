@@ -4,11 +4,12 @@ const moment = require('moment');
 class HomeController extends Controller {
   async testX(ctx) {
     try {
-      const OPENID = 'odLFQwBPj42OaGWQm43pxRShkbTg';
-      const x = await this.ctx.service.wechatService.sendMessageCard('无敌',
-        'ckf8l9trp0001t8oxduv595qg', 'STEP1', '第一步试玩游戏', '通过', OPENID);
-
+      // const OPENID = 'odLFQwBPj42OaGWQm43pxRShkbTg';
+      // const x = await this.ctx.service.wechatService.sendMessageCard('无敌',
+      //   'ckf8l9trp0001t8oxduv595qg', 'STEP1', '第一步试玩游戏', '通过', OPENID);
+      await ctx.service.excelService.exportList_downloadOverview();
       // const user = await this.ctx.model.UserAccount.findOne({ tel_number: '13602012967' });
+      // await ctx.service.analyzeLogService.recordPersonalBcoinChange(user, 1090);
       // const setting = await this.ctx.model.SystemSetting.findOne({}, {}, { sort: { created_at: -1 } });
       // if (!this.app.isEmpty(setting.gameEventReward)) {
       //   const settingObj = setting.gameEventReward.find(element => { return String(element.category) === 'STEP2'; });
@@ -16,7 +17,7 @@ class HomeController extends Controller {
       // }
       // // ctx.throw(500, '测试日志');
       // // await this.service.autoBackUpService.dbAutoBackUp();
-      this.success(x);
+      this.success();
     } catch (e) {
       console.log(e);
       this.failure(e);

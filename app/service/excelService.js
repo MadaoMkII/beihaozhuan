@@ -3,6 +3,105 @@ const BaseService = require('./baseService');
 const XLSX = require('xlsx');
 const path = require('path');
 class excelService extends BaseService {
+  async exportList_downloadOverview() {
+    const aggregateResult = await this.ctx.model.AnalyzeLog.aggregate([
+
+      { $match: { type: 'download_daily' } },
+      { $group: {
+        _id: {
+          day: { $dayOfYear: '$analyzeDate' },
+          // gameName: '$category',
+        },
+        valueList: { $push: { tel_numberArray: '$dataArray', gameName: '$category' } },
+      } },
+    ]);
+    const wscols = [
+      { wch: 20 },
+    ];
+    const gameNames = await this.ctx.model.GameEvent.aggregate([
+      { $unwind: '$gameSetting' },
+      { $project: {
+        _id: 0,
+        gameName: '$gameSetting.gameName',
+      } },
+      { $group: {
+        _id: 0,
+        gameNames: { $addToSet: '$gameName' },
+      } },
+    ]);
+    // const res = await this.ctx.model.AnalyzeLog.find({ type: 'download_daily' }, {
+    //   analyzeDate: 1,
+    //   dataArray: 1,
+    //   category: 1,
+    //   category_2: 1,
+    // });
+
+
+    const finalResult = [];
+
+
+    for (const obj of aggregateResult) {
+      const day = obj._id.day;
+      const tempMap = new Map();
+      let longest = 0;
+      for (const e of obj.valueList) {
+        longest = Math.max(longest, e.tel_numberArray.length);
+        tempMap.set(e.gameName, e.tel_numberArray);
+      }
+      for (let index = 0; index < longest; index++) {
+        const tempArray = [];
+        tempArray.push(this.formatDayOfYear(day));
+        for (const gameName of gameNames[0].gameNames) {
+          const tempResult = tempMap.get(gameName);
+          if (tempResult) {
+            tempArray.push(tempResult[index]);
+          } else {
+            tempArray.push('');
+          }
+        }
+        finalResult.push(tempArray);
+
+      }
+
+    }
+
+
+    const header1 = gameNames[0].gameNames;
+    const wsMerge = [ XLSX.utils.decode_range('A1:A2') ];
+    header1.map((res, idx, array) => {
+      const hdMergeObj = {
+        s: { r: 0 },
+        e: { r: 0 },
+      };
+      if (idx % 1 === 0) {
+        // array.splice(3 * idx + 1, 0, '', '');
+        hdMergeObj.s.c = 1 * idx + 1;
+        hdMergeObj.e.c = hdMergeObj.s.c + 0;
+        wsMerge.push(hdMergeObj);
+      }
+      return res;
+    });
+
+
+    const header2 = Array(header1.length).fill('下载账号'); // .concat('库存数量');
+
+    for (let i = 0; i < header2.length; i++) {
+      wscols.push({ wch: 27 });
+    }
+    const ws = XLSX.utils.aoa_to_sheet([
+      [ '记录日期' ].concat(header1),
+      [ '' ].concat(header2),
+    ]);
+    ws['!cols'] = wscols;
+    ws['!merges'] = wsMerge;
+    // const wb = XLSX.utils.book_new();
+    // XLSX.utils.sheet_add_aoa(ws, finalResult, { origin: 'A3' });
+    // XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    // // wsMerge.push(XLSX.utils.decode_range('B1:D1')) // 测试数据 仓库1模拟数据
+    // XLSX.writeFile(wb, '测试表1.xlsx');
+    await this.makeDataToExcel_new(finalResult, ws, '游戏下载详情');
+  }
+
 
   async exportList_overview() {
     const result = await this.ctx.model.AnalyzeLog.aggregate([
@@ -14,13 +113,34 @@ class excelService extends BaseService {
           },
           totalGainAmount: { $sum: { $cond: [{ $gte: [ '$amount', 0 ] }, '$amount', 0 ] } },
           totalWithdrewCount: { $sum: { $cond: [{ $eq: [ '$category', '消费' ] }, 1, 0 ] } },
+          totalWithdrewAmount: { $sum: { $cond: [{ $eq: [ '$category', '消费' ] }, '$amount', 0 ] } },
           activityUser: { $sum: 1 },
+          deepUserCount: { $sum: { $cond: [{ $gte: [ '$totalAmount', '1000' ] }, 1, 0 ] } },
         },
       },
     ]);
-    console.log(result);
-    const c = await this.ctx.model.UserAccount.find({}, { Bcoins: 1 });
-    const deepUserCount = c.filter(e => e.Bcoins > 10000).length;
+
+    const result_deepCount = await this.ctx.model.AnalyzeLog.aggregate([
+      { $match: { category: { $in: [ '获得' ] } } },
+      {
+        $group: {
+          _id: {
+            day: { $dayOfYear: '$analyzeDate' },
+            tel_number: '$tel_number',
+          },
+          todayTotalAmount: { $sum: '$amount' },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.day',
+          todayDeepCount: { $sum: { $cond: [{ $gte: [ '$todayTotalAmount', 10000 ] }, 1, 0 ] } },
+        },
+      },
+    ]);
+    //
+    // const c = await this.ctx.model.UserAccount.find({}, { Bcoins: 1 });
+    // const deepUserCount = c.filter(e => e.Bcoins > 10000).length;
 
 
     const auditResult = await this.ctx.model.AuditUploadRecord.aggregate([
@@ -39,16 +159,15 @@ class excelService extends BaseService {
     for (const element of auditResult) {
       auditResultMap.set(element.day, element.count);
     }
-
-    // console.log();
     const resultArray = [];
     for (const element of result) {
       const tempObj = {
         日期: this.formatDayOfYear(element._id.day),
         总金币产出: element.totalGainAmount,
+        总提现额: element.totalWithdrewAmount,
         总提现数: element.totalWithdrewCount,
         活跃用户数: element.activityUser,
-        深度用户数: deepUserCount,
+        深度用户数: result_deepCount.find(e => e._id === element._id.day).todayDeepCount,
         总审核通过数: auditResultMap.get(element._id.day),
       };
       resultArray.push(tempObj);
@@ -72,59 +191,76 @@ class excelService extends BaseService {
       {
         $group: {
           _id: {
-            category: '$category',
+            // category_2: '$category_2',
             tel_number: '$tel_number',
             analyzeDate: '$analyzeDate',
           },
-          census: { $sum: '$amount' },
+          // census: { $sum: '$amount' },
           date: { $first: '$date_1' },
           nickName: { $first: '$nickName' },
-          totalAmount: { $first: '$totalAmount' },
+          rewardTotalAmount: { $max: { $cond: [{ $eq: [ '$category_2', '返利' ] }, '$totalAmount', 0 ] } },
+          gainTotalAmount: { $max: { $cond: [{ $eq: [ '$category_2', '自我收入' ] }, '$totalAmount', 0 ] } },
+          gainCensus: { $sum: { $cond: [{ $and: [
+            { $eq: [ '$category_2', '自我收入' ] },
+            { $eq: [ '$category', '获得' ] },
+          ] }, '$amount', 0 ] } },
+          rewardCensus: { $sum: { $cond: [{ $eq: [ '$category_2', '返利' ] }, '$amount', 0 ] } },
+          totalWithdrew: { $min: { $cond: [{ $eq: [ '$category', '消费' ] }, '$amount', null ] } },
         },
       },
-      {
-        $group: {
-          _id: {
-            tel_number: '$_id.tel_number',
-            analyzeDate: '$_id.analyzeDate',
-          },
-          res: { $push: { census: '$census', category: '$_id.category', totalAmount: '$totalAmount' } },
-          date: { $first: '$date' },
-          nickName: { $first: '$nickName' },
-          analyzeDate: { $first: '$analyzeDate' },
-          totalAmount: { $first: '$totalAmount' },
-        },
-
-      },
+      // {
+      //   $group: {
+      //     _id: {
+      //       analyzeDate: '$_id.analyzeDate',
+      //       tel_number: '$_id.tel_number',
+      //       category_2: '$_id.category_2',
+      //     },
+      //     res: { $push: { census: '$census', category: '$_id.category', totalAmount: '$totalAmount' } },
+      //     date: { $first: '$date' },
+      //
+      //   } },
+      //
+      // },
     ]);
-    console.log(result);
+    const nameBoard = result.map(e => e._id.tel_number);
+
+    const userList = await this.ctx.model.UserAccount.find({ tel_number: { $in: nameBoard } }, { referrals: 1, tel_number: 1 });
     const tableData = [];
     for (const element of result) {
-      console.log(element.res);
-      const getObj = element.res.find(e => e.category === '获得');
-      // const customObj = element.res.find(e => e.category === '消费');
+      // const getObj = element.res.find(e => e.category === '获得');
+      const userObj = userList.find(e => e.tel_number === element._id.tel_number);
+      const length = userObj ? userObj.referrals.length : 0;
       const tempObj = {
         日期: this.app.getFormatDateForJSON(element._id.analyzeDate),
         用户昵称: element.nickName,
         用户账号: element._id.tel_number,
-        金币产出: getObj.census,
-        累计总产出: getObj.census,
-        累计提现: element.totalAmount,
+        '当日金币获取(非邀请)': element.gainCensus,
+        当日邀请返利渠道获取金币: element.rewardCensus,
+        当日金币总产出: element.gainCensus + element.rewardCensus,
+        '累计金币获取(非邀请)': element.gainTotalAmount,
+        累计邀请人数: length,
+        累计邀请返利金币获取: element.rewardTotalAmount,
+        累计总金币获取: element.gainTotalAmount + element.rewardTotalAmount,
+        累计提现: element.totalWithdrew ? element.totalWithdrew : 0,
         注册日期: this.app.getLocalTime(element.date),
       };
       tableData.push(tempObj);
     }
-
+    //
     const wsCols = [
       { wch: 25 },
       { wch: 20 },
       { wch: 15 },
-      { wch: 10 },
-      { wch: 10 },
-      { wch: 8 },
-      { wch: 40 },
+      { wch: 22 },
+      { wch: 25 },
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 17 },
+      { wch: 37 },
     ];
-    console.log(tableData);
     await this.makeJsonToExcel(tableData, wsCols, '用户详细');
   }
 
@@ -213,7 +349,7 @@ class excelService extends BaseService {
     ]);
 
     aggregateResult = aggregateResult.sort((a, b) => { return -a._id + b._id; });
-    const resultArray = [];
+    const finalResultArray = [];
     for (const resultObj of aggregateResult) {
       const dataMap = new Map();
       let longestNumber = 0;
@@ -221,32 +357,44 @@ class excelService extends BaseService {
         dataMap.set(obj.key, obj.valueArray);
         longestNumber = Math.max(longestNumber, obj.valueArray.length);
       }
-
-      // const totalArray = Array(keyArray.length + 1).fill(0);
-      // totalArray[0] = '总计';
-      const mapX = new Map();
+      const countArray = Array(keyArray.length + 1).fill(0);
+      countArray[0] = '单日计数';
       for (let index = 0; index < longestNumber; index++) {
-        const tempArray = [];
+        const columnArray = [];
+
         for (let nameKeyIndex = 0; nameKeyIndex < keyArray.length; nameKeyIndex++) {
+          // if (nameKeyIndex === 0) {
+          //   columnArray.push('!');
+          // }
           const nameKey = keyArray[nameKeyIndex];
           const tempValueArray = dataMap.get(nameKey);
-          if (nameKey) {}
-
-
-          if (tempValueArray && (index <= tempValueArray.length - 1)) {
-            tempArray.push(tempValueArray[index]);
-            const count = mapX.get(nameKey) ? mapX.get(nameKey) : 0;
-            mapX.set(nameKey, count + 1);
+          if (tempValueArray && tempValueArray[index]) {
+            columnArray.push(tempValueArray[index]);
+            countArray[nameKeyIndex + 1] += 1;
           } else {
-            // tempArray.push(nameKey);
-            // tempArray.push('');
+            columnArray.push('');
           }
-
         }
-        resultArray.push([ this.formatDayOfYear(resultObj._id) ].concat(tempArray));
+        finalResultArray.push([ this.formatDayOfYear(resultObj._id) ].concat(columnArray));
       }
+      finalResultArray.push(countArray);
+      // for (let index = 0; index < longestNumber; index++) {
+      //   const tempArray = [];
+      //   for (let nameKeyIndex = 0; nameKeyIndex < keyArray.length; nameKeyIndex++) {
+      //     const nameKey = keyArray[nameKeyIndex];
+      //     const tempValueArray = dataMap.get(nameKey);
+      //     if (tempValueArray && (index <= tempValueArray.length - 1)) {
+      //       tempArray.push(tempValueArray[index]);
+      //       const count = mapX.get(nameKey) ? mapX.get(nameKey) : 0;
+      //       mapX.set(nameKey, count + 1);
+      //     } else {
+      //       // tempArray.push(nameKey);
+      //       // tempArray.push('');
+      //     }
+      //   }
+      //   resultArray.push([ this.formatDayOfYear(resultObj._id) ].concat(tempArray));
+      // }
       // resultArray.push(totalArray);
-      console.log(mapX);
     }
 
     // ws.B2.s = {									// 为某个单元格设置单独样式
@@ -261,11 +409,11 @@ class excelService extends BaseService {
     // };
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.sheet_add_aoa(ws, resultArray, { origin: 'A3' });
+    XLSX.utils.sheet_add_aoa(ws, finalResultArray, { origin: 'A3' });
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     // wsMerge.push(XLSX.utils.decode_range('B1:D1')) // 测试数据 仓库1模拟数据
     XLSX.writeFile(wb, '测试表1.xlsx');
-    await this.makeDataToExcel_new(resultArray, ws, '游戏详情');
+    await this.makeDataToExcel_new(finalResultArray, ws, '游戏详情');
 
   }
   async makeDataToExcel_new(resultData, ws, sheetName) {
@@ -496,15 +644,15 @@ class excelService extends BaseService {
   }
 
 
-  async gameEventDetail() {
-    const thisDay = this.getTimeQueryByPeriod(day);
-    await this.ctx.model.GameEvent.aggregate([
-
-
-    ]);
-
-
-  }
+  // async gameEventDetail() {
+  //   const thisDay = this.getTimeQueryByPeriod(day);
+  //   await this.ctx.model.GameEvent.aggregate([
+  //
+  //
+  //   ]);
+  //
+  //
+  // }
 
   async getUserInfoExecl_today() {
     const XLSX = require('xlsx');

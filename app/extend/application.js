@@ -56,7 +56,11 @@ module.exports = {
   },
   getFormatDateForJSON(date = new Date()) {
     const { DateTime } = require('luxon');
-    const local = DateTime.fromISO(date.toISOString());
+    console.log(date);
+    if (typeof date === 'string') {
+      date = new Date(date);
+    }
+    const local = DateTime.fromJSDate(date);
     const rezoned = local.setZone('Asia/Shanghai');
     return rezoned.toFormat('yyyy-MM-dd');
   },

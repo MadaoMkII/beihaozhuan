@@ -2,6 +2,23 @@
 const Controller = require('./baseController');
 class GameEventController extends Controller {
 
+  async recordDownload(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('gameEventRules.noAdmin.recordDownloadRule',
+        'tel_number', 'gameUUid', 'name');
+      if (!condition) {
+        return;
+      }
+      await ctx.service.analyzeLogService.recordDownloadChange(condition);
+      this.success();
+    } catch (e) {
+      this.app.logger.error(e, ctx);
+      this.failure(e);
+    }
+
+  }
+
+
   async completeDownload(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('gameEventRules.getGameSettingByUUidRule',

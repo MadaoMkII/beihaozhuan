@@ -12,6 +12,39 @@ class gameEventService extends BaseService {
     this.isEmpty = isEmpty;
     this.getLocalTime = getLocalTime;
   }
+
+  async recordDownload(condition) {
+    const today = this.getBeginOfDay();
+    const queryObj = {
+      analyzeDate: today,
+      type: 'download_daily',
+      category: condition.name,
+      category_2: condition.gameUUid,
+      // 'dataArray.tel_number': condition.tel_number,
+    };
+
+    await this.ctx.model.AnalyzeLog.updateOne(queryObj, { $inc: { totalAmount: 1 }, $addToSet: { dataArray: condition.tel_number } }, { upsert: true });
+
+    // const isExists = await this.ctx.model.AnalyzeLog.exists(queryObj);
+    // console.log(isExists);
+    // if (isExists) {
+    //   const lastAnalyzeLog = await this.ctx.model.AnalyzeLog.updateOne(queryObj,
+    //     { $inc: { totalAmount: 1, 'dataArray.$.amount': 1 } });
+    // } else {
+    //   delete queryObj['dataArray.tel_number'];
+    //   await this.ctx.model.AnalyzeLog.updateOne(queryObj, {
+    //     $push: {
+    //       dataArray: {
+    //         tel_number: condition.tel_number,
+    //         amount: 1,
+    //       },
+    //     }, $inc: { totalAmount: 1 },
+    //   }, { upsert: true });
+    //
+    //
+    // }
+
+  }
   async completeDownload(condition) {
     const { tel_number } = this.ctx.user;
     await this.ctx.model.GameProcess.updateOne({ tel_number,
@@ -692,6 +725,15 @@ class gameEventService extends BaseService {
       category: condition.category,
       'gameSetting.uuid': condition.uuid,
     }, { $set: { 'gameSetting.$': condition } });
+
+    if (condition.subsequent_A.available || condition.subsequent_B.available) {
+      await this.ctx.model.GameProcess.updateMany({
+        category: condition.category,
+        status: '进行中',
+        'content.uuid': condition.uuid,
+      }, { $set: { 'content.$.done': false } });
+    }
+
   }
   async getEventGameSettingList(condition, project = {}) {
     const gameEvent = await this.ctx.model.GameEvent.findOne({ category: condition.category },
@@ -805,7 +847,11 @@ class gameEventService extends BaseService {
         await this.ctx.service.wechatService.sendMessageCard(user.nickName,
           oldAuditUploadRecord.missionUUid, oldAuditUploadRecord.category,
           oldAuditUploadRecord.name, '通过', user.OPENID);
-
+        await this.ctx.service.analyzeLogService.recordApproveChange({
+          name: oldAuditUploadRecord.name,
+          uuid: oldAuditUploadRecord.missionUUid,
+          type: 'try',
+        }, user);
       } else {
 
         const oldProcess = await this.ctx.model.GameProcess.findOne({
@@ -845,7 +891,6 @@ class gameEventService extends BaseService {
         const setting = await this.ctx.model.SystemSetting.findOne({}, {}, { sort: { created_at: -1 } });
         if (!this.isEmpty(setting.gameEventReward) && (oldAuditUploadRecord.category !== 'STEP1')) {
           const settingObj = setting.gameEventReward.find(element => { return element.category === oldAuditUploadRecord.category; });
-          console.log(settingObj);
           await this.checkShareReward(user, settingObj);
         }
         await this.ctx.model.GameProcess.updateOne({
@@ -856,22 +901,18 @@ class gameEventService extends BaseService {
         { $set: { status: '已完成' } });
       }
 
-
-      // const newMoney = Number(user.Bcoins) + oldAuditUploadRecord.increaseAmount;
-
       await this.ctx.model.AuditUploadRecord.updateOne({ uuid: condition.uuid }, { $set: { status: '审核通过' } });
-      // await this.dataIncrementRecord(`活动奖励-${oldAuditUploadRecord.category}-${oldAuditUploadRecord.name}`, oldAuditUploadRecord.increaseAmount, 'bcoin', '活动');
-      // await this.setUserBcionChange(oldAuditUploadRecord.tel_number,
-      //   `活动奖励-${oldAuditUploadRecord.category}-${oldAuditUploadRecord.name}`,
-      //   '获得', oldAuditUploadRecord.increaseAmount, newMoney);
-
       await this.ctx.service.userService.modifyUserRcoin({
         tel_number: user.tel_number,
         amount: Number(oldAuditUploadRecord.increaseAmount),
         content: `活动奖励-${oldAuditUploadRecord.category}-${oldAuditUploadRecord.name}`,
         type: '活动',
       });
-
+      await this.ctx.service.analyzeLogService.recordApproveChange({
+        name: oldAuditUploadRecord.name,
+        uuid: oldAuditUploadRecord.missionUUid,
+        type: oldAuditUploadRecord.sub_title,
+      }, user);
 
     } else {
 

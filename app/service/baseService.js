@@ -3,6 +3,15 @@
 const { Service } = require('egg');
 const { DateTime } = require('luxon');
 class BaseService extends Service {
+  formatDayOfYear(day) {
+    const local = DateTime.fromJSDate(new Date()).reconfigure({ locale: 'zh-CN' });
+    const rezoned = local.set({ ordinal: day });
+    return rezoned.toFormat('yyyy-MM-dd');
+  }
+
+  isEmpty(obj) {
+    return this.app.isEmpty(obj);
+  }
   getAbsoluteDate(useHour = false, date = new Date()) {
     if (!useHour) {
       date.setHours(0);
@@ -66,29 +75,10 @@ class BaseService extends Service {
     return returnValue;
   }
 
-  // async dataIncrementRecord(content, amount, type, category, tel_number) {
-  //
-  //   const date = this.getAbsoluteDate(true);
-  //   const res = await this.ctx.model.DataAnalyze.findOneAndUpdate({
-  //     absoluteDate: date,
-  //     content,
-  //     type, category, tel_number,
-  //   }, { $inc: { amount } }, { upsert: true, new: true });
-  //
-  //   console.log(res);
-  //
-  // }
-  // async setUserBcionChange(tel_number, category, income, amount, tempBcoin) {
-  //   const newBcionChange = {
-  //     category,
-  //     income,
-  //     amount,
-  //     createTime: new Date(), // 必须加入那些代码
-  //   };
-  //   return this.ctx.model.UserAccount.findOneAndUpdate({ tel_number },
-  //     { $push: { balanceList: newBcionChange }, $set: { Bcoins: tempBcoin } }, { new: true });
-  //
-  // }
+  getBeginOfDay(date = new Date()) {
+    const triggerDate = DateTime.fromJSDate(date).reconfigure({ locale: 'zh-CN' });
+    return triggerDate.startOf('day').toJSDate();
+  }
 }
 
 module.exports = BaseService;
