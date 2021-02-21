@@ -68,7 +68,7 @@ class excelService extends BaseService {
 
     const header1 = gameNames[0].gameNames;
     const wsMerge = [ XLSX.utils.decode_range('A1:A2') ];
-    header1.map((res, idx, array) => {
+    header1.map((res, idx) => {
       const hdMergeObj = {
         s: { r: 0 },
         e: { r: 0 },
@@ -99,10 +99,44 @@ class excelService extends BaseService {
     // XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     // // wsMerge.push(XLSX.utils.decode_range('B1:D1')) // 测试数据 仓库1模拟数据
     // XLSX.writeFile(wb, '测试表1.xlsx');
-    await this.makeDataToExcel_new(finalResult, ws, '游戏下载详情');
+    return await this.makeDataToExcel_new(finalResult, ws, '游戏下载详情');
   }
 
-
+  async getUserInfoExcel(day) {
+    const app = this.ctx.app;
+    const resultData = [];
+    const users = await this.getUserList(day, {}, null);
+    users.forEach(user => {
+      const element = {};
+      // if (user.tel_number !== '13602012967') { return; }
+      element.用户昵称 = user.nickName;
+      element.用户账号 = user.tel_number;
+      element.今日收入 = !this.ctx.helper.isEmpty(user.todayIncoming) ? user.todayIncoming : 0;
+      element.金币余额 = app.decrypt(user.Bcoins);
+      element.注册时间 = app.getLocalTimeForFileName(user.created_at);
+      resultData.push(element);
+    });
+    const rowInfo = [
+      { hpx: 30 },
+    ];
+    const wsCols = [
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 10 },
+    ];
+    const workbook = XLSX.utils.book_new();
+    const tempRowInfo = Array.from(rowInfo);
+    tempRowInfo.push({ hpx: 20 });
+    const worksheet = await XLSX.utils.json_to_sheet(resultData);
+    worksheet['!cols'] = wsCols;
+    worksheet['!rows'] = tempRowInfo;
+    XLSX.utils.book_append_sheet(workbook, worksheet, '用户信息列表');
+    const fileName = path.resolve(__dirname, `../public/file/${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
+    XLSX.writeFile(workbook, fileName);
+    return fileName;
+  }
   async exportList_overview() {
     const result = await this.ctx.model.AnalyzeLog.aggregate([
       { $match: { category: { $in: [ '获得', '消费' ] } } },
@@ -181,7 +215,7 @@ class excelService extends BaseService {
       { wch: 20 },
       { wch: 40 },
     ];
-    await this.makeJsonToExcel(resultArray, wsCols, '数据总览');
+    return await this.makeJsonToExcel(resultArray, wsCols, '数据总览');
   }
 
 
@@ -208,26 +242,12 @@ class excelService extends BaseService {
           totalWithdrew: { $min: { $cond: [{ $eq: [ '$category', '消费' ] }, '$amount', null ] } },
         },
       },
-      // {
-      //   $group: {
-      //     _id: {
-      //       analyzeDate: '$_id.analyzeDate',
-      //       tel_number: '$_id.tel_number',
-      //       category_2: '$_id.category_2',
-      //     },
-      //     res: { $push: { census: '$census', category: '$_id.category', totalAmount: '$totalAmount' } },
-      //     date: { $first: '$date' },
-      //
-      //   } },
-      //
-      // },
     ]);
     const nameBoard = result.map(e => e._id.tel_number);
 
     const userList = await this.ctx.model.UserAccount.find({ tel_number: { $in: nameBoard } }, { referrals: 1, tel_number: 1 });
     const tableData = [];
     for (const element of result) {
-      // const getObj = element.res.find(e => e.category === '获得');
       const userObj = userList.find(e => e.tel_number === element._id.tel_number);
       const length = userObj ? userObj.referrals.length : 0;
       const tempObj = {
@@ -246,7 +266,6 @@ class excelService extends BaseService {
       };
       tableData.push(tempObj);
     }
-    //
     const wsCols = [
       { wch: 25 },
       { wch: 20 },
@@ -261,7 +280,7 @@ class excelService extends BaseService {
       { wch: 17 },
       { wch: 37 },
     ];
-    await this.makeJsonToExcel(tableData, wsCols, '用户详细');
+    return await this.makeJsonToExcel(tableData, wsCols, '用户详细');
   }
 
   async exportList_gameDetail() {
@@ -412,7 +431,7 @@ class excelService extends BaseService {
     XLSX.utils.sheet_add_aoa(ws, finalResultArray, { origin: 'A3' });
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     // wsMerge.push(XLSX.utils.decode_range('B1:D1')) // 测试数据 仓库1模拟数据
-    XLSX.writeFile(wb, '测试表1.xlsx');
+    // XLSX.writeFile(wb, '测试表1.xlsx');
     await this.makeDataToExcel_new(finalResultArray, ws, '游戏详情');
 
   }
@@ -592,41 +611,6 @@ class excelService extends BaseService {
     ]);
     return users;
   }
-  // async getJsonToExcel(day) {
-  //   const app = this.ctx.app;
-  //   const resultData = [];
-  //   const users = await this.getUserList(day, {}, null);
-  //   users.forEach(user => {
-  //     const element = {};
-  //     // if (user.tel_number !== '13602012967') { return; }
-  //     element.用户昵称 = user.nickName;
-  //     element.用户账号 = user.tel_number;
-  //     element.今日收入 = !this.ctx.helper.isEmpty(user.todayIncoming) ? user.todayIncoming : 0;
-  //     element.金币余额 = app.decrypt(user.Bcoins);
-  //     element.注册时间 = app.getLocalTimeForFileName(user.created_at);
-  //     resultData.push(element);
-  //   });
-  //   const rowInfo = [
-  //     { hpx: 30 },
-  //   ];
-  //   const wsCols = [
-  //     { wch: 25 },
-  //     { wch: 20 },
-  //     { wch: 10 },
-  //     { wch: 10 },
-  //     { wch: 10 },
-  //   ];
-  //   const workbook = XLSX.utils.book_new();
-  //   const tempRowInfo = Array.from(rowInfo);
-  //   tempRowInfo.push({ hpx: 20 });
-  //   const worksheet = await XLSX.utils.json_to_sheet(resultData);
-  //   worksheet['!cols'] = wsCols;
-  //   worksheet['!rows'] = tempRowInfo;
-  //   XLSX.utils.book_append_sheet(workbook, worksheet, '用户信息列表');
-  //   const fileName = path.resolve(__dirname, `../public/file/${this.ctx.app.getLocalTimeForFileName(new Date())}.xlsx`);
-  //   XLSX.writeFile(workbook, fileName);
-  //   return fileName;
-  // }
   async makeJsonToExcel(resultData, wsCols, sheetName) {
     const workbook = XLSX.utils.book_new();
     const rowInfo = [
@@ -642,18 +626,6 @@ class excelService extends BaseService {
     XLSX.writeFile(workbook, fileName);
     return fileName;
   }
-
-
-  // async gameEventDetail() {
-  //   const thisDay = this.getTimeQueryByPeriod(day);
-  //   await this.ctx.model.GameEvent.aggregate([
-  //
-  //
-  //   ]);
-  //
-  //
-  // }
-
   async getUserInfoExecl_today() {
     const XLSX = require('xlsx');
     const app = this.ctx.app;

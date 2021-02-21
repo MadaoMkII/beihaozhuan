@@ -3,6 +3,7 @@ const BaseService = require('./baseService');
 class analyzeLogService extends BaseService {
 
   async recordDownloadChange(condition) {
+    const user = this.ctx.user;
     const today = this.getBeginOfDay();
     await this.ctx.model.AnalyzeLog.updateOne({
       analyzeDate: today,
@@ -13,7 +14,7 @@ class analyzeLogService extends BaseService {
     },
     {
       $addToSet: {
-        dataArray: condition.tel_number,
+        dataArray: user.tel_number,
       },
       $inc: { totalAmount: 1 } }, { upsert: true });
   }

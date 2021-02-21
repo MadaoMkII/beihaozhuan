@@ -4,10 +4,28 @@ const moment = require('moment');
 class HomeController extends Controller {
   async testX(ctx) {
     try {
+
+      // const settings = await ctx.model.GameEvent.find({}, { category: 1, expectEarning: 1 });
+      //
+      // for (const setting of settings) {
+      //   await ctx.model.GameProcess.updateMany({ status: '进行中',
+      //     category: setting.category }, {
+      //     $set: { requiredIncoming: Number(setting.expectEarning) },
+      //   });
+      //
+      // }
+      const user = await this.ctx.model.UserAccount.findOne({ tel_number: '15222194687' });
+      console.log(user.referrals.length);
+      // await ctx.model.GameProcess.updateMany({ status: '进行中',
+      //   $expr: { $gte: [ '$currentIncoming', '$requiredIncoming' ] } }, {
+      //   $set: { status: '已完成' },
+      // });
+      // const result = await ctx.model.GameProcess.find({ tel_number: '18630920818' }, { status: 1, category: 1, requiredIncoming: 1, tel_number: 1, currentIncoming: 1 });
+      // console.log(result);
       // const OPENID = 'odLFQwBPj42OaGWQm43pxRShkbTg';
       // const x = await this.ctx.service.wechatService.sendMessageCard('无敌',
       //   'ckf8l9trp0001t8oxduv595qg', 'STEP1', '第一步试玩游戏', '通过', OPENID);
-      await ctx.service.excelService.exportList_downloadOverview();
+      // await ctx.service.excelService.exportList_downloadOverview();
       // const user = await this.ctx.model.UserAccount.findOne({ tel_number: '13602012967' });
       // await ctx.service.analyzeLogService.recordPersonalBcoinChange(user, 1090);
       // const setting = await this.ctx.model.SystemSetting.findOne({}, {}, { sort: { created_at: -1 } });
@@ -17,6 +35,10 @@ class HomeController extends Controller {
       // }
       // // ctx.throw(500, '测试日志');
       // // await this.service.autoBackUpService.dbAutoBackUp();
+      // const fileName = await ctx.service.excelService.getUserInfoExecl(condition.day);
+      // ctx.status = 200;
+      // await ctx.downloader(fileName);
+      // await fs.unlinkSync(fileName);
       this.success();
     } catch (e) {
       console.log(e);

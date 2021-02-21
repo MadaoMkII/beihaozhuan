@@ -23,7 +23,10 @@ class gameEventService extends BaseService {
       // 'dataArray.tel_number': condition.tel_number,
     };
 
-    await this.ctx.model.AnalyzeLog.updateOne(queryObj, { $inc: { totalAmount: 1 }, $addToSet: { dataArray: condition.tel_number } }, { upsert: true });
+    await this.ctx.model.AnalyzeLog.updateOne(queryObj, {
+      $inc: { totalAmount: 1 },
+      $addToSet: { dataArray: condition.tel_number },
+    }, { upsert: true });
 
     // const isExists = await this.ctx.model.AnalyzeLog.exists(queryObj);
     // console.log(isExists);
@@ -45,13 +48,18 @@ class gameEventService extends BaseService {
     // }
 
   }
+
   async completeDownload(condition) {
     const { tel_number } = this.ctx.user;
-    await this.ctx.model.GameProcess.updateOne({ tel_number,
+    await this.ctx.model.GameProcess.updateOne({
+      tel_number,
       category: condition.category,
-      'content.uuid': condition.uuid }, {
-      $set: { 'content.$.hasDownloaded': true } });
+      'content.uuid': condition.uuid,
+    }, {
+      $set: { 'content.$.hasDownloaded': true },
+    });
   }
+
   async getGameProcessByUUid(condition) {
     const { tel_number } = this.ctx.user;
     const setter = {};
@@ -114,6 +122,7 @@ class gameEventService extends BaseService {
 
     return tempResult;
   }
+
   async getGameSetting(condition) {
     const setter = {};
     setter.category = condition.category;
@@ -127,6 +136,7 @@ class gameEventService extends BaseService {
     result._doc.updated_at = this.app.getLocalTime(result._doc.updated_at);
     return result;
   }
+
   // async getGameProcessByUUid(condition) {
   //   const setter = {};
   //   const tempResult = {};
@@ -244,6 +254,7 @@ class gameEventService extends BaseService {
     }
     return finalResult;
   }
+
   async getRenderData(condition) {
     const setter = {};
     if (!this.isEmpty(condition)) {
@@ -349,9 +360,11 @@ class gameEventService extends BaseService {
               await this.ctx.model.GameProcess.updateOne({
                 tel_number: this.ctx.user.tel_number,
                 category: gameEvent.category,
-              }, { $push: {
-                content: processEntity,
-              } });
+              }, {
+                $push: {
+                  content: processEntity,
+                },
+              });
               continue;
             }
             const tempObject = Object.assign(gameEventEntity._doc, contentEntity._doc);
@@ -373,10 +386,12 @@ class gameEventService extends BaseService {
     return finalResult;
 
   }
+
   async getMyGameProcess(condition) {
     const { tel_number } = this.ctx.user;
     return this.ctx.model.GameProcess.findOne({ tel_number, category: condition.category });
   }
+
   async submitScreenshot(condition) {
     const { tel_number } = this.ctx.user;
 
@@ -389,7 +404,6 @@ class gameEventService extends BaseService {
     if (!this.isEmpty(oldAuditUploadRecord)) {
       this.ctx.throw(400, '已经存在了未审批的请求');
       const simpleValue = { try: 1, A: 2, B: 3 };
-
       if (simpleValue[oldAuditUploadRecord.sub_title] - simpleValue[condition.sub_title] === 0) {
         this.ctx.throw(400, '已经提交过同类的请求');
       }
@@ -416,14 +430,16 @@ class gameEventService extends BaseService {
     const oldGameProcess = await this.ctx.model.GameProcess.findOne({
       tel_number,
       category: condition.category,
-      status: '进行中',
+      // status: '进行中',
       'content.uuid': condition.uuid,
       'content.done': false,
     });
     if (this.isEmpty(oldGameProcess)) {
       this.ctx.throw(400, '找不到对应的记录');
     }
-    const processContent = oldGameProcess.content.find(element => { return element.uuid === condition.uuid; });
+    const processContent = oldGameProcess.content.find(element => {
+      return element.uuid === condition.uuid;
+    });
     const gameName = processContent.gameName;
     let increaseAmount;
     if (condition.sub_title === 'try') {
@@ -454,7 +470,8 @@ class gameEventService extends BaseService {
     const { tel_number } = this.ctx.user;
     const oldGameProcess = await this.ctx.model.GameProcess.findOne({
       tel_number,
-      category: condition.category });
+      category: condition.category,
+    });
 
     if (this.isEmpty(oldGameProcess)) {
       this.ctx.throw(400, '还没有初始化这个阶段的任务');
@@ -462,10 +479,19 @@ class gameEventService extends BaseService {
     if (oldGameProcess.complete_mission_watchVideo) {
       this.ctx.throw(400, '这个任务已经被完成了');
     }
+
+    const setter = { complete_mission_watchVideo: true };
+    if (oldGameProcess.requiredIncoming <= oldGameProcess.currentIncoming + oldGameProcess.amount_mission_watchVideo) {
+      setter.status = '已完成';
+    }
     await this.ctx.model.GameProcess.updateOne({
       tel_number,
-      category: condition.category },
-    { $set: { complete_mission_watchVideo: true }, $inc: { currentIncoming: oldGameProcess.amount_mission_watchVideo } });
+      category: condition.category,
+    },
+    {
+      $set: setter,
+      $inc: { currentIncoming: oldGameProcess.amount_mission_watchVideo },
+    });
     const increaseAmount = oldGameProcess.amount_mission_watchVideo;
 
     await this.ctx.service.userService.modifyUserRcoin({
@@ -481,6 +507,7 @@ class gameEventService extends BaseService {
     //   '获得', increaseAmount, newMoney);
 
   }
+
   async initialGameEventByStep(condition) {
     console.log('我被调用了，步数是' + condition.category);
     let gameEventEntity;
@@ -568,17 +595,20 @@ class gameEventService extends BaseService {
       { $match: { tel_number } },
       { $project: { balanceList: 1 } },
       { $unwind: '$balanceList' },
-      { $project: {
-        income: '$balanceList.income',
-        amount: '$balanceList.amount',
-        createTime: '$balanceList.createTime',
-      },
+      {
+        $project: {
+          income: '$balanceList.income',
+          amount: '$balanceList.amount',
+          createTime: '$balanceList.createTime',
+        },
       },
       { $match: query },
-      { $group: {
-        _id: null,
-        totalAmount: { $sum: '$amount' },
-      } },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: '$amount' },
+        },
+      },
       { $project: { _id: 0 } },
     ]);
     return !this.isEmpty(result[0]) ? result[0] : {
@@ -698,6 +728,7 @@ class gameEventService extends BaseService {
       { $set: condition },
       { upsert: true });
   }
+
   async createEventGameSetting(condition) {
     const setter = condition;
     setter.uuid = uuid();
@@ -719,6 +750,7 @@ class gameEventService extends BaseService {
     }
 
   }
+
   async updateEventGameSetting(condition) {
     condition.updated_at = new Date();
     await this.ctx.model.GameEvent.updateOne({
@@ -735,6 +767,7 @@ class gameEventService extends BaseService {
     }
 
   }
+
   async getEventGameSettingList(condition, project = {}) {
     const gameEvent = await this.ctx.model.GameEvent.findOne({ category: condition.category },
       project);
@@ -747,11 +780,13 @@ class gameEventService extends BaseService {
     }
     const auditUploadResult = await this.ctx.model.AuditUploadRecord.aggregate([
       { $match: { category: condition.category, status: 1 } },
-      { $group: {
+      {
+        $group: {
 
-        _id: '$missionUUid',
-        amount: { $sum: 1 },
-      } },
+          _id: '$missionUUid',
+          amount: { $sum: 1 },
+        },
+      },
     ]);
 
 
@@ -778,6 +813,7 @@ class gameEventService extends BaseService {
     }
     return resultSetting;
   }
+
   async deleteEventGameSetting(condition) {
     await this.ctx.model.GameEvent.updateOne({ gameSetting: { $elemMatch: { uuid: condition.uuid } } },
       { $pull: { gameSetting: { uuid: condition.uuid } } });
@@ -790,7 +826,10 @@ class gameEventService extends BaseService {
     if (refUserID) {
       const user_B = await this.ctx.model.UserAccount.findOne({ _id: refUserID }, { tel_number: 1, referrer: 1 });
       if (user_B && user_B.referrer) {
-        const user_C = await this.ctx.model.UserAccount.findOne({ _id: user_B.referrer }, { tel_number: 1, uuid: 1 });
+        const user_C = await this.ctx.model.UserAccount.findOne({ _id: user_B.referrer }, {
+          tel_number: 1,
+          uuid: 1,
+        });
         if (!this.isEmpty(user_C)) {
           const hide1Process = await this.ctx.model.GameProcess.findOne({
             tel_number: user_C.tel_number,
@@ -807,7 +846,8 @@ class gameEventService extends BaseService {
             });
             await this.ctx.model.GameProcess.deleteOne({
               tel_number: user_C.tel_number,
-              category: 'HIDE1' });
+              category: 'HIDE1',
+            });
           } else {
             await this.ctx.model.GameProcess.updateOne({
               tel_number: user_C.tel_number,
@@ -818,13 +858,15 @@ class gameEventService extends BaseService {
                 content: [],
                 requiredIncoming: 5,
               },
-              $inc: { currentIncoming: 1 } }, { upsert: true });
+              $inc: { currentIncoming: 1 },
+            }, { upsert: true });
           }
         }
       }
     }
 
   }
+
   async approveAuditUploadRecord(condition) {
     const oldAuditUploadRecord = await this.ctx.model.AuditUploadRecord.findOne({ uuid: condition.uuid });
 
@@ -890,7 +932,9 @@ class gameEventService extends BaseService {
       if (this.isEmpty(newContent) || (newGameProcess.currentIncoming >= newGameProcess.requiredIncoming)) {
         const setting = await this.ctx.model.SystemSetting.findOne({}, {}, { sort: { created_at: -1 } });
         if (!this.isEmpty(setting.gameEventReward) && (oldAuditUploadRecord.category !== 'STEP1')) {
-          const settingObj = setting.gameEventReward.find(element => { return element.category === oldAuditUploadRecord.category; });
+          const settingObj = setting.gameEventReward.find(element => {
+            return element.category === oldAuditUploadRecord.category;
+          });
           await this.checkShareReward(user, settingObj);
         }
         await this.ctx.model.GameProcess.updateOne({
@@ -922,6 +966,7 @@ class gameEventService extends BaseService {
       await this.ctx.model.AuditUploadRecord.updateOne({ uuid: condition.uuid }, { $set: { status: '审核未通过' } });
     }
   }
+
   async getAuditUploadRecordList(condition, option) {
     return this.ctx.model.AuditUploadRecord.find(condition, { _id: 0 }, option);
   }

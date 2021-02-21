@@ -7,7 +7,7 @@ class smsController extends baseController {
       const { tel_number } = ctx.request.body;
       const resultUser = await this.ctx.service.userService.getUser({ tel_number: this.ctx.request.body.tel_number });
       if (!this.ctx.helper.isEmpty(resultUser)) {
-        return this.failure('该手机号未注册', 4013, 400);
+        return this.failure('该手机号已经注册', 4013, 400);
       }
       const text = (Math.random() * Date.now() * 6).toFixed(0).slice(-6);
       ctx.session.smsVerifyCode = text;

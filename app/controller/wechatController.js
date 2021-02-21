@@ -183,6 +183,9 @@ class wechatController extends baseController {
       const OPENID = result_2.openid;
       const user = await this.ctx.service.userService.getUser({ OPENID });
       if (!ctx.helper.isEmpty(user)) {
+        if (user.userStatus.activity.toString() !== 'enable') {
+          ctx.throw(400, '该账户被封停');
+        }
         ctx.login(user);
         let location_jump = '';
         if (stateMessage !== 'CHECK') {
@@ -228,7 +231,7 @@ class wechatController extends baseController {
       }
     } catch (e) {
       this.app.logger.error(e, ctx);
-      this.failure();
+      this.failure(e);
     }
   }
 }

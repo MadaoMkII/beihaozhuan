@@ -38,6 +38,7 @@ module.exports = app => {
     withDrewSetting: [ withDrewSetting ],
     rewardPercent: { type: Number, default: 0.5 },
     gameEventReward: [{ category: String, amount: Number, limitNumber: Number }],
+    goodSetting: { category: String },
   }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   });

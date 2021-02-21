@@ -20,4 +20,5 @@ module.exports = app => {
   require('./router/promotionRounter')(app);
   require('./router/wechatRouter')(app);
   require('./router/gameEventRouter')(app);
+  require('./router/fileRouter')(app);
 };

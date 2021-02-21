@@ -56,7 +56,6 @@ module.exports = {
   },
   getFormatDateForJSON(date = new Date()) {
     const { DateTime } = require('luxon');
-    console.log(date);
     if (typeof date === 'string') {
       date = new Date(date);
     }

@@ -5,7 +5,7 @@ class GameEventController extends Controller {
   async recordDownload(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('gameEventRules.noAdmin.recordDownloadRule',
-        'tel_number', 'gameUUid', 'name');
+        'gameUUid', 'name');
       if (!condition) {
         return;
       }
