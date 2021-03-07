@@ -22,13 +22,18 @@ class goodController extends baseController {
   }
 
   async getShowGoods(ctx) {
-    ctx.request.body.status = 'enable';
+    // ctx.request.body.status = 'enable';
     await this.getManyGoods(ctx);
   }
 
   async delGood(ctx) {
     try {
-      const { uuid } = ctx.request.body;
+      const [ condition ] = await this.cleanupRequestProperty('goodRules.createGoodRule',
+        'uuid');
+      if (!condition) {
+        return false;
+      }
+      const { uuid } = condition;
       if (ctx.helper.isEmpty(uuid)) {
         this.failure('uuid can not be empty', 400);
       }
@@ -61,7 +66,8 @@ class goodController extends baseController {
   async generatorGood(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('goodRules.createGoodRule',
-        'title', 'category', 'description', 'inventory', 'insuranceLink', 'price', 'paymentMethod');
+        'title', 'categoryUUid', 'description', 'inventory',
+        'price', 'exchangeWay', 'giftExchangeContent');
       if (!condition) {
         return false;
       }
@@ -78,11 +84,15 @@ class goodController extends baseController {
           }
         }
       }
+      newGood.paymentMethod = 'Bcoin';
       newGood.category = condition.category;
       newGood.price = Number(condition.price) <= 0 ? 1 : Number(condition.price);
       newGood.title = condition.title;
       newGood.insuranceLink = condition.insuranceLink;
+      newGood.categoryUUid = condition.categoryUUid;
       newGood.description = condition.description;
+      newGood.exchangeWay = condition.exchangeWay;
+      newGood.giftExchangeContent = condition.giftExchangeContent;
       newGood.inventory = Number(condition.inventory) <= 0 ? 1 : Number(condition.inventory);
       newGood.paymentMethod = condition.paymentMethod;
       return newGood;
@@ -94,7 +104,12 @@ class goodController extends baseController {
 
   async updateGood(ctx) {
     try {
-      const { uuid } = ctx.request.body;
+      const [ condition ] = await this.cleanupRequestProperty('goodRules.createGoodRule',
+        'uuid');
+      if (!condition) {
+        return false;
+      }
+      const { uuid } = condition;
       const newGood = await this.generatorGood(ctx);
       if (newGood === false) {
         return;
@@ -135,6 +150,66 @@ class goodController extends baseController {
       this.failure();
     }
   }
+
+
+  // -------------------------2.0----------------------------
+  async createCategory(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('goodRules.createCategoryRule',
+        'category', 'priority', 'type');
+      if (!condition) {
+        return false;
+      }
+      condition.uuid = 'GDC' + require('cuid')();
+      await ctx.service.goodService.createCategory(condition);
+      this.success();
+    } catch (e) {
+      console.log(e);
+      // this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
+  async getCategory(ctx) {
+    try {
+      const [ condition, option ] = await this.cleanupRequestProperty('goodRules.getCategoryRule',
+        'title', 'unit', 'page');
+      if (!condition) {
+        return false;
+      }
+      const result = await ctx.service.goodService.getCategory(condition, option);
+      this.success(result);
+    } catch (e) {
+      // this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
+  async updateCategory(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('goodRules.createGoodRule',
+        'category', 'priority', 'uuid');
+      if (!condition) {
+        return false;
+      }
+      await ctx.service.goodService.updateCategory(condition);
+    } catch (e) {
+      // this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
+  async deleteCategory(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('goodRules.createGoodRule',
+        'uuid');
+      if (!condition) {
+        return false;
+      }
+      await ctx.service.goodService.deleteCategory(condition);
+    } catch (e) {
+      // this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
+
 }
 
 module.exports = goodController;

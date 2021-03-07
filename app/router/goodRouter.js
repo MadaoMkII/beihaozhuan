@@ -18,4 +18,14 @@ module.exports = app => {
   router.post('/good/delGood', app.middleware.authenticatedMiddleware('运营'), controller.goodController.delGood);
   // router.get('/good/getRecommendGoods', controller[`goodController`].getBannerGood);
   router.post('/good/getShowGoods', app.middleware.authenticatedMiddleware('用户'), controller.goodController.getShowGoods);
+  // -------------------------2.0----------------------------
+  router.post('/good/createCategory', app.middleware.authenticatedMiddleware('运营'),
+    controller.goodController.createCategory);
+  router.post('/good/updateCategory', app.middleware.authenticatedMiddleware('运营'),
+    controller.goodController.updateCategory);
+  router.post('/good/deleteCategory', app.middleware.authenticatedMiddleware('运营'),
+    controller.goodController.deleteCategory);
+  router.post('/good/getCategory', app.middleware.authenticatedMiddleware('运营'),
+    controller.goodController.getCategory);
+
 };

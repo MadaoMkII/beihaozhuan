@@ -47,8 +47,8 @@ class AppBootHook {
     this.app.eventEmitter = new EventEmitter();
     const ctx = this.app.createAnonymousContext();
     this.app.eventEmitter.on('normalMissionCount', async (userId, missionName) => {
-      const missionObj = await ctx.model.Mission.findOne({ title: missionName});
-      if (ctx.helper.isEmpty(missionObj) || missionObj.status === `disable`) {
+      const missionObj = await ctx.model.Mission.findOne({ title: missionName });
+      if (ctx.helper.isEmpty(missionObj) || missionObj.status === 'disable') {
         // ctx.throw(`监听器任务名匹配有问题，值为${missionName}`);
         console.log(`监听器任务名匹配有问题或者任务没有开启，值为${missionName}`);
         return;
@@ -90,8 +90,12 @@ class AppBootHook {
       return { uuid: user.uuid, password: user.password };
     });
     this.app.passport.deserializeUser(async (ctx, user) => {
-      // console.log('deserializeUser', user);
-      return ctx.model.UserAccount.findOne(user);
+      const userRes = await ctx.model.UserAccount.findOne(user);
+      if (userRes || !userRes.last_sync_time || ctx.diffTime(userRes.last_sync_time) <= 21) {
+        console.log(ctx.diffTime(userRes.last_sync_time));
+        await ctx.model.UserAccount.updateOne(user, { $set: { last_sync_time: new Date() } });
+      }
+      return userRes;
     });
   }
 

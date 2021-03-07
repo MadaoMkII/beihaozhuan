@@ -24,4 +24,8 @@ module.exports = app => {
   router.post('/mission/finishMission', app.middleware.authenticatedMiddleware('用户'),
     controller.missionProcessingTrackerController.finishMission);
 
+
+  router.post('/mission/createRealMission', app.middleware.authenticatedMiddleware('用户'),
+    controller.realMissionController.createRealMission);
+
 };

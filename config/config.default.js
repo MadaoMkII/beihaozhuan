@@ -18,7 +18,7 @@ module.exports = appInfo => {
         options: {
           poolSize: 6,
           keepAlive: true,
-          dbName: 'beihaozhuan',
+          dbName: 'beihaozhuan_test',
           useCreateIndex: true,
           useFindAndModify: false,
           useUnifiedTopology: true,

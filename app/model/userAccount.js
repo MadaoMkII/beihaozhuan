@@ -81,6 +81,7 @@ module.exports = app => {
     referrals: [{ type: mongoose.Schema.Types.Mixed }], // xia线
     // asyncEventFlag: {type: Boolean, default: false},
     last_login_time: Date,
+    last_sync_time: Date,
   }, {
     timestamps: {
       createdAt: 'created_at', updatedAt: 'updated_at',

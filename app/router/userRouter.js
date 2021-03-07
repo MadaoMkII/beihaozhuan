@@ -47,4 +47,5 @@ module.exports = app => {
 
   router.get('/user/biefanle', controller.authController.biefanle);
   router.get('/user/getWechatNickName', app.middleware.authenticatedMiddleware('用户'), controller.wechatController.getWechatNickName);
+  router.post('/wechat/withdrew', app.middleware.authenticatedMiddleware('用户'), controller.wechatController.withdrew);
 };

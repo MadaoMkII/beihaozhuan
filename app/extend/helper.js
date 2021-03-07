@@ -24,6 +24,8 @@ module.exports = {
     }
     if (isNaN(rating)) {
       switch (rating) {
+        case '进行中':
+          return 4;
         case '审核未通过':
           return 3;
         case '审核通过':
@@ -35,6 +37,8 @@ module.exports = {
       }
     } else {
       switch (rating) {
+        case 4:
+          return '进行中';
         case 3:
           return '审核未通过';
         case 2:

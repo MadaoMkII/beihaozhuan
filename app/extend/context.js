@@ -21,6 +21,11 @@ module.exports = {
     for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
   },
+  diffTime(date_A, date_B = new Date(), unit = 'hours') {
+    const lastTime = DateTime.fromJSDate(new Date(date_A));
+    const nowDate = DateTime.fromJSDate(new Date(date_B));
+    return nowDate.diff(lastTime, unit)[unit].toFixed(2);
+  },
   getDateByPeriod(period) {
     let beginDate;
     const end = DateTime.fromISO(this.getAbsoluteDate().toISOString());

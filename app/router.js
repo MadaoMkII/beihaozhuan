@@ -17,8 +17,10 @@ module.exports = app => {
   require('./router/advertisementRouter')(app);
   require('./router/missionRouter')(app);
   require('./router/maintenanceRouter')(app);
-  require('./router/promotionRounter')(app);
   require('./router/wechatRouter')(app);
   require('./router/gameEventRouter')(app);
   require('./router/fileRouter')(app);
+  require('./router/userRewardRouter')(app);
+  require('./router/promotionRouter')(app);
+
 };

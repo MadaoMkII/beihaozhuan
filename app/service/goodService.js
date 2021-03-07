@@ -28,8 +28,7 @@ class goodService extends Service {
   }
 
   async getManyGood(conditions, option) {
-    // let count = await this.ctx.model.Good.countDocuments(conditions);//estimatedDocumentCount
-    return this.ctx.model.Good.find(conditions, {}, option);
+    return this.ctx.model.Good.find(conditions, {}, option).populate('category');
   }
 
   async getBannerGood() {
@@ -48,6 +47,22 @@ class goodService extends Service {
     });
 
     return settingGood.recommendGood;
+  }
+  // -------------------------2.0----------------------------
+  async createCategory(condition) {
+    const goodCategory = new this.ctx.model.Category(condition);
+    goodCategory.save();
+  }
+  async updateCategory(condition) {
+    await this.ctx.model.Category.updateOne({ uuid: condition.uuid }, { $set: condition });
+  }
+  async deleteCategory(condition) {
+    await this.ctx.model.Category.deleteOne({ uuid: condition.uuid });
+  }
+  async getCategory(condition, option) {
+    const result = await this.ctx.model.Category.find(condition, { created_at: false }, option);
+    const count = await this.ctx.model.Category.countDocuments(condition);
+    return [ result, count ];
   }
 }
 
