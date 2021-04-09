@@ -2,10 +2,41 @@
 const baseController = require('../controller/baseController');
 
 class goodController extends baseController {
+
+  async getGoodDetailForUser(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
+        'uuid');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.goodService.getGood(condition.uuid);
+      return this.success(result);
+    } catch (e) {
+      // this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
+
+  async getGoodDetailForAdmin(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
+        'uuid');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.goodService.getGood(condition.uuid);
+      return this.success(result);
+    } catch (e) {
+      // this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
+
   async getManyGoods(ctx) {
     try {
       const [ condition, option ] = await this.cleanupRequestProperty('goodRules.findGoodRule',
-        'unit', 'page', 'status', 'title', 'uuid');
+        'unit', 'page', 'status', 'title', 'categoryUUid');
       if (!condition) {
         return;
       }
@@ -28,16 +59,12 @@ class goodController extends baseController {
 
   async delGood(ctx) {
     try {
-      const [ condition ] = await this.cleanupRequestProperty('goodRules.createGoodRule',
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
         'uuid');
       if (!condition) {
         return false;
       }
-      const { uuid } = condition;
-      if (ctx.helper.isEmpty(uuid)) {
-        this.failure('uuid can not be empty', 400);
-      }
-      await ctx.service.goodService.delGood(uuid);
+      await ctx.service.goodService.delGood(condition.uuid);
       return this.success();
     } catch (e) {
       this.app.logger.error(e, ctx);
@@ -104,17 +131,28 @@ class goodController extends baseController {
 
   async updateGood(ctx) {
     try {
-      const [ condition ] = await this.cleanupRequestProperty('goodRules.createGoodRule',
-        'uuid');
+      const [ condition ] = await this.cleanupRequestProperty('goodRules.updateGoodRule',
+        'uuid', 'title', 'categoryUUid', 'slideShowPicUrlArray', 'price',
+        'description', 'inventory', 'mainlyShowPicUrl', 'status', 'exchangeWay', 'paymentMethod', 'giftExchangeContent');
       if (!condition) {
         return false;
       }
-      const { uuid } = condition;
-      const newGood = await this.generatorGood(ctx);
-      if (newGood === false) {
-        return;
+      const files = ctx.request.files;
+      if (!ctx.helper.isEmpty(files)) {
+        condition.slideShowPicUrlArray = [];
+        for (const fileObj of files) {
+          const ossUrl = await ctx.service.picService.putImgs(fileObj);
+          if (fileObj.field === 'mainlyShowPicUrl') {
+            condition.mainlyShowPicUrl = ossUrl;
+          } else {
+            condition.slideShowPicUrlArray.push(ossUrl);
+          }
+        }
       }
-      const result = await ctx.service.goodService.updateGood(newGood, uuid);
+      condition.paymentMethod = 'Bcoin';
+      condition.price = Number(condition.price) <= 0 ? 1 : Number(condition.price);
+      condition.inventory = Number(condition.inventory) <= 0 ? 1 : Number(condition.inventory);
+      const result = await ctx.service.goodService.updateGood(condition);
       if (ctx.helper.isEmpty(result)) {
         return this.failure('找不到商品', 4031, 400);
       }
@@ -172,9 +210,12 @@ class goodController extends baseController {
   async getCategory(ctx) {
     try {
       const [ condition, option ] = await this.cleanupRequestProperty('goodRules.getCategoryRule',
-        'title', 'unit', 'page');
+        'category', 'unit', 'page', 'type');
       if (!condition) {
         return false;
+      }
+      if (condition.category) {
+        condition.category = { $regex: `.*${condition.category}.*` };
       }
       const result = await ctx.service.goodService.getCategory(condition, option);
       this.success(result);
@@ -185,12 +226,13 @@ class goodController extends baseController {
   }
   async updateCategory(ctx) {
     try {
-      const [ condition ] = await this.cleanupRequestProperty('goodRules.createGoodRule',
+      const [ condition ] = await this.cleanupRequestProperty('goodRules.updateCategoryRule',
         'category', 'priority', 'uuid');
       if (!condition) {
         return false;
       }
       await ctx.service.goodService.updateCategory(condition);
+      this.success();
     } catch (e) {
       // this.app.logger.error(e, ctx);
       this.failure();
@@ -198,12 +240,13 @@ class goodController extends baseController {
   }
   async deleteCategory(ctx) {
     try {
-      const [ condition ] = await this.cleanupRequestProperty('goodRules.createGoodRule',
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
         'uuid');
       if (!condition) {
         return false;
       }
       await ctx.service.goodService.deleteCategory(condition);
+      this.success();
     } catch (e) {
       // this.app.logger.error(e, ctx);
       this.failure();

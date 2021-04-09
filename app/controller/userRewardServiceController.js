@@ -13,7 +13,8 @@ class userRewardServiceController extends Controller {
         condition.title = { $regex: `.*${condition.title}.*` };
       }
       const result = await ctx.service.userRewardService.getUserRewardList(condition, option);
-      this.success(result);
+      const count = await this.getFindModelCount('UserReward', condition);
+      this.success([ result, count ]);
     } catch (e) {
       console.log(e);
       this.failure(e);

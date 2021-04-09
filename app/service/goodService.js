@@ -3,13 +3,15 @@ const { Service } = require('egg');
 
 class goodService extends Service {
   async createGood(goodObj) {
+    await this.ctx.model.Category.updateOne({ uuid: goodObj.categoryUUid }, { $inc: { amount: 1 } });
     const good = new this.ctx.model.Good(goodObj);
     good.save();
   }
 
-  async updateGood(goodObj, uuid) {
+  async updateGood(condition) {
 
-    const oldGood = await this.ctx.model.Good.findOneAndUpdate({ uuid }, { $set: goodObj }, { new: false });
+    const oldGood = await this.ctx.model.Good.findOneAndUpdate({ uuid: condition.uuid },
+      { $set: condition }, { new: false });
     if (!this.ctx.helper.isEmpty(oldGood)) {
       const waitingForDeletingImgs = oldGood.slideShowPicUrlArray;
       waitingForDeletingImgs.push(oldGood.mainlyShowPicUrl);
@@ -19,16 +21,19 @@ class goodService extends Service {
   }
 
   async delGood(uuid) {
+    const goodObj = await this.ctx.model.Good.findOne({ uuid });
+    await this.ctx.model.Category.updateOne({ uuid: goodObj.categoryUUid }, { $inc: { amount: -1 } });
     return this.ctx.model.Good.deleteOne({ uuid });
   }
-
+  async getGoodForUser(uuid) {
+    return this.ctx.model.Good.findOne({ uuid, status: 'enable' }, { isRecommend: false });
+  }
   async getGood(uuid) {
-
     return this.ctx.model.Good.findOne({ uuid });
   }
 
   async getManyGood(conditions, option) {
-    return this.ctx.model.Good.find(conditions, {}, option).populate('category');
+    return this.ctx.model.Good.find(conditions, { isRecommend: false, redeemCode: false, giftExchangeContent: false }, option).populate('category');
   }
 
   async getBannerGood() {
@@ -60,7 +65,8 @@ class goodService extends Service {
     await this.ctx.model.Category.deleteOne({ uuid: condition.uuid });
   }
   async getCategory(condition, option) {
-    const result = await this.ctx.model.Category.find(condition, { created_at: false }, option);
+    option.sort = { priority: -1 };
+    const result = await this.ctx.model.Category.find(condition, { created_at: false, type: false }, option);
     const count = await this.ctx.model.Category.countDocuments(condition);
     return [ result, count ];
   }

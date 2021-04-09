@@ -17,5 +17,18 @@ class realMissionController extends Controller {
     }
   }
 
+  async doMission(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('missionRules.doMissionRule',
+        'type');
+      if (!condition) {
+        return;
+      }
+      await ctx.service.realMissionService.doRealMission(condition);
+      this.success();
+    } catch (e) {
+      this.failure(e);
+    }
+  }
 }
 module.exports = realMissionController;

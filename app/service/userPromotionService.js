@@ -115,6 +115,7 @@ class userPromotionService extends BaseService {
       reward: promotionBranch.promotionReward,
       promotionUUid: promotionBranch.promotionUUid,
       source: user.source,
+      stepNumber: promotionBranch.stepNumber,
     };
     const promotionBranchObj = new this.ctx.model.UserPromotion(userPromotion);
     promotionBranchObj.save();

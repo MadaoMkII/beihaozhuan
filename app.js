@@ -3,7 +3,7 @@
 // const Logger = require('egg-logger').Logger;
 // const FileTransport = require('egg-logger').FileTransport;
 const ConsoleTransport = require('egg-logger').ConsoleTransport;
-const EventEmitter = require('events');
+// const EventEmitter = require('events');
 const RemoteErrorTransport = require('./app/logging/RemoteErrorTransport');
 
 class AppBootHook {
@@ -44,44 +44,44 @@ class AppBootHook {
   async didReady() {
     // Worker is ready, can do some things
     // don't need to block the app boot.
-    this.app.eventEmitter = new EventEmitter();
-    const ctx = this.app.createAnonymousContext();
-    this.app.eventEmitter.on('normalMissionCount', async (userId, missionName) => {
-      const missionObj = await ctx.model.Mission.findOne({ title: missionName });
-      if (ctx.helper.isEmpty(missionObj) || missionObj.status === 'disable') {
-        // ctx.throw(`监听器任务名匹配有问题，值为${missionName}`);
-        console.log(`监听器任务名匹配有问题或者任务没有开启，值为${missionName}`);
-        return;
-      }
-
-      let effectDay;
-      switch (missionObj.missionType) {
-        case 'Permanent':
-          effectDay = 'Permanent';
-          break;
-        case 'Daily':
-          effectDay = this.app.getFormatDate();
-          break;
-        case 'Weekly':
-          effectDay = this.app.getFormatWeek();
-          break;
-        default:break;
-      }
-      const missionSearcher = {
-        userID: userId,
-        missionID: missionObj._id,
-        effectDay,
-        missionEventName: missionName,
-      };
-      const modelName = `${missionObj.missionType}MissionProcessingTracker`;
-      const res = await ctx.model[modelName].findOne(missionSearcher);
-
-      if (ctx.helper.isEmpty(res)) {
-        this.app.logger.warn(`值为${modelName}`, ctx, missionSearcher);
-        await ctx.service.userService.syncingTasks({ _id: userId });
-      }
-      await ctx.model[modelName].updateOne(missionSearcher, { $inc: { recentAmount: 1 } });
-    });
+    // this.app.eventEmitter = new EventEmitter();
+    // const ctx = this.app.createAnonymousContext();
+    // this.app.eventEmitter.on('normalMissionCount', async (userId, missionName) => {
+    //   const missionObj = await ctx.model.Mission.findOne({ title: missionName });
+    //   if (ctx.helper.isEmpty(missionObj) || missionObj.status === 'disable') {
+    //     // ctx.throw(`监听器任务名匹配有问题，值为${missionName}`);
+    //     console.log(`监听器任务名匹配有问题或者任务没有开启，值为${missionName}`);
+    //     return;
+    //   }
+    //
+    //   let effectDay;
+    //   switch (missionObj.missionType) {
+    //     case 'Permanent':
+    //       effectDay = 'Permanent';
+    //       break;
+    //     case 'Daily':
+    //       effectDay = this.app.getFormatDate();
+    //       break;
+    //     case 'Weekly':
+    //       effectDay = this.app.getFormatWeek();
+    //       break;
+    //     default:break;
+    //   }
+    //   const missionSearcher = {
+    //     userID: userId,
+    //     missionID: missionObj._id,
+    //     effectDay,
+    //     missionEventName: missionName,
+    //   };
+    //   const modelName = `${missionObj.missionType}MissionProcessingTracker`;
+    //   const res = await ctx.model[modelName].findOne(missionSearcher);
+    //
+    //   if (ctx.helper.isEmpty(res)) {
+    //     this.app.logger.warn(`值为${modelName}`, ctx, missionSearcher);
+    //     await ctx.service.userService.syncingTasks({ _id: userId });
+    //   }
+    //   await ctx.model[modelName].updateOne(missionSearcher, { $inc: { recentAmount: 1 } });
+    // });
   }
 
   async serverDidReady() {
@@ -91,9 +91,8 @@ class AppBootHook {
     });
     this.app.passport.deserializeUser(async (ctx, user) => {
       const userRes = await ctx.model.UserAccount.findOne(user);
-      if (userRes || !userRes.last_sync_time || ctx.diffTime(userRes.last_sync_time) <= 21) {
-        console.log(ctx.diffTime(userRes.last_sync_time));
-        await ctx.model.UserAccount.updateOne(user, { $set: { last_sync_time: new Date() } });
+      if (userRes && (!userRes.last_sync_time || !ctx.compareTime(userRes.last_sync_time))) {
+        await ctx.service.realMissionService.syncingMissionTasks(userRes);
       }
       return userRes;
     });

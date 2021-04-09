@@ -6,30 +6,30 @@ class userAccount extends baseController {
   async isLogin(ctx) {
     try {
       const userObj = ctx.user;
-      const absoluteDate = ctx.getAbsoluteDate();
-      const promiseArray = [];
-      let triggerFlag = false;
+      // const absoluteDate = ctx.getAbsoluteDate();
+      // const promiseArray = [];
+      // let triggerFlag = false;
       if (!ctx.helper.isEmpty(userObj)) {
-        if (ctx.helper.isEmpty(userObj.last_login_time) ||
-                    (userObj.last_login_time).toString() !== absoluteDate.toString()) {
-          triggerFlag = true;
-        } else {
-          const dailyMission = await this.ctx.model.DailyMissionProcessingTracker.findOne({
-            userID: userObj._id,
-            effectDay: absoluteDate,
-          });
-          if (ctx.helper.isEmpty(dailyMission)) {
-            triggerFlag = true;
-          }
-        }
-        if (triggerFlag) {
-          const syncingTasksPromise = ctx.service.userService.syncingTasks(userObj);
-          const updateUser = ctx.service.userService.updateUser(userObj.uuid, { last_login_time: absoluteDate });
-          promiseArray.push(syncingTasksPromise);
-          promiseArray.push(updateUser);
-        }
+        // if (ctx.helper.isEmpty(userObj.last_login_time) ||
+        //             (userObj.last_login_time).toString() !== absoluteDate.toString()) {
+        //   triggerFlag = true;
+        // } else {
+        //   const dailyMission = await this.ctx.model.DailyMissionProcessingTracker.findOne({
+        //     userID: userObj._id,
+        //     effectDay: absoluteDate,
+        //   });
+        //   if (ctx.helper.isEmpty(dailyMission)) {
+        //     triggerFlag = true;
+        //   }
+        // }
+        // if (triggerFlag) {
+        //   const syncingTasksPromise = ctx.service.userService.syncingTasks(userObj);
+        //   const updateUser = ctx.service.userService.updateUser(userObj.uuid, { last_login_time: absoluteDate });
+        //   promiseArray.push(syncingTasksPromise);
+        //   promiseArray.push(updateUser);
+        // }
         this.success('用户已经登录', 200);
-        Promise.all(promiseArray).then();
+        // Promise.all(promiseArray).then();
       } else {
         return this.success('用户尚未登录', 200);
       }

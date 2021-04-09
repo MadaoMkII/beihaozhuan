@@ -110,6 +110,6 @@
 // xlsx.utils.book_append_sheet(wb, workSheet, 'dog');
 // const fileName = path.resolve(__dirname, '../app/public/file/test.xlsx');
 // xlsxStyle.writeFile(wb, fileName);
-const a = null;
-const b = () => { console.log(2); };
-a && b();
+const { DateTime } = require('luxon');
+const x = DateTime.fromJSDate(new Date());
+console.log(x.day);

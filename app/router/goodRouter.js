@@ -16,16 +16,17 @@ module.exports = app => {
   router.get('/good/getRecommendGood', app.middleware.authenticatedMiddleware('用户'), controller.goodController.getRecommendGood);
   router.post('/good/setGoodStatus', app.middleware.authenticatedMiddleware('运营'), controller.goodController.setGoodStatus);
   router.post('/good/delGood', app.middleware.authenticatedMiddleware('运营'), controller.goodController.delGood);
+  router.post('/good/getGoodDetailForAdmin', app.middleware.authenticatedMiddleware('用户'), controller.goodController.getGoodDetailForAdmin);
   // router.get('/good/getRecommendGoods', controller[`goodController`].getBannerGood);
   router.post('/good/getShowGoods', app.middleware.authenticatedMiddleware('用户'), controller.goodController.getShowGoods);
   // -------------------------2.0----------------------------
-  router.post('/good/createCategory', app.middleware.authenticatedMiddleware('运营'),
+  router.post('/category/createCategory', app.middleware.authenticatedMiddleware('运营'),
     controller.goodController.createCategory);
-  router.post('/good/updateCategory', app.middleware.authenticatedMiddleware('运营'),
+  router.post('/category/updateCategory', app.middleware.authenticatedMiddleware('运营'),
     controller.goodController.updateCategory);
-  router.post('/good/deleteCategory', app.middleware.authenticatedMiddleware('运营'),
+  router.post('/category/deleteCategory', app.middleware.authenticatedMiddleware('运营'),
     controller.goodController.deleteCategory);
-  router.post('/good/getCategory', app.middleware.authenticatedMiddleware('运营'),
+  router.post('/category/getCategoryList', app.middleware.authenticatedMiddleware('运营'),
     controller.goodController.getCategory);
 
 };

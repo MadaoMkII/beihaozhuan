@@ -18,6 +18,11 @@ module.exports = app => {
       required: true,
       type: String,
     },
+    stepNumber: {
+      required: true,
+      type: Number,
+      default: 1,
+    },
     tel_number: {
       required: true,
       type: String,

@@ -17,58 +17,58 @@ class UserService extends BaseService {
   }
 
 
-  async syncingTasks(user) { // 把mission同步为missionTracker
-
-    const promiseArray = [];
-    const closedMissionArray = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack('disable');
-
-    for (const missionElement of closedMissionArray) {
-      const modelName = missionElement._id + 'MissionProcessingTracker';
-      missionElement.missions.forEach(littleMission => {
-        const promise = this.ctx.model[modelName].deleteOne({ missionID: littleMission._id });
-        promiseArray.push(promise);
-      });
-    }
-
-    const requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack('enable');
-
-
-    requireMissionResult.forEach(missionArray => {
-      if ([ 'Weekly', 'Daily', 'Permanent' ].includes(missionArray._id)) {
-        missionArray.missions.forEach(async mission => {
-          const conditions = {
-            userID: user._id,
-            missionID: mission._id,
-            missionEventName: mission.title,
-            requireAmount: mission.requireAmount,
-          };
-          const modelName = missionArray._id + 'MissionProcessingTracker';
-
-          switch (missionArray._id) {
-            case 'Permanent':
-              conditions.effectDay = 'Permanent';
-              break;
-            case 'Daily':
-              conditions.effectDay = this.ctx.app.getFormatDate(new Date());
-              break;
-            case 'Weekly':
-              conditions.effectDay = this.ctx.app.getFormatWeek(new Date());
-              break;
-            default:break;
-          }
-          const missionTracker = await this.ctx.model[modelName].findOne(conditions);
-          if (this.ctx.helper.isEmpty(missionTracker)) {
-            const newMissionTracker = new this.ctx.model[modelName](conditions);
-
-            const savePromise = newMissionTracker.save();
-            promiseArray.push(savePromise);
-          }
-        });
-      }
-    });
-    Promise.all(promiseArray).then();
-    return requireMissionResult;
-  }
+  // async syncingTasks(user) { // 把mission同步为missionTracker
+  //
+  //   const promiseArray = [];
+  //   const closedMissionArray = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack('disable');
+  //
+  //   for (const missionElement of closedMissionArray) {
+  //     const modelName = missionElement._id + 'MissionProcessingTracker';
+  //     missionElement.missions.forEach(littleMission => {
+  //       const promise = this.ctx.model[modelName].deleteOne({ missionID: littleMission._id });
+  //       promiseArray.push(promise);
+  //     });
+  //   }
+  //
+  //   const requireMissionResult = await this.ctx.service.missionProcessingTrackerService.requireMissionToTrack('enable');
+  //
+  //
+  //   requireMissionResult.forEach(missionArray => {
+  //     if ([ 'Weekly', 'Daily', 'Permanent' ].includes(missionArray._id)) {
+  //       missionArray.missions.forEach(async mission => {
+  //         const conditions = {
+  //           userID: user._id,
+  //           missionID: mission._id,
+  //           missionEventName: mission.title,
+  //           requireAmount: mission.requireAmount,
+  //         };
+  //         const modelName = missionArray._id + 'MissionProcessingTracker';
+  //
+  //         switch (missionArray._id) {
+  //           case 'Permanent':
+  //             conditions.effectDay = 'Permanent';
+  //             break;
+  //           case 'Daily':
+  //             conditions.effectDay = this.ctx.app.getFormatDate(new Date());
+  //             break;
+  //           case 'Weekly':
+  //             conditions.effectDay = this.ctx.app.getFormatWeek(new Date());
+  //             break;
+  //           default:break;
+  //         }
+  //         const missionTracker = await this.ctx.model[modelName].findOne(conditions);
+  //         if (this.ctx.helper.isEmpty(missionTracker)) {
+  //           const newMissionTracker = new this.ctx.model[modelName](conditions);
+  //
+  //           const savePromise = newMissionTracker.save();
+  //           promiseArray.push(savePromise);
+  //         }
+  //       });
+  //     }
+  //   });
+  //   Promise.all(promiseArray).then();
+  //   return requireMissionResult;
+  // }
 
   async updateUser(user_uuid, userObj) {
     delete userObj.uuid;
