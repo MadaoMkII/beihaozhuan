@@ -38,6 +38,7 @@ module.exports = app => {
       default: 'https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/UI/QQ%E6%88%AA%E5%9B%BE20190827233433.png',
     },
     stepsBox: [{ uuid: String, stepNumber: Number }],
+    totalFinishCount: { type: Number, default: 0 },
   }, {
     timestamps: {
       createdAt: 'created_at', updatedAt: 'updated_at',

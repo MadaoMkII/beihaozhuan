@@ -61,6 +61,7 @@ module.exports = app => {
       sparse: true,
     },
     source: String,
+    platform: String,
     nickName: { type: String, default: '无名氏' },
     realName: { type: String },
     inviteCode: { type: String, default: app.getInviteCode },

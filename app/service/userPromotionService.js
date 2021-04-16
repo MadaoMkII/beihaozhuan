@@ -18,7 +18,7 @@ class userPromotionService extends BaseService {
       tempObj.stepNumber = branch.stepNumber;
       tempObj.allowUpload = branch.allowUpload;
       tempObj.rewardSwitch = branch.rewardSwitch;
-      if (!this.app.isEmpty(ups)) {
+      if (!this.isEmpty(ups)) {
         delete ups._doc.promotionBranchUUid;
         delete ups._doc.tel_number;
         delete ups._doc.nickName;
@@ -43,7 +43,7 @@ class userPromotionService extends BaseService {
     const userPromotionMap = new Map();
     for (const ps of userPromotions) {
       const oldUP = userPromotionMap.get(ps.promotionUUid);
-      if (this.app.isEmpty(oldUP) ||
+      if (this.isEmpty(oldUP) ||
           (oldUP.promotionBranchObj && oldUP.promotionBranchObj.stepNumber &&
               (oldUP.promotionBranchObj.stepNumber < ps.promotionBranchObj.stepNumber))) {
         userPromotionMap.set(ps.promotionUUid, ps);
@@ -61,7 +61,7 @@ class userPromotionService extends BaseService {
 
     for (const promotion of promotions) {
       const ups = userPromotionMap.get(promotion.uuid);
-      const tempUserStatus = this.app.isEmpty(ups) ? '未开启' : ups.status;
+      const tempUserStatus = this.isEmpty(ups) ? '未开启' : ups.status;
       if (categoryMap.has(promotion.category.category)) {
         categoryMap.set(promotion.category.category, categoryMap.get(promotion.category.category) + 1);
       } else {
@@ -102,7 +102,7 @@ class userPromotionService extends BaseService {
     const user = this.ctx.user;
     const promotionBranch = await this.ctx.model.PromotionBranch.findOne({
       uuid: condition.promotionBranchUUid });
-    if (this.app.isEmpty(promotionBranch)) {
+    if (this.isEmpty(promotionBranch)) {
       this.ctx.throw(400, '找不到这个uuid对应的记录');
     }
     const userPromotion = {
@@ -123,11 +123,13 @@ class userPromotionService extends BaseService {
 
   async submitUserPromotion(condition) {
     const user = this.ctx.user;
-    const promotionBranch = await this.ctx.model.PromotionBranch.findOneAndUpdate({
-      uuid: condition.promotionBranchUUid,
+    const promotionBranch = await this.ctx.model.UserPromotion.findOneAndUpdate({
+      promotionBranchUUid: condition.promotionBranchUUid,
       status: '进行中',
-      tel_number: user.tel_number }, { $set: { screenshotUrls: condition.screenshotUrls, status: '已提交' } });
-    if (this.app.isEmpty(promotionBranch)) {
+      tel_number: user.tel_number,
+    },
+    { $set: { screenshotUrls: condition.screenshotUrls, status: '已提交' } });
+    if (this.isEmpty(promotionBranch)) {
       this.ctx.throw(400, '找不到这个uuid对应的记录, 或者状态不对');
     }
   }
@@ -137,7 +139,7 @@ class userPromotionService extends BaseService {
     const { user } = this.ctx; //
     const result = await this.ctx.model.UserPromotion.findOneAndUpdate({ uuid: condition.uuid, status: '未审核' },
       { $set: { status: condition.decision, operator: { nickName: user.nickName, tel_number: user.tel_number } } });
-    if (this.app.isEmpty(result)) {
+    if (this.isEmpty(result)) {
       this.ctx.throw(400, '找不到这个uuid对应的记录, 或者订单状态已经被审核');
     }
     if (condition.decision) {

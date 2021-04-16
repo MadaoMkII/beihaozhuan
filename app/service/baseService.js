@@ -3,14 +3,15 @@
 const { Service } = require('egg');
 const { DateTime } = require('luxon');
 class BaseService extends Service {
+
+  constructor(ctx) {
+    super(ctx);
+    this.isEmpty = ctx.app.isEmpty;
+  }
   formatDayOfYear(day) {
     const local = DateTime.fromJSDate(new Date()).reconfigure({ locale: 'zh-CN' });
     const rezoned = local.set({ ordinal: day });
     return rezoned.toFormat('yyyy-MM-dd');
-  }
-
-  isEmpty(obj) {
-    return this.app.isEmpty(obj);
   }
   getAbsoluteDate(useHour = false, date = new Date()) {
     if (!useHour) {

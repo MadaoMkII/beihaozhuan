@@ -41,6 +41,7 @@ module.exports = app => {
       // max: 1000,
     },
     operator: { nickName: String, tel_number: String },
+    creator: { nickName: String, tel_number: String },
     source: String,
   },
   {

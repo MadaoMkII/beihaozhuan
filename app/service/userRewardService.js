@@ -9,7 +9,7 @@ class userRewardService extends BaseService {
     return this.ctx.model.UserReward.findOne({ uuid: condition.uuid });
   }
   async deleteUserReward(condition) {
-    await this.ctx.model.UserReward.deleteOne({ uuid: condition.uuid });
+    await this.ctx.model.UserReward.deleteOne({ uuid: condition.uuid, status: '关闭' });
   }
   async updateUserReward(condition) {
     const user = this.ctx.user;
@@ -24,6 +24,7 @@ class userRewardService extends BaseService {
     condition.uuid = 'UR' + require('cuid')();
     condition.numberOfPeople = condition.guests.length;
     condition.totalAmount = condition.numberOfPeople * condition.singleReward;
+    condition.creator = { tel_number: user.tel_number, nickName: user.nickName };
     condition.operator = { tel_number: user.tel_number, nickName: user.nickName };
     const userReward = new this.ctx.model.UserReward(condition);
     userReward.save();
@@ -34,7 +35,7 @@ class userRewardService extends BaseService {
       status: '关闭' },
     { $set: { operator: { tel_number: this.ctx.user.tel_number, nickName: this.ctx.user.nickName },
       status: '开启' } });
-    if (this.app.isEmpty(userReward)) {
+    if (this.isEmpty(userReward)) {
       this.ctx.throw(400, '找不到对应的记录');
     }
     for (const guest of userReward.guests) {
@@ -50,8 +51,12 @@ class userRewardService extends BaseService {
   }
 
   async quickUserList(condition) {
-    return this.ctx.model.UserAccount.find({ tel_number: { $regex: `.*${condition.username}.*` } },
-      { nickName: 1, tel_number: 1 });
+    let query = { tel_number: { $regex: `.*${condition.username}.*` } };
+    if (this.app.isEmpty(condition.username)) {
+      query = {};
+    }
+    return this.ctx.model.UserAccount.find(query,
+      { nickName: 1, tel_number: 1 }, { limit: 30 });
   }
 }
 

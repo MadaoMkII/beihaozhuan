@@ -207,7 +207,7 @@ class authController extends Controller {
         newUser.userStatus = {};
         newUser.userStatus.hasVerifyWechat = 'enable';
         newUser.userStatus.activity = 'enable';
-        newUser.source = ctx.helper.isEmpty(requestEntity.source) ? 'origin' : requestEntity.source;
+        newUser.source = ctx.helper.isEmpty(requestEntity.source) ? '平台' : requestEntity.source;
         const newUser_login = await ctx.service.userService.addUser(newUser, requestEntity.inviteCode);
 
         if (initialBcoin !== 0) {

@@ -14,8 +14,7 @@ class HomeController extends Controller {
       //   });
       //
       // }
-      const user = await this.ctx.model.UserAccount.findOne({ tel_number: '15222194687' });
-      console.log(user.referrals.length);
+      await this.ctx.model.UserAccount.updateMany({}, { $set: { source: '平台', platform: 'H5网页' } });
       // await ctx.model.GameProcess.updateMany({ status: '进行中',
       //   $expr: { $gte: [ '$currentIncoming', '$requiredIncoming' ] } }, {
       //   $set: { status: '已完成' },

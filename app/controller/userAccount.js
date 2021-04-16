@@ -161,7 +161,7 @@ class userAccount extends baseController {
     try {
       // let result = await ctx.service[`userService`].getManyUser(condition, option);
       const [ condition, option ] = await this.cleanupRequestProperty('userAccountController.findUsersRule',
-        'tel_number', 'hasPaid', 'nickName', 'activity', 'hasVerifyWechat', 'unit', 'page');
+        'tel_number', 'hasPaid', 'nickName', 'activity', 'hasVerifyWechat', 'unit', 'page', 'source', 'platform');
       if (condition !== false) {
         this.deepCleanUp(condition, 'userStatus', 'activity', 'hasPaid', 'hasVerifyWechat');
         // const [ result, count ] = await this.ctx.service.userService.getManyUser(condition,
@@ -188,6 +188,8 @@ class userAccount extends baseController {
             Bcoins: this.app.decrypt(e.Bcoins),
             userStatus: e.userStatus,
             created_at: this.app.getLocalTime(e.created_at),
+            source: e.source,
+            platform: e.platform,
           };
         });
         const count = await this.getFindModelCount('UserAccount', condition);
@@ -217,7 +219,7 @@ class userAccount extends baseController {
         nickName: 1,
         updated_at: 1,
         userStatus: 1,
-        Bcoins: 1, uuid: 1, realName: 1,
+        Bcoins: 1, uuid: 1, realName: 1, source: 1, platform: 1,
       });
       this.success(newUser);
     } catch (e) {

@@ -3,9 +3,6 @@ const rule = {
   uuid: [
     { required: false, message: 'categoryUUid不能为空' },
     { type: 'string', message: '需要是字符串' }],
-  stepNumber: [
-    { required: false, message: 'stepNumber不能为空' },
-    { type: 'number', message: '需要是字符串' }],
   promotionUUid: [
     { required: true, message: 'promotionUUid不能为空' },
     { type: 'string', message: '需要是字符串' }],

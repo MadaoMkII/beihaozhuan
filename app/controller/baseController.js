@@ -3,7 +3,23 @@ const { DateTime } = require('luxon');
 const { Controller } = require('egg');
 
 class BaseController extends Controller {
-
+  constructor(ctx) {
+    super(ctx);
+    this.isEmpty = ctx.app.isEmpty;
+  }
+  async uploadAndSetPics(condition, picsArrayName = 'slideShowPicUrlArray', singlePicName = 'mainlyShowPicUrl') {
+    const files = this.ctx.request.files;
+    if (!this.isEmpty(files)) {
+      for (const fileObj of files) {
+        const ossUrl = await this.ctx.service.picService.putImgs(fileObj);
+        if (fileObj.field !== 'mainlyShowPicUrl') {
+          condition[picsArrayName].push(ossUrl);
+        } else {
+          condition[singlePicName] = ossUrl;
+        }
+      }
+    }
+  }
   async checkTimeInterval(interval) {
     const ctx = this.ctx;
     let lastTime = ctx.cookies.get('lastCallTime');

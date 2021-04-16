@@ -505,53 +505,6 @@ class excelService extends BaseService {
       { $match: condition },
       optionLimit,
       optionSkip,
-      //
-      // {
-      //     $unwind: {
-      //         path: '$balanceList',
-      //         preserveNullAndEmptyArrays: true,
-      //     }
-      // },
-      // {
-      //     $project: {
-      //         uuid: 1,
-      //         tel_number: 1,
-      //         nickName: 1,
-      //         realName: 1,
-      //         Bcoins: 1,
-      //         balanceDayOfYear: {
-      //             $dayOfYear: {
-      //                 date: "$balanceList.createTime",
-      //                 timezone: "Asia/Shanghai"
-      //             },
-      //
-      //         },
-      //         balanceYear: {
-      //             $year: {
-      //                 date: "$balanceList.createTime",
-      //                 timezone: "Asia/Shanghai"
-      //             }
-      //         },
-      //         amount: "$balanceList.amount",
-      //         created_at: "$created_at"
-      //     }
-      // },
-      // {
-      //     $match: {
-      //         balanceDayOfYear: (Number(yesterday.toFormat('ooo'))),
-      //         balanceYear: Number(yesterday.toFormat(`y`))
-      //     }
-      // },
-      // {
-      //     $group: {
-      //         _id: '$uuid',
-      //         todayIncoming: {$sum: '$amount'},
-      //         tel_number: {$first: '$tel_number'},
-      //         nickName: {$first: '$nickName'},
-      //         Bcoins: {$first: '$Bcoins'},
-      //         created_at: {$first: '$created_at'}
-      //     }
-      // },
       {
         $project: {
           uuid: 1,
@@ -562,6 +515,7 @@ class excelService extends BaseService {
           created_at: '$created_at',
           userStatus: 1,
           balanceList: 1,
+          source: 1, platform: 1,
         },
       },
       {
@@ -586,7 +540,7 @@ class excelService extends BaseService {
           realName: 1,
           Bcoins: 1,
           userStatus: 1,
-          created_at: 1,
+          created_at: 1, source: 1, platform: 1,
         },
       },
       {
@@ -606,6 +560,7 @@ class excelService extends BaseService {
           userStatus: { $first: '$userStatus' },
           created_at: { $first: '$created_at' },
           uuid: { $first: '$uuid' },
+          source: { $first: '$source' }, platform: { $first: '$platform' },
         },
       },
     ]);

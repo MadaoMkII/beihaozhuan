@@ -38,7 +38,7 @@ module.exports = app => {
       type: String,
       enum: [ 'enable', 'disable' ], default: 'disable',
     },
-
+    finishCount: { type: Number, default: 0 },
   }, {
     timestamps: {
       createdAt: 'created_at', updatedAt: 'updated_at',
