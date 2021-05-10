@@ -6,11 +6,7 @@ const path = require('path');
  * @param {Egg.EggAppInfo} appInfo app info
  */
 module.exports = appInfo => {
-  /**
-     * built-in config
-     * @type {Egg.EggAppConfig}
-     **/
-  const config = exports = {};
+  const config = {};
   config.mongoose = {
     clients: {
       beihaozhuan: {
@@ -40,7 +36,7 @@ module.exports = appInfo => {
     domainWhiteList: [ 'http://localhost:8080', 'http://127.0.0.1:3000', 'http://localhost:3000' ],
   };
   config.cors = {
-    // origin: 'http://localhost:3000',
+    origin: 'http://localhost:3000',
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
     credentials: true,
   };
@@ -169,7 +165,7 @@ module.exports = appInfo => {
     fields: 100,
     fileSize: '2048mb',
     files: 1000,
-    fileExtensions: [ '' ],
+    // fileExtensions: [ 'jpeg', 'jpg', 'png' ],
   };
 
   exports.email = {

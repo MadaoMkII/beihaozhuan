@@ -2,6 +2,7 @@
 const BaseService = require('./baseService');
 const XLSX = require('xlsx');
 const path = require('path');
+// noinspection NonAsciiCharacters
 class excelService extends BaseService {
   async exportList_downloadOverview() {
     const aggregateResult = await this.ctx.model.AnalyzeLog.aggregate([
@@ -500,7 +501,7 @@ class excelService extends BaseService {
     const thisDay = this.getTimeQueryByPeriod(day);
     const optionLimit = !this.ctx.helper.isEmpty(option) ? { $limit: option.limit + option.skip } : { $limit: 100000 };
     const optionSkip = !this.ctx.helper.isEmpty(option) ? { $skip: option.skip } : { $skip: 0 };
-    const users = await this.ctx.model.UserAccount.aggregate([
+    return this.ctx.model.UserAccount.aggregate([
 
       { $match: condition },
       optionLimit,
@@ -564,7 +565,6 @@ class excelService extends BaseService {
         },
       },
     ]);
-    return users;
   }
   async makeJsonToExcel(resultData, wsCols, sheetName) {
     const workbook = XLSX.utils.book_new();

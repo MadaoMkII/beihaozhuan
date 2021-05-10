@@ -37,12 +37,23 @@ class promotionService extends BaseService {
     delete condition.promotionUUid;
     await this.ctx.model.PromotionBranch.updateOne({ uuid: condition.uuid }, { $set: condition });
   }
+  async updatePromotion(condition) {
+    await this.ctx.model.Promotion.updateOne({ uuid: condition.uuid }, { $set: condition });
+  }
 
+  async getPromotionDetail(condition) {
+    return this.ctx.model.Promotion.findOne({ uuid: condition.promotionUUid }).populate('category stepsBoxDetail');
+  }
   async createPromotion(condition) {
     const promotion = new this.ctx.model.Promotion(condition);
     promotion.save();
   }
-
+  async cleanPromotionBranch(condition) {
+    const uuid = condition.uuid;
+    const promotion = await this.ctx.model.Promotion.findOne({ uuid });
+    await this.ctx.model.Promotion.updateOne({ uuid: promotion.promotionUUid },
+      { $pull: { stepsBox: { uuid } } });
+  }
   async deletePromotionBranch(condition) {
     const uuid = condition.uuid;
     const promotion = await this.ctx.model.PromotionBranch.findOne({ uuid });

@@ -149,7 +149,7 @@ class userAccount extends baseController {
         condition.avatar = ossUrl;
       }
       const newUser_result = await this.ctx.service.userService.updateUser(ctx.user.uuid, condition);
-      ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '完善用户信息');
+      // ctx.app.eventEmitter.emit('normalMissionCount', ctx.user._id, '完善用户信息');
       this.success(newUser_result);
     } catch (e) {
       this.app.logger.error(e, ctx);
@@ -358,6 +358,28 @@ class userAccount extends baseController {
       this.success();
     } catch (e) {
       this.app.logger.error(e, ctx);
+      this.failure();
+    }
+  }
+  async getMyTodayIncoming(ctx) {
+    try {
+      const { user } = ctx;
+      const result = await ctx.service.userService.getMyTodayIncoming();
+      if (this.app.isEmpty(result)) {
+        return this.success({
+          todayIncoming: 0,
+          tel_number: user.tel_number,
+          nickName: user.nickName,
+        });
+      }
+      const resObj = {};
+      resObj.todayIncoming = result[0].todayIncoming;
+      resObj.tel_number = result[0].tel_number;
+      resObj.nickName = result[0].nickName;
+      return this.success(resObj);
+
+
+    } catch (e) {
       this.failure();
     }
   }

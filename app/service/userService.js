@@ -4,6 +4,56 @@ require('moment-timezone');
 
 class UserService extends BaseService {
 
+  async getMyTodayIncoming() {
+    const thisDay = this.getTimeQueryByPeriod('本日');
+    return this.ctx.model.UserAccount.aggregate([
+      { $match: { uuid: this.ctx.user.uuid } },
+      {
+        $project: {
+          tel_number: 1,
+          nickName: 1,
+          balanceList: 1,
+        },
+      },
+      {
+        $project: {
+          items: {
+            $filter: {
+              input: '$balanceList',
+              as: 'item',
+              cond: {
+                $and:
+                  [
+                    { $gte: [ '$$item.createTime', thisDay.created_at.$gte ] },
+                    { $lte: [ '$$item.createTime', thisDay.created_at.$lte ] },
+                    { $eq: [ '$$item.income', '获得' ] },
+                  ],
+              },
+            },
+          },
+          tel_number: 1,
+          nickName: 1,
+        },
+      },
+      {
+        $unwind: {
+          path: '$items',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      // { $match: { '$items.income': '消费' } },
+      {
+        $group: {
+          _id: '$tel_number',
+          todayIncoming: { $sum: '$items.amount' },
+          tel_number: { $first: '$tel_number' },
+          nickName: { $first: '$nickName' },
+        },
+      },
+    ]);
+  }
+
+
   async setUserBcionChange(user_uuid, category, income, amount, tempBcoin) {
     const newBcionChange = {
       category,

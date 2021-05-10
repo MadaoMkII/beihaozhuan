@@ -2,7 +2,7 @@
 module.exports = app => {
   const { router, controller } = app;
   const checker = app.middleware.authenticatedMiddleware;
-  const { userPromotionController, promotionController } = controller;
+  const { promotionController } = controller;
   router.post('/promotion/createPromotion', checker('用户'), promotionController.createPromotion);
   router.post('/promotion/addPromotionBranch', checker('用户'), promotionController.addPromotionBranch);
   router.post('/promotion/updatePromotionBranch', checker('用户'), promotionController.updatePromotionBranch);
@@ -14,8 +14,7 @@ module.exports = app => {
   // router.post('/userPromotion/approvePromotion', checker('用户'), userPromotionController.approvePromotion);
   router.post('/userPromotion/checkDownloadLink', checker('用户'), promotionController.checkDownloadLink);
   router.post('/userReward/getPromotionDetail', checker('用户'), promotionController.getPromotionDetail);
-
-
+  router.post('/promotion/updatePromotion', checker('用户'), promotionController.updatePromotion);
   // router.post('/promotion/getProofs', app.middleware.authenticatedMiddleware('用户'),
   //     controller.homeCreditController.getProofs);
   //

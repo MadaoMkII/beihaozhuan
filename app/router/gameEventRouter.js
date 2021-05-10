@@ -16,7 +16,7 @@ module.exports = app => {
   router.post('/gameEvent/getAuditUploadRecordList', authenticatedMiddleware('客服'), gameEventController.getAuditUploadRecordList);
   router.post('/gameEvent/withdrewByCategory', authenticatedMiddleware('用户'), gameEventController.withdrewByCategory);
   router.post('/gameEvent/getMyGameProcess', authenticatedMiddleware('用户'), gameEventController.getMyGameProcess);
-  router.post('/images/uploadImages', authenticatedMiddleware('用户'), controller.picController.uploadImages);
+  router.post('/images/uploadImages', controller.picController.uploadImages);
   router.post('/gameEvent/getEventGameByCategory', authenticatedMiddleware('用户'), gameEventController.getEventGameByCategory);
 
   router.post('/gameEvent/getGameSetting', authenticatedMiddleware('用户'), gameEventController.getGameSetting);

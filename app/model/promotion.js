@@ -9,6 +9,7 @@ module.exports = app => {
       unique: true,
       sparse: true,
     },
+    link: String,
     title: { type: String, required: true },
     categoryUUid: { type: String, required: true },
     promotionType: {
@@ -35,7 +36,7 @@ module.exports = app => {
     },
     mainlyShowPicUrl: {
       type: String,
-      default: 'https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/UI/QQ%E6%88%AA%E5%9B%BE20190827233433.png',
+      // default: 'https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/UI/QQ%E6%88%AA%E5%9B%BE20190827233433.png',
     },
     stepsBox: [{ uuid: String, stepNumber: Number }],
     totalFinishCount: { type: Number, default: 0 },
@@ -48,6 +49,12 @@ module.exports = app => {
   promotion.virtual('category', {
     ref: 'Category', // The model to use
     localField: 'categoryUUid', // Find people where `localField`
+    foreignField: 'uuid', // is equal to `foreignField`
+    justOne: true,
+  });
+  promotion.virtual('stepsBoxDetail', {
+    ref: 'PromotionBranch', // The model to use
+    localField: 'stepsBox.uuid', // Find people where `localField`
     foreignField: 'uuid', // is equal to `foreignField`
     justOne: true,
   });

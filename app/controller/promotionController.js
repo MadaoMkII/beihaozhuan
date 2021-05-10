@@ -35,14 +35,14 @@ class promotionController extends Controller {
     try {
       const [ condition ] = await this.cleanupRequestProperty('promotionRules.createPromotionRule',
         'title', 'categoryUUid', 'promotionType', 'platform', 'description',
-        'reward', 'priority', 'mainlyShowPicUrl');
+        'reward', 'priority', 'mainlyShowPicUrl', 'link');
       if (!condition) {
         return;
       }
       await this.uploadAndSetPics(condition, 'showPics');
       condition.uuid = 'PRO' + require('cuid')();
       await ctx.service.promotionService.createPromotion(condition);
-      this.success();
+      this.success(condition.uuid);
     } catch (e) {
       console.log(e);
       this.failure(e);
@@ -58,14 +58,27 @@ class promotionController extends Controller {
       if (!condition) {
         return;
       }
-      await this.uploadAndSetPics(condition, 'showPics');
+      // await this.uploadAndSetPics(condition, 'showPics');
       await ctx.service.promotionService.setPromotionBranch(condition);
       this.success();
     } catch (e) {
       this.failure(e);
     }
   }
-
+  async updatePromotion(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('promotionRules.updatePromotionBranchRule',
+        'title', 'link', 'categoryUUid', 'promotionType', 'uuid',
+        'platform', 'description', 'reward', 'priority', 'mainlyShowPicUrl');
+      if (!condition) {
+        return;
+      }
+      await ctx.service.promotionService.updatePromotion(condition);
+      this.success();
+    } catch (e) {
+      this.failure(e);
+    }
+  }
   async updatePromotionBranch(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('promotionRules.updatePromotionBranchRule',
@@ -94,6 +107,17 @@ class promotionController extends Controller {
       this.failure(e);
     }
   }
+  // async getPromotionDetail(ctx) {
+  //   const [ condition ] = await this.cleanupRequestProperty('uuidRule',
+  //     'uuid');
+  //   if (!condition) {
+  //     return;
+  //   }
+  //   await ctx.service.promotionService.cleanPromotionBranch(condition);
+  //   this.success();
+  // } catch(e) {
+  //   this.failure(e);
+  // }
   //---------------------------------------------------------------------------
   async checkDownloadLink(ctx) {
     try {

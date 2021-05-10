@@ -1,69 +1,70 @@
 'use strict';
-const { Service } = require('egg');
+const BaseService = require('./baseService');
+class orderTrackerService extends BaseService {
 
-class orderTrackerService extends Service {
 
-
-  async getExcel(conditions, option) {
-    const searcher = {};
-    Object.keys(conditions).forEach(key => {
-      if (key === 'title') {
-        searcher.title = { $regex: `.*${conditions.title}.*` };
-      } else {
-        searcher[key] = conditions[key];
-      }
-    });
-    // .populate({path: `goodUUid`, model: this.ctx.model.Good})
-    const allData = this.ctx.model.OrderTracker.find({}, { _id: 0 });
+  // async getExcel(conditions, option) {
+  //   const searcher = {};
+  //   Object.keys(conditions).forEach(key => {
+  //     if (key === 'title') {
+  //       searcher.title = { $regex: `.*${conditions.title}.*` };
+  //     } else {
+  //       searcher[key] = conditions[key];
+  //     }
+  //   });
+  //   // .populate({path: `goodUUid`, model: this.ctx.model.Good})
+  //   const allData = this.ctx.model.OrderTracker.find({}, { _id: 0 });
+  // }
+  //
+  // async findOrder(conditions, option) {
+  //   const searcher = {};
+  //   Object.keys(conditions).forEach(key => {
+  //     if (key === 'title') {
+  //       searcher.title = { $regex: `.*${conditions.title}.*` };
+  //     } else {
+  //       searcher[key] = conditions[key];
+  //     }
+  //   });
+  //   //
+  //   return this.ctx.model.OrderTracker.find(searcher, {}, option).populate({
+  //     path: 'goodID',
+  //     model: this.ctx.model.Good, select: '-_id insuranceLink',
+  //   });
+  // }
+  async getMyOrders(condition, option) {
+    const result = await this.ctx.model.OrderTrack.find({ creator: this.ctx.uesr._id },
+      { title: 1, content: 1, price: 1 }, option);
   }
 
-  async findOrder(conditions, option) {
-    const searcher = {};
-    Object.keys(conditions).forEach(key => {
-      if (key === 'title') {
-        searcher.title = { $regex: `.*${conditions.title}.*` };
-      } else {
-        searcher[key] = conditions[key];
-      }
-    });
-    //
-    return this.ctx.model.OrderTracker.find(searcher, {}, option).populate({
-      path: 'goodID',
-      model: this.ctx.model.Good, select: '-_id insuranceLink',
-    });
-  }
-
-  async makeOrder(order) {
-    const good = await this.service.goodService.getGood(order.goodUUid);
-    if (!good) {
-      return this.ctx.throw(400, 'can not find good');
+  async makeOrder(condition) {
+    const { user } = this.ctx;
+    const good = await this.ctx.model.Good.findOne({ uuid: condition.uuid });
+    if (this.isEmpty(good)) {
+      this.ctx.throw(400, '找不到这个商品');
     }
     if (good.price > this.ctx.user.Bcoins) {
-      return this.ctx.throw(400, 'user cannot offer this good');
+      this.ctx.throw(400, '余额不足');
     }
-    // const balanceRecord = {
-    //   category: '购买商品',
-    //   income: '消费',
-    //   amount: -good.price,
-    //   createTime: new Date(),
-    // };
-    const promise_1 = this.ctx.service.userService.setUserBcionChange(this.ctx.user.uuid, '购买商品',
-      '消费', -good.price, this.ctx.user.Bcoins - good.price);
 
-    order.goodCategory = good.category;
-    order.goodPrice = good.price;
-    order.title = good.title;
-    order.goodID = good._id;
-    order.mainlyShowPicUrl = good.mainlyShowPicUrl;
-    order.orderUUid = 'ORD' + require('cuid')();
-    order.redeemCode = this.ctx.helper.randomNumber(8);
+    const modifyObj = {
+      tel_number: user.tel_number,
+      content: `用户消费-${good.title}`,
+      category: '用户消费-购买商品',
+      amount: -good.price,
+    };
+    await this.ctx.service.userService.modifyUserRcoin(modifyObj);
 
-    const consumerTracker = new this.ctx.model.OrderTracker(order);
-    const promise_2 = consumerTracker.save();
-    Promise.all([ promise_1, promise_2 ]).catch(error => {
-      this.app.logger.error(error, this.ctx);
-    });
-    return order;
+    const orderObj = {
+      good_id: good._id,
+      title: good.title,
+      content: good.giftExchangeContent,
+      price: good.price,
+      creator: user._id,
+      tel_number: user.tel_number,
+
+    };
+    const consumerTracker = new this.ctx.model.OrderTrack(orderObj);
+    consumerTracker.save();
   }
 }
 

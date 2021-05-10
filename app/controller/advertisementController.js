@@ -38,8 +38,6 @@ class advertisementController extends Controller {
       if (!advertisement) {
         return;
       }
-      const promiseArray = [];
-      const userObj = ctx.user;
       const advertisementObj = await ctx.service.advertisementService.getOneAdvertisement({ uuid: advertisement.uuid });
       if (ctx.helper.isEmpty(advertisementObj)) {
         return this.failure('找不到目标广告', 4041, 400);

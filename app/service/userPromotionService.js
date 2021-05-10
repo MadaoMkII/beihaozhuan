@@ -5,19 +5,25 @@ class userPromotionService extends BaseService {
   async getDetail(condition) {
     const promotion = await this.ctx.model.Promotion.findOne({ uuid: condition.uuid },
       { stepsBox: 0, created_at: 0, updated_at: 0 }).populate('category');
-    const branches = await this.ctx.model.PromotionBranch.find({ promotionUUid: condition.uuid, status: 'disable' },
+    if (!promotion) {
+      this.ctx.throw(400, '找不到这个活动');
+    }
+    const branches = await this.ctx.model.PromotionBranch.find({ promotionUUid: condition.uuid },
       {}, { sort: { stepNumber: 1 } });
-    const userPromotions = await this.ctx.model.UserPromotion.find({ promotionUUid: condition.uuid }, { operator: 0,
-      promotionUUid: 0,
-      created_at: 0,
-    });
+    const userPromotions = await this.ctx.model.UserPromotion.find({ promotionUUid: condition.uuid },
+      {
+        operator: 0,
+        created_at: 0,
+      });
     const branchArray = [];
     for (const branch of branches) {
       const ups = userPromotions.find(e => e.promotionBranchUUid === branch.uuid);
       const tempObj = {};
+      tempObj.uuid = branch.uuid;
       tempObj.stepNumber = branch.stepNumber;
       tempObj.allowUpload = branch.allowUpload;
       tempObj.rewardSwitch = branch.rewardSwitch;
+      tempObj.branchTitle = branch.branchTitle;
       if (!this.isEmpty(ups)) {
         delete ups._doc.promotionBranchUUid;
         delete ups._doc.tel_number;
@@ -29,7 +35,6 @@ class userPromotionService extends BaseService {
       tempObj.showPics = branch.showPics;
       tempObj.downloadLink = branch.downloadLink;
       branchArray.push(tempObj);
-      console.log(tempObj);
     }
     promotion._doc.branches = branchArray;
     return promotion;
