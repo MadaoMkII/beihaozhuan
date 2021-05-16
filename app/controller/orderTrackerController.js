@@ -99,13 +99,37 @@ class orderTrackerController extends baseController {
       if (!condition) {
         return;
       }
-      await ctx.service.orderTrackerService.makeOrder(condition);
-      this.success();
+      const giftExchangeContent = await ctx.service.orderTrackerService.makeOrder(condition);
+      this.success(giftExchangeContent);
     } catch (e) {
       this.failure(e);
     }
   }
-
-
+  async getMyOrders(ctx) {
+    try {
+      const [ condition, options ] = await this.cleanupRequestProperty('pageAndUnitRule',
+        'page', 'unit');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.orderTrackerService.getMyOrders(condition, options);
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
+  async getOneMyOrder(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('idRule',
+        'id');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.orderTrackerService.getOneMyOrder(condition);
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
 }
 module.exports = orderTrackerController;

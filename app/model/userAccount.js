@@ -93,7 +93,6 @@ module.exports = app => {
     virtuals: true,
     transform: (doc, ret) => {
       delete ret.__v;
-      delete ret._id;
       delete ret.id;
       delete ret.password;
       if (doc.updated_at) {
@@ -124,7 +123,6 @@ module.exports = app => {
     },
   });
   userAccountSchema.set('toObject', {
-    virtuals: true,
     transform: (doc, ret) => {
       delete ret.__v;
       // delete ret._id;

@@ -27,6 +27,7 @@ module.exports = app => {
       min: [ 0, 'Must bigger than 0 ' ],
       max: 1000,
     },
+    // 南乡不是白板点了85%
     mainlyShowPicUrl: {
       type: String,
       default: 'https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/UI/QQ%E6%88%AA%E5%9B%BE20190827233433.png',
@@ -71,18 +72,25 @@ module.exports = app => {
       delete ret.created_at;
       delete ret.updated_at;
       ret.category = doc.category ? doc.category.category : '未分类';
-      // delete ret.password;
-      // ret.Bcoins = doc.Bcoins;
-      // ret.VIPLevel = vipCoculart(doc.growthPoints);
-      // if (doc.created_at && doc.updated_at) {
-      //     ret.created_at = new Date(doc.created_at).getTime();
-      //     ret.updated_at = new Date(doc.updated_at).getTime();
-      // }
-      // if (doc.last_login_time) {
-      //     ret.last_login_time = new Date(doc.last_login_time).getTime();
-      // }
+      if (doc.created_at) {
+        ret.created_at = new Date(doc.created_at).getTime();
+      }
     },
   });
-
+  goodSchema.set('toObject', {
+    virtuals: true,
+    transform: (doc, ret) => {
+      delete ret.__v;
+      delete ret._id;
+      delete ret.id;
+      delete ret.created_at;
+      delete ret.updated_at;
+      ret.priority = doc.category ? doc.category.priority : -1;
+      ret.category = doc.category ? doc.category.category : '未分类';
+      if (doc.created_at) {
+        ret.created_at = new Date(doc.created_at).getTime();
+      }
+    },
+  });
   return connection.model('Good', goodSchema, 'Good');
 };

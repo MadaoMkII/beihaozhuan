@@ -31,9 +31,31 @@ class orderTrackerService extends BaseService {
   //     model: this.ctx.model.Good, select: '-_id insuranceLink',
   //   });
   // }
+  async getOneMyOrder(condition) {
+    const result = await this.ctx.model.OrderTrack.findOne({ _id: condition.id },
+      { title: 1, content: 1, price: 1 }).lean({ autoPopulate: true });
+    if (this.isEmpty(result)) {
+      this.ctx.throw(400, '这条记录不存在');
+    }
+    if (!result.creator._id.equals(this.ctx.user._id)) {
+      this.ctx.throw(400, '不是本人创建的');
+    }
+    delete result.creator;
+    // result.contentReview = result.content.replace(/(<([^>]+)>)/ig, '').substring(0, 30);
+    return result;
+  }
   async getMyOrders(condition, option) {
-    const result = await this.ctx.model.OrderTrack.find({ creator: this.ctx.uesr._id },
+    let result = await this.ctx.model.OrderTrack.find({ creator: this.ctx.user._id },
       { title: 1, content: 1, price: 1 }, option);
+    result = result.map(e => {
+      return {
+        contentReview: e.content.replace(/(<([^>]+)>)/ig, '').substring(0, 30),
+        title: e.title,
+        price: e.price,
+        id: e._id,
+      };
+    });
+    return result;
   }
 
   async makeOrder(condition) {
@@ -61,10 +83,10 @@ class orderTrackerService extends BaseService {
       price: good.price,
       creator: user._id,
       tel_number: user.tel_number,
-
     };
     const consumerTracker = new this.ctx.model.OrderTrack(orderObj);
     consumerTracker.save();
+    return good.giftExchangeContent;
   }
 }
 

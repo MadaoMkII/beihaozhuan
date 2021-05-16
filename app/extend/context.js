@@ -26,10 +26,14 @@ module.exports = {
     const nowDate = DateTime.fromJSDate(new Date(date_B));
     return nowDate.diff(lastTime, unit)[unit].toFixed(2);
   },
-  compareTime(date_A, date_B = new Date(), unit = 'day') {
+  compareTime(date_A, date_B = new Date(), units = [ 'day', 'month', 'year' ]) {
     const lastTime = DateTime.fromJSDate(new Date(date_A));
     const nowDate = DateTime.fromJSDate(new Date(date_B));
-    return lastTime[unit] === nowDate[unit];
+    let finalFlag = true;
+    for (const unit of units) {
+      finalFlag = finalFlag && (lastTime[unit] === nowDate[unit]);
+    }
+    return finalFlag;
   },
   getDateByPeriod(period) {
     let beginDate;
@@ -43,6 +47,8 @@ module.exports = {
         break;
       case 'full':
         beginDate = undefined;
+        break;
+      default:
         break;
     }
     return beginDate;

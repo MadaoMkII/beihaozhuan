@@ -91,8 +91,12 @@ class AppBootHook {
     });
     this.app.passport.deserializeUser(async (ctx, user) => {
       const userRes = await ctx.model.UserAccount.findOne(user);
-      if (userRes && (!userRes.last_sync_time || !ctx.compareTime(userRes.last_sync_time))) {
-        await ctx.service.realMissionService.syncingMissionTasks(userRes);
+      if (userRes) {
+        if (!userRes.last_sync_time || !ctx.compareTime(userRes.last_sync_time)) {
+          await ctx.service.realMissionService.syncingMissionTasks(userRes);
+        }
+      } else {
+        ctx.throw(400, '该用户不存在');
       }
       return userRes;
     });

@@ -13,8 +13,8 @@ module.exports = app => {
       content: String,
       price: String,
       creator: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'UserAccount',
-        autopopulate: { select: 'nickName avatar USERID' },
+        type: mongoose.Schema.Types.ObjectId, ref: 'RealMission',
+        autopopulate: { select: 'uuid title tel_number' },
       },
       tel_number: String,
     },

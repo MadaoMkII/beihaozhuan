@@ -10,11 +10,10 @@ class goodController extends baseController {
       if (!condition) {
         return;
       }
-      const result = await ctx.service.goodService.getGood(condition.uuid);
+      const result = await ctx.service.goodService.getGood(condition.uuid, { giftExchangeContent: false });
       return this.success(result);
     } catch (e) {
-      // this.app.logger.error(e, ctx);
-      this.failure();
+      this.failure(e);
     }
   }
 
@@ -55,6 +54,23 @@ class goodController extends baseController {
   async getShowGoods(ctx) {
     // ctx.request.body.status = 'enable';
     await this.getManyGoods(ctx);
+  }
+  async getGoodListForUser(ctx) {
+    try {
+      const [ condition, option ] = await this.cleanupRequestProperty('goodRules.getGoodListForUserRule',
+        'unit', 'page', 'categoryUUid');
+      if (!condition) {
+        return false;
+      }
+      if (condition.categoryUUid === '全部') {
+        delete condition.categoryUUid;
+      }
+      const result = await ctx.service.goodService.getGoodListForUser(condition, option);
+      const count = await this.getFindModelCount('Good', condition);
+      this.success([ result, count ]);
+    } catch (e) {
+      this.failure(e);
+    }
   }
 
   async delGood(ctx) {
@@ -252,6 +268,7 @@ class goodController extends baseController {
       this.failure();
     }
   }
+
 
 }
 

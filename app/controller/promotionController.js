@@ -1,6 +1,8 @@
 'use strict';
 const Controller = require('./baseController');
-
+/**
+ * @Controller 用户管理
+ */
 class promotionController extends Controller {
   async approvePromotion(ctx) {
     try {
@@ -107,6 +109,20 @@ class promotionController extends Controller {
       this.failure(e);
     }
   }
+  async deletePromotion(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
+        'uuid');
+      if (!condition) {
+        return;
+      }
+      await ctx.service.promotionService.deletePromotion(condition);
+      this.success();
+    } catch (e) {
+      this.failure(e);
+    }
+  }
+
   // async getPromotionDetail(ctx) {
   //   const [ condition ] = await this.cleanupRequestProperty('uuidRule',
   //     'uuid');
@@ -135,15 +151,31 @@ class promotionController extends Controller {
 
   }
   async getPromotionDetail(ctx) {
-    const [ condition ] = await this.cleanupRequestProperty('uuidRule',
-      'uuid');
-    if (!condition) {
-      return;
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
+        'uuid');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.userPromotionService.getDetail(condition);
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
     }
-    const result = await ctx.service.userPromotionService.getDetail(condition);
-    this.success(result);
   }
-
+  async getPromotionForAdmin(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
+        'uuid');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.userPromotionService.getPromotionForDetail(condition);
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
   async getMainPageData(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('promotionRules.user.getMainPageDataRule',
@@ -158,11 +190,23 @@ class promotionController extends Controller {
       this.failure(e);
     }
   }
-
-  async submitUserPromotionService(ctx) {
+  async getCheckUserPromotionBranchLabel(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
+        'uuid');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.userPromotionService.getCheckUserPromotionBranchLabel(condition);
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
+  async submitUserPromotionProve(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('promotionRules.user.submitUserPromotionRule',
-        'promotionBranchUUid');
+        'promotionBranchUUid', 'screenshotUrls');
       if (!condition) {
         return;
       }
@@ -170,7 +214,23 @@ class promotionController extends Controller {
       await ctx.service.userPromotionService.submitUserPromotion(condition);
       this.success();
     } catch (e) {
-      console.log(e);
+      this.failure(e);
+    }
+  }
+  async getCheckUserPromotionList(ctx) {
+    try {
+      const [ condition, option ] = await this.cleanupRequestProperty('promotionRules.user.getCheckUserPromotionListRule',
+        'tel_number', 'status', 'source', 'page', 'unit', 'promotionBranchUUid');
+      if (!condition) {
+        return;
+      }
+      if (!this.isEmpty(condition.title)) {
+        condition.title = { $regex: `.*${condition.title}.*` };
+      }
+      const list = await ctx.service.userPromotionService.getCheckUserPromotionList(condition, option);
+      const count = await this.getFindModelCount('UserPromotion', condition);
+      this.success([ list, count ]);
+    } catch (e) {
       this.failure(e);
     }
   }

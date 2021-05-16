@@ -2,6 +2,22 @@
 const { Service } = require('egg');
 
 class goodService extends Service {
+  async getGoodListForUser(condition, option) {
+    let allGoodList = await this.ctx.model.Good.find(condition, {}).populate('category');
+    allGoodList = allGoodList.sort((a, b) => a.priority - b.priority);
+    allGoodList = allGoodList.map(e => {
+      return {
+        slideShowPicUrlArray: e.slideShowPicUrlArray,
+        mainlyShowPicUrl: e.mainlyShowPicUrl,
+        uuid: e.uuid,
+        title: e.title,
+        price: e.price,
+        category: e.category.category,
+      };
+    });
+    return allGoodList.slice(option.skip, option.limit + option.skip);
+  }
+
   async createGood(goodObj) {
     await this.ctx.model.Category.updateOne({ uuid: goodObj.categoryUUid }, { $inc: { amount: 1 } });
     const good = new this.ctx.model.Good(goodObj);
@@ -28,8 +44,8 @@ class goodService extends Service {
   async getGoodForUser(uuid) {
     return this.ctx.model.Good.findOne({ uuid, status: 'enable' }, { isRecommend: false });
   }
-  async getGood(uuid) {
-    return this.ctx.model.Good.findOne({ uuid });
+  async getGood(uuid, project) {
+    return this.ctx.model.Good.findOne({ uuid }, project);
   }
 
   async getManyGood(conditions, option) {

@@ -24,27 +24,31 @@ module.exports = {
     }
     if (isNaN(rating)) {
       switch (rating) {
-        case '进行中':
+        case '已下载':
+          return 5;
+        case '已完成':
           return 4;
         case '审核未通过':
           return 3;
         case '审核通过':
           return 2;
-        case '未审核':
+        case '审核中':
           return 1;
         default:
           return 0;
       }
     } else {
       switch (rating) {
+        case 5:
+          return '已下载';
         case 4:
-          return '进行中';
+          return '已完成';
         case 3:
           return '审核未通过';
         case 2:
           return '审核通过';
         case 1:
-          return '未审核';
+          return '审核中';
         default:
           return '其他';
       }

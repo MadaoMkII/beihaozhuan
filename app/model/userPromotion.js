@@ -28,7 +28,8 @@ module.exports = app => {
       type: String,
     },
     nickName: String,
-    status: { required: true,
+    status: {
+      required: true,
       type: Number,
       get: localCtx.helper.exchangeRating,
       set: localCtx.helper.exchangeRating },

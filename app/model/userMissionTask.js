@@ -12,7 +12,11 @@ module.exports = app => {
     tel_number: String,
     nickName: String,
     title: { type: String, required: true },
-    missionUUid: { type: String, required: true },
+    mission_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'RealMission',
+      autopopulate: true,
+    },
     picUrl: { type: String, required: true },
     type: {
       required: true,
@@ -60,6 +64,6 @@ module.exports = app => {
       }
     },
   });
-
+  userMissionTask.plugin(require('mongoose-autopopulate'));
   return connection.model('UserMissionTask', userMissionTask, 'UserMissionTask');
 };

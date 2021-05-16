@@ -29,4 +29,10 @@ module.exports = app => {
     controller.realMissionController.createRealMission);
   router.post('/mission/doMission', app.middleware.authenticatedMiddleware('用户'),
     controller.realMissionController.doMission);
+
+  router.post('/mission/getRealMissionForUser', app.middleware.authenticatedMiddleware('用户'),
+    controller.realMissionController.getRealMissionForUser);
+  router.post('/mission/finishRealMission', app.middleware.authenticatedMiddleware('用户'),
+    controller.realMissionController.finishRealMission);
+
 };

@@ -43,6 +43,7 @@ module.exports = app => {
       delete ret.__v;
       delete ret._id;
       delete ret.updated_at;
+      ret.created_at = app.getLocalTime(doc.created_at);
       ret.recentAmount = doc.recentAmount > doc.requireAmount ? doc.requireAmount : doc.recentAmount;
     },
   });

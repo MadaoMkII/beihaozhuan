@@ -61,6 +61,20 @@ class promotionService extends BaseService {
       { $pull: { stepsBox: { uuid } } });
     await this.ctx.model.PromotionBranch.deleteOne({ uuid });
   }
+
+  async deletePromotion(condition) {
+    const uuid = condition.uuid;
+    const promotion = await this.ctx.model.Promotion.findOne({ uuid });
+    if (this.isEmpty(promotion)) {
+      this.ctx.throw(400, '找不到这个记录');
+    }
+    const flag = await this.ctx.model.UserPromotion.exists({ promotionUUid: uuid });
+    if (flag) {
+      this.ctx.throw(400, '已经有用户进行了这个活动，无法删除');
+    }
+    await this.ctx.model.Promotion.deleteOne({ uuid });
+  }
+
 }
 
 module.exports = promotionService;

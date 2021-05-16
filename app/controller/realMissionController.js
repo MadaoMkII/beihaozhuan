@@ -30,5 +30,32 @@ class realMissionController extends Controller {
       this.failure(e);
     }
   }
+
+  async getRealMissionForUser(ctx) {
+    try {
+      const [ condition, option ] = await this.cleanupRequestProperty('pageAndUnitRule',
+        'unit', 'page');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.realMissionService.getRealMissionForUser(option);
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
+  async finishRealMission(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
+        'uuid');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.realMissionService.finishRealMission(condition);
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
 }
 module.exports = realMissionController;

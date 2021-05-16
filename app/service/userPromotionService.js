@@ -28,7 +28,15 @@ class userPromotionService extends BaseService {
         delete ups._doc.promotionBranchUUid;
         delete ups._doc.tel_number;
         delete ups._doc.nickName;
-        tempObj.userPromotion = ups;
+        tempObj.userPromotion = {
+          status: ups.status,
+          screenshotUrls: ups.screenshotUrls,
+        };
+      } else {
+        tempObj.userPromotion = {
+          status: '未开启',
+          screenshotUrls: [],
+        };
       }
       tempObj.promotionReward = branch.promotionReward;
       tempObj.description = branch.description;
@@ -54,11 +62,11 @@ class userPromotionService extends BaseService {
         userPromotionMap.set(ps.promotionUUid, ps);
       }
     }
-    const promotions = await this.ctx.model.Promotion.find({ platform, status: 'disable' }).populate('category');
+    const promotions = await this.ctx.model.Promotion.find({ platform, status: 'enable' }).populate('category');
     let promotionData = [];
     const categoryMap = new Map();
     const statusMap = new Map();
-    statusMap.set('进行中', 0);
+    statusMap.set('已下载', 0);
     statusMap.set('审核中', 0);
     statusMap.set('审核不通过', 0);
     statusMap.set('审核通过', 0);
@@ -88,7 +96,7 @@ class userPromotionService extends BaseService {
         uuid: promotion.uuid,
         category: promotion.category.category,
         userStatus: tempUserStatus,
-        updated_at: this.app.getLocalTime(promotion.updated_at),
+        // updated_at: this.app.getLocalTime(promotion.updated_at),
       };
       promotionData.push(tempObj);
     }
@@ -110,10 +118,18 @@ class userPromotionService extends BaseService {
     if (this.isEmpty(promotionBranch)) {
       this.ctx.throw(400, '找不到这个uuid对应的记录');
     }
+    const existFlag = await this.ctx.model.UserPromotion.exists({
+      promotionBranchUUid: condition.promotionBranchUUid,
+      tel_number: user.tel_number,
+      promotionUUid: promotionBranch.promotionUUid,
+    });
+    if (existFlag) {
+      return;
+    }
     const userPromotion = {
       uuid: condition.uuid,
       promotionBranchUUid: condition.promotionBranchUUid,
-      status: '进行中',
+      status: '已下载',
       title: promotionBranch.branchTitle,
       tel_number: user.tel_number,
       nickName: user.nickName,
@@ -130,10 +146,10 @@ class userPromotionService extends BaseService {
     const user = this.ctx.user;
     const promotionBranch = await this.ctx.model.UserPromotion.findOneAndUpdate({
       promotionBranchUUid: condition.promotionBranchUUid,
-      status: '进行中',
+      status: '已下载',
       tel_number: user.tel_number,
     },
-    { $set: { screenshotUrls: condition.screenshotUrls, status: '已提交' } });
+    { $set: { screenshotUrls: condition.screenshotUrls, status: '审核中' } });
     if (this.isEmpty(promotionBranch)) {
       this.ctx.throw(400, '找不到这个uuid对应的记录, 或者状态不对');
     }
@@ -156,6 +172,31 @@ class userPromotionService extends BaseService {
       };
       await this.ctx.service.userService.modifyUserRcoin(modifyObj);
     }
+  }
+  async getCheckUserPromotionList(condition, option) {
+    return this.ctx.model.UserPromotion.find(condition, {
+      tel_number: 1,
+      title: 1,
+      screenshotUrls: 1,
+      reward: 1,
+      operator: 1,
+      source: 1,
+      created_at: 1,
+      status: 1,
+      uuid: 1,
+    }, option);
+
+  }
+  async getCheckUserPromotionBranchLabel(condition) {
+    const list = await this.ctx.model.UserPromotion.aggregate([
+      { $match: { promotionUUid: condition.uuid } },
+      { $group: {
+        _id: '$promotionBranchUUid',
+        stepNumber: { $first: '$stepNumber' },
+        totalUnfinished: { $sum: { $cond: [{ $eq: [ '$status', 4 ] }, 1, 0 ] } },
+      } },
+    ]);
+    return list;
   }
 }
 module.exports = userPromotionService;

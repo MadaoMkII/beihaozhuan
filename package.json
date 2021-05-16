@@ -63,7 +63,8 @@
     "submail-sms": "^0.1.4",
     "svg-captcha": "^1.4.0",
     "xml2js": "^0.4.22",
-    "mongoose-autopopulate": "^0.13.0"
+    "mongoose-autopopulate": "^0.13.0",
+    "egg-swagger-doc-feat": "^2.2.14"
   },
   "engines": {
     "node": ">=10.0.0"
