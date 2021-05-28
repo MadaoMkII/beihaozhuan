@@ -102,5 +102,9 @@ class realMissionService extends BaseService {
     await this.ctx.model.UserMissionTask.updateOne({ uuid: condition.uuid }, { $set: { status: '完成' } });
   }
 
+  async getRealMissionForAdmin(condition, option) {
+    const list = await this.ctx.model.RealMission.find(condition, {}, option);
+    return list;
+  }
 }
 module.exports = realMissionService;

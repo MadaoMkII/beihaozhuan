@@ -23,6 +23,7 @@ module.exports = app => {
       type: Number,
       default: 1,
     },
+    type: String,
     tel_number: {
       required: true,
       type: String,

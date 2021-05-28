@@ -91,6 +91,8 @@ class BaseController extends Controller {
   failure(message, msgState, state = 503) {
     console.log(message);
     const { ctx } = this;
+
+
     // const defaultCode = (state >= 200 && state < 300) ? 0 : state;
     if (typeof message === 'object') {
       ctx.body = {

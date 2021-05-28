@@ -34,5 +34,7 @@ module.exports = app => {
     controller.realMissionController.getRealMissionForUser);
   router.post('/mission/finishRealMission', app.middleware.authenticatedMiddleware('用户'),
     controller.realMissionController.finishRealMission);
+  router.post('/mission/getRealMissionForAdmin', app.middleware.authenticatedMiddleware('用户'),
+    controller.realMissionController.getRealMissionForAdmin);
 
 };

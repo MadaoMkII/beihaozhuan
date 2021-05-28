@@ -1,8 +1,133 @@
 'use strict';
-const Service = require('egg').Service;
+const BaseService = require('./baseService');
 const { DateTime } = require('luxon');
+const path = require('path');
+class WeChatService extends BaseService {
 
-class WeChatService extends Service {
+
+  async createWithdrewConstraint(condition) {
+    const obj = new this.ctx.model.WithdrewConstraint(condition);
+    obj.save();
+  }
+  async getWithdrewConstraintList() {
+    return this.ctx.model.WithdrewConstraint.find({ status: 'enable' }, { created_at: false, status: false });
+  }
+  async updateWithdrewConstraintList(condition) {
+    await this.ctx.model.WithdrewConstraint.updateOne({ _id: condition.id }, { $set: condition });
+  }
+  async deleteWithdrewConstraintList(condition) {
+    await this.ctx.model.WithdrewConstraint.updateOne({ _id: condition.id }, { $set: { status: 'disable' } });
+  }
+
+  async realWithdrewConstraint(constraintId, ip) {
+    const { user } = this.ctx;
+    if (this.isEmpty(user.OPENID)) {
+      return this.success('该用户没有注册微信', 'OK', 400);
+    }
+    if (this.isEmpty(!user.realName)) {
+      this.ctx.throw(200, '用户没有实名制，请先输入实名');
+    }
+    const constraint = await this.ctx.model.WithdrewConstraint.findOne({ _id: this.app.mongoose.Types.ObjectId(constraintId) });
+    if (this.isEmpty(constraint)) {
+      this.ctx.throw(400, '找不到这条取款条件记录');
+    }
+    await this.checkConstraint(constraint);
+    const recentUserAccount = await this.ctx.model.UserAccount.findOne({ tel_number: user.tel_number });
+    const amount = Number(constraint.amount);
+    if (Number(recentUserAccount.Bcoins) < amount) {
+      this.ctx.throw(200, '用户余额不足');
+    }
+    const newBCoin = Number(recentUserAccount.Bcoins) - amount;
+    if (newBCoin < 0) {
+      this.ctx.throw(200, '用户所剩的余额不足');
+    }
+    const partner_trade_no = 100 + this.ctx.helper.randomNumber(10);
+    if (amount >= 60000) {
+      this.ctx.throw(50000, '提款数目过大');
+    }
+    const inputObj = {
+      mch_appid: this.ctx.app.config.wechatConfig.appid,
+      mchid: this.ctx.app.config.wechatConfig.mchid,
+      nonce_str: this.ctx.randomString(32),
+      partner_trade_no,
+      openid: user.OPENID,
+      check_name: 'FORCE_CHECK',
+      re_user_name: user.realName,
+      amount: amount / 100, // Number(constraint.amount),
+      desc: constraint.title,
+      spbill_create_ip: ip,
+    };
+    const [ , signedStr ] = await this.getSign(inputObj);
+    inputObj.sign = signedStr;
+
+    const xml2js = require('xml2js');
+    const builder = new xml2js.Builder({ headless: true, rootName: 'xml' });
+    const xml = builder.buildObject(inputObj);
+    const appDir = path.resolve(process.cwd(), './');
+    const [ result ] = await this.ctx.app.requestMethod(xml, 'POST',
+      'https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers',
+      path.resolve(appDir + '//config/apiclient_cert.p12'), true);
+    const parser = new xml2js.Parser({ explicitArray: false, explicitRoot: false });
+    const withdrewResult = await parser.parseStringPromise(result);
+    if (!this.ctx.helper.isEmpty(withdrewResult) && withdrewResult.result_code !== 'FAIL') {
+      console.log('OK');
+      await this.ctx.service.userService.modifyUserRcoin({
+        tel_number: user.tel_number,
+        amount: -amount,
+        content: '提现',
+        type: '提现',
+      });
+    }
+    const withDrewEntity = {
+      category: 'normal',
+      guestIP: ip,
+      desc: constraint.title,
+      constraint_id: constraint._id,
+      amount: amount / 100,
+      OPENID: user.OPENID,
+      partner_trade_no,
+      nickName: user.nickName,
+      userUUid: user.uuid,
+      tel_number: user.tel_number,
+      source: user.source,
+      withdrewResult,
+      return_msg: !this.isEmpty(withdrewResult.return_msg) ? withdrewResult.return_msg : '支付成功',
+      result_code: withdrewResult.result_code,
+    };
+    const withDrewObj = new this.ctx.model.Withdrew(withDrewEntity);
+    await withDrewObj.save();
+    return withdrewResult;
+  }
+
+  async checkConstraint(constraint) {
+    let query = {},
+      limited_times;
+    if (!constraint.onlyOneTime) { // 不是唯一一次
+      query = this.getTimeQueryByPeriod('本' + constraint.period);
+      limited_times = constraint.withdrewConstraintTimes;
+    } else {
+      limited_times = 1;
+    }
+    query.tel_number = this.ctx.user.tel_number;
+    query.return_msg = '支付成功';
+    query.constraint_id = constraint._id;
+    const count = await this.ctx.model.Withdrew.countDocuments(query);
+    console.log(count);
+    if (count >= limited_times) {
+      this.ctx.throw(400, '提现次数已满');
+    }
+  }
+
+  // async updateWithdrewConstraint(condition) {
+  //   await this.ctx.model.WithdrewConstraint.updateOne({ _id: condition.id }, { $set: condition });
+  // }
+
+
+  //-----------------------
+  // async getWithdrewList(condition, option) {
+  //   option.sort = { created_at: -1 };
+  //   return this.ctx.model.Withdrew.find(condition, {}, option);
+  // }
   async toQueryString(obj) {
     return Object.keys(obj)
       .filter(key => key !== 'sign' && obj[key] !== void 0 && obj[key] !== '')
@@ -79,6 +204,7 @@ class WeChatService extends Service {
 
         // eslint-disable-next-line no-case-declarations
 
+        // eslint-disable-next-line no-case-declarations
         const local = DateTime.fromJSDate(new Date()).reconfigure({ locale: 'zh-CN' });
         await this.ctx.model.Withdrew.find({
           created_at: {
@@ -136,125 +262,26 @@ class WeChatService extends Service {
     }
     return result;
   }
-  async withdrew(amount, desc = '平台提现', ip, partner_trade_no, category) {
-
-
-    const user = this.ctx.user;
-    const lastWithDrew = await this.ctx.model.Withdrew.findOne({
-      result_code: 'SUCCESS',
-      category,
-      userUUid: user.uuid });
-    if (!this.ctx.helper.isEmpty(lastWithDrew)) {
-      this.ctx.throw(400, '您已经提过这个档位的钱了');
-    }
-
-    const recentUserAccount = await this.ctx.model.UserAccount.findOne({ tel_number: user.tel_number });
-
-    if (Number(recentUserAccount.Bcoins) < Number(amount)) {
-      this.ctx.throw(200, '用户余额不足');
-    }
-    const newBcoin = Number(recentUserAccount.Bcoins) - Number(amount);
-    if (newBcoin < 0) {
-      this.ctx.throw(200, '用户所剩的余额不足');
-    }
-    const inputObj = {
-      mch_appid: this.ctx.app.config.wechatConfig.appid,
-      mchid: this.ctx.app.config.wechatConfig.mchid,
-      nonce_str: this.ctx.randomString(32),
-      partner_trade_no,
-      openid: user.OPENID,
-      check_name: 'NO_CHECK',
-      re_user_name: '',
-      amount: amount / 100,
-      desc,
-      spbill_create_ip: ip,
-    };
-    const [ , signedStr ] = await this.getSign(inputObj);
-    inputObj.sign = signedStr;
-
-    const xml2js = require('xml2js');
-    const builder = new xml2js.Builder({ headless: true, rootName: 'xml' });
-    const xml = builder.buildObject(inputObj);
-
-    const path = require('path');
-    const appDir = path.resolve(process.cwd(), './');
-
-    const [ result ] = await this.ctx.app.requestMethod(xml, 'POST',
-      'https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers',
-      path.resolve(appDir + '//config/apiclient_cert.p12'), true);
-    const parser = new xml2js.Parser({ explicitArray: false, explicitRoot: false });
-    const withdrewResult = await parser.parseStringPromise(result);
-    if (!this.ctx.helper.isEmpty(withdrewResult) && withdrewResult.result_code !== 'FAIL') {
-      console.log('OK');
-      //   await this.ctx.service.analyzeService.dataIncrementRecord('提现',
-      //     -amount, 'bcoin', '提现');
-      //   await this.ctx.service.userService.setUserBcionChange(user.uuid, '提现',
-      //     '消费', -amount, newBcoin);
-      // }
-      await this.ctx.service.userService.modifyUserRcoin({
-        tel_number: user.tel_number,
-        amount: -Number(amount),
-        content: '提现',
-        type: '提现',
-      });
-    }
-    const withDrewEntity = {
-      category,
-      guestIP: ip,
-      desc,
-      amount,
-      OPENID: user.OPENID,
-      partner_trade_no,
-      nickName: user.nickName,
-      userUUid: user.uuid,
-      withdrewResult,
-      return_msg: !this.ctx.helper.isEmpty(withdrewResult.return_msg) ? withdrewResult.return_msg : '支付成功',
-      result_code: withdrewResult.result_code,
-    };
-    const withDrewObj = new this.ctx.model.Withdrew(withDrewEntity);
-    await withDrewObj.save();
-    return withdrewResult;
-  }
+  // async withdrew(amount, desc = '平台提现', ip, partner_trade_no, category) {
+  //
+  //
+  //   const user = this.ctx.user;
+  //   const lastWithDrew = await this.ctx.model.Withdrew.findOne({
+  //     result_code: 'SUCCESS',
+  //     category,
+  //     userUUid: user.uuid });
+  //   if (!this.ctx.helper.isEmpty(lastWithDrew)) {
+  //     this.ctx.throw(400, '您已经提过这个档位的钱了');
+  //   }
+  //
+  //
+  // }
 
   async getWithdrew(conditions, option, project) {
+    option.sort = { created_at: -1 };
     return this.ctx.model.Withdrew.find(conditions, project, option);
   }
 
-  // async update_accessToken() {
-  //     const requestObj_1 = {
-  //         appid: this.ctx.app.config.wechatConfig.appid,
-  //         secret: this.ctx.app.config.wechatConfig.secret,
-  //         grant_type: 'client_credential',
-  //     };
-  //
-  //     const [result_1] = await this.ctx.app.requestMethod(requestObj_1,
-  //         'GET', 'https://api.weixin.qq.com/cgi-bin/token');
-  //
-  //     if (!this.ctx.helper.isEmpty(result_1.errcode)) {
-  //         this.ctx.throw(400, result_1.errmsg);
-  //     }
-  //     await this.ctx.model.SystemSetting.findOneAndUpdate({},
-  //         {$set: {access_token: {tokenStr: result_1.access_token, createTime: new Date()}}},
-  //         {sort: {updated_at: -1}, new: true});
-  //     return result_1.access_token;
-  // }
-
-  // async get_access_token() {
-  //   let result;
-  //   const recentTimeModified = this.ctx.app.modifyDate('second', -7210).toJSDate();
-  //   const settingObj = await this.ctx.model.SystemSetting.findOne({}, {},
-  //     { sort: { updated_at: -1 } });
-  //   if (!this.ctx.helper.isEmpty(settingObj.access_token)) {
-  //     if (recentTimeModified >= settingObj.access_token.createTime) {
-  //       result = await this.update_accessToken();
-  //     } else {
-  //       result = settingObj.access_token.tokenStr;
-  //     }
-  //   } else {
-  //     result = await this.update_accessToken();
-  //   }
-  //   return result;
-  // }
   async get_access_token() {
     const { isEmpty } = this.ctx.helper;
     const end = DateTime.fromJSDate(new Date());

@@ -39,7 +39,25 @@ class realMissionController extends Controller {
         return;
       }
       const result = await ctx.service.realMissionService.getRealMissionForUser(option);
-      this.success(result);
+      const count = await this.getFindModelCount('UserMissionTask', { tel_number: ctx.user.tel_number });
+      this.success([ result, count ]);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
+  async getRealMissionForAdmin(ctx) {
+    try {
+      const [ condition, option ] = await this.cleanupRequestProperty('missionRules.getRealMissionForAdminRule',
+        'unit', 'page', 'title', 'extraSwitch');
+      if (!condition) {
+        return;
+      }
+      if (!this.isEmpty(condition.title)) {
+        condition.title = { $regex: `.*${condition.title}.*` };
+      }
+      const result = await ctx.service.realMissionService.getRealMissionForAdmin(condition, option);
+      const count = await this.getFindModelCount('RealMission', condition);
+      this.success([ result, count ]);
     } catch (e) {
       this.failure(e);
     }

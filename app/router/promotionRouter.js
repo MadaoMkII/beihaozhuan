@@ -11,7 +11,7 @@ module.exports = app => {
 
   router.get('/userPromotion/getMainPageData', checker('用户'), promotionController.getMainPageData);
   router.post('/userPromotion/submitUserPromotionProve', checker('用户'), promotionController.submitUserPromotionProve);
-  // router.post('/userPromotion/approvePromotion', checker('用户'), userPromotionController.approvePromotion);
+  router.post('/userPromotion/approvePromotion', checker('用户'), promotionController.approvePromotion);
   router.post('/userPromotion/checkDownloadLink', checker('用户'), promotionController.checkDownloadLink);
   router.post('/userReward/getPromotionDetail', checker('用户'), promotionController.getPromotionDetail);
   router.post('/promotion/updatePromotion', checker('用户'), promotionController.updatePromotion);

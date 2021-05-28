@@ -1,6 +1,6 @@
 'use strict';
 const rule = {
-  type: [
+  constraintId: [
     { required: false, message: '不能为空' },
     { type: 'string' },
   ],

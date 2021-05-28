@@ -13,4 +13,12 @@ module.exports = app => {
   router.post('/wechat/getWithDrewByUser', app.middleware.authenticatedMiddleware('用户'),
     controller.wechatController.getWithDrewByUser);
 
+  router.post('/withdrew/createWithdrewConstraint', app.middleware.authenticatedMiddleware('用户'),
+    controller.withdrewConstraintController.createWithdrewConstraint);
+  router.post('/withdrew/getWithdrewConstraintList', app.middleware.authenticatedMiddleware('用户'),
+    controller.withdrewConstraintController.getWithdrewConstraintList);
+  router.post('/withdrew/updateWithdrewConstraintList', app.middleware.authenticatedMiddleware('用户'),
+    controller.withdrewConstraintController.updateWithdrewConstraintList);
+  router.post('/withdrew/deleteWithdrewConstraintList', app.middleware.authenticatedMiddleware('用户'),
+    controller.withdrewConstraintController.deleteWithdrewConstraintList);
 };

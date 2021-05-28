@@ -2,7 +2,7 @@
 module.exports = app => {
   const mongoose = app.mongoose;
   const connection = app.mongooseDB.get('beihaozhuan');
-  const goodSchema = new mongoose.Schema({
+  const withdrew = new mongoose.Schema({
     category: String,
     guestIP: String,
     desc: String,
@@ -10,7 +10,12 @@ module.exports = app => {
     OPENID: String,
     partner_trade_no: String,
     nickName: String,
+    tel_number: String,
+    source: String,
     userUUid: String,
+    constraint_id: { type: mongoose.Schema.Types.ObjectId,
+      ref: 'WithdrewConstraint',
+      autopopulate: true },
     withdrewResult: { type: mongoose.Schema.Types.Mixed },
     return_msg: String,
     result_code: String,
@@ -21,7 +26,7 @@ module.exports = app => {
     },
   });
 
-  goodSchema.set('toObject', {
+  withdrew.set('toObject', {
     virtuals: true,
     transform: (doc, ret) => {
       delete ret.__v;
@@ -31,7 +36,7 @@ module.exports = app => {
       }
     },
   });
-  goodSchema.set('toJSON', {
+  withdrew.set('toJSON', {
     virtuals: true,
     transform: (doc, ret) => {
       delete ret.__v;
@@ -44,6 +49,6 @@ module.exports = app => {
       delete ret.updated_at;
     },
   });
-
-  return connection.model('Withdrew', goodSchema, 'Withdrew');
+  withdrew.plugin(require('mongoose-autopopulate'));
+  return connection.model('Withdrew', withdrew, 'Withdrew');
 };

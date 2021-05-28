@@ -5,6 +5,8 @@ const url = require('url');
 
 class wechatController extends baseController {
 
+
+  //---------------------------------------
   async getWechatNickName(ctx) {
     const name = await ctx.service.wechatService.getRealNickName();
     if (!ctx.app.isEmpty(name)) {
@@ -24,7 +26,6 @@ class wechatController extends baseController {
       if (!ctx.helper.isEmpty(condition.nickName)) {
         condition.nickName = { $regex: `.*${condition.nickName}.*` };
       }
-      condition.OPENID = ctx.user.OPENID;
       const count = await this.getFindModelCount('Withdrew', condition);
       const result = await ctx.service.wechatService.getWithdrew(condition, option,
         {
@@ -37,8 +38,7 @@ class wechatController extends baseController {
         });
       return this.success([ result, count ]);
     } catch (e) {
-      this.app.logger.error(e, ctx);
-      this.failure();
+      this.failure(e);
     }
   }
   async getWithDrewByUser(ctx) {
@@ -91,53 +91,20 @@ class wechatController extends baseController {
   async withdrew(ctx) {
     try {
       // await this.checkTimeInterval(0.5);
-      const user = ctx.user;
       const [ condition ] = await this.cleanupRequestProperty('wechatRules.withdrewRule',
-        'type');
+        'constraintId');
       if (!condition) {
         return;
       }
-      const promise_0 = {};
-      const settingArray = await ctx.service.systemSettingService.getWithDrewSetting();
-      const option = settingArray.withDrewSetting.find(entity => entity.optionType === condition.type);
-
-      // const [ pass, msg ] = await ctx.service.wechatService.withdrewConstraint(ctx.user, option.category);
-      //
-      // if (!pass) {
-      //   return this.success(msg, 'OK', 400);
-      // }
-      if (ctx.helper.isEmpty(option)) {
-        return this.failure('输入type错误');
-      }
-      if (ctx.helper.isEmpty(user.OPENID)) {
-        return this.success('该用户没有注册微信', 'OK', 400);
-      }
-
       const ip = ctx.app.getIP(ctx.request);
-      const partner_trade_no = 100 + ctx.helper.randomNumber(10);
-      const result = await ctx.service.wechatService.withdrew(option.amount, option.desc, ip, partner_trade_no, condition.type);
-      //
-      // {
-      //     "return_code": "SUCCESS",
-      //     "return_msg": "",
-      //     "mch_appid": "wx87462aaa978561bf",
-      //     "mchid": "1546748521",
-      //     "nonce_str": "V3IvzY8zKFwn5NX6iLUwp3Q1xLHcwJmi",
-      //     "result_code": "SUCCESS",
-      //     "partner_trade_no": "1009934862824",
-      //     "payment_no": "10101080611701912050043521019656",
-      //     "payment_time": "2019-12-05 15:13:12"
-      // }
-      //
+      console.log(condition);
+      const result = await ctx.service.wechatService.realWithdrewConstraint(condition.constraintId, ip);
       if (!result || result.result_code === 'FAIL') {
         this.failure('微信服务器连接不稳定,请稍后再试');
-        this.app.logger.error(new Error(JSON.stringify(result)), ctx);
+        // this.app.logger.error(new Error(JSON.stringify(result)), ctx);
       }
       this.success();
-      Promise.all([ promise_0 ]).then();
-
     } catch (e) {
-      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }

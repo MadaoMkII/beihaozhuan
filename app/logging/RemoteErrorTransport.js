@@ -51,11 +51,14 @@ class RemoteErrorTransport extends Transport {
           body: req.body,
         };
         if (ctx.user) {
-          result.tel_number = ctx.user.tel_number;
-          result.uuid = ctx.user.uuid;
-          result.nickName = ctx.user.nickName;
-          result.realName = ctx.user.realName;
-          result.role = ctx.user.role;
+          Object.assign(result, {
+            realName: ctx.user.realName,
+            tel_number: ctx.user.tel_number,
+            uuid: ctx.user.uuid,
+            nickName: ctx.user.nickName,
+            role: ctx.user.role,
+          });
+
         }
       } else {
         ctx = this.options.app.createAnonymousContext();
@@ -64,6 +67,7 @@ class RemoteErrorTransport extends Transport {
     if (args[2]) {
       result.specialInformation = args[2];
     }
+    args.push(meta);
     const loggerEntity = new ctx.model.Logger(result);
     loggerEntity.save();
   }

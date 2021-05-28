@@ -93,8 +93,7 @@ class GameEventController extends Controller {
         return;
       }
 
-      const amount = await ctx.service.gameEventService.withdrewConstraint(condition.category);
-      console.log(amount);
+      await ctx.service.gameEventService.withdrewConstraint(condition.category);
       // const result = await ctx.service.gameEventService.withdrew(100, '测试取钱');
       // if (!result || result.result_code === 'FAIL') {
       //   return this.failure('微信服务器连接不稳定,请稍后再试');

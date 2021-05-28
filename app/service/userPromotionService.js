@@ -1,4 +1,3 @@
-
 'use strict';
 const BaseService = require('./baseService');
 class userPromotionService extends BaseService {
@@ -48,7 +47,6 @@ class userPromotionService extends BaseService {
     return promotion;
   }
   async getMainPageData(user, platform) {
-
     const userPromotions = await this.ctx.model.UserPromotion.find({ tel_number: user.tel_number }, {},
       { sort: { update_at: -1 } }).
       populate('promotionBranchObj');
@@ -90,6 +88,7 @@ class userPromotionService extends BaseService {
         promotionType: promotion.promotionType,
         platform: promotion.platform,
         // description: promotion.description,
+        totalFinishCount: promotion.totalFinishCount,
         reward: promotion.reward,
         priority: promotion.priority,
         mainlyShowPicUrl: promotion.mainlyShowPicUrl,
@@ -123,6 +122,8 @@ class userPromotionService extends BaseService {
       tel_number: user.tel_number,
       promotionUUid: promotionBranch.promotionUUid,
     });
+    const promotion = await this.ctx.model.Promotion.findOne({ uuid: promotionBranch.promotionUUid },
+      { promotionType: 1 });
     if (existFlag) {
       return;
     }
@@ -130,6 +131,7 @@ class userPromotionService extends BaseService {
       uuid: condition.uuid,
       promotionBranchUUid: condition.promotionBranchUUid,
       status: '已下载',
+      type: promotion.promotionType,
       title: promotionBranch.branchTitle,
       tel_number: user.tel_number,
       nickName: user.nickName,
@@ -171,6 +173,8 @@ class userPromotionService extends BaseService {
         amount: result.reward,
       };
       await this.ctx.service.userService.modifyUserRcoin(modifyObj);
+      await this.ctx.model.Promotion.updateOne({ uuid: result.promotionUUid },
+        { $inc: { totalFinishCount: 1 } });
     }
   }
   async getCheckUserPromotionList(condition, option) {
