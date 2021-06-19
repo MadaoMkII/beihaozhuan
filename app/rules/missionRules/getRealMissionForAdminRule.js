@@ -7,7 +7,7 @@ const rule = {
   ],
   extraSwitch: [
     { required: false, message: '可以能为空' },
-    { type: 'boolean', message: 'extraSwitch必须为字符串' },
+    { type: 'boolean', message: 'extraSwitch必须为boolean' },
   ],
 };
 Object.assign(rule, pageAndUnitRules);

@@ -26,7 +26,7 @@ const rule = {
   ],
   extraSwitch: [
     { required: true, message: 'extraSwitch不能为空' },
-    { type: 'boolean', message: 'extraSwitch需要是字符串' },
+    { type: 'boolean', message: 'extraSwitch需要是boolean' },
   ],
   extraBonusAmount: [
     { required: true, message: 'extraBonusAmount不能为空' },
@@ -34,7 +34,7 @@ const rule = {
   ],
   extraBonusRate: [
     { required: true, message: 'extraBonusRate不能为空' },
-    { type: 'number', message: 'extraBonusRate需要是number' },
+    { type: 'number', message: 'extraBonusRate需要是number，且最小值必须大于1', min: 1 },
   ],
 };
 module.exports = rule;

@@ -12,10 +12,12 @@ class promotionService extends BaseService {
       categoryUUid: true,
       promotionType: true,
       uuid: true,
+      status: true,
       reward: true,
       priority: true,
       created_at: true,
       totalFinishCount: true,
+      waitingProcess: true,
     }, option).populate('category');
   }
   async setPromotionBranch(condition) {

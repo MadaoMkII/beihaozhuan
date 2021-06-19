@@ -1,7 +1,7 @@
 'use strict';
 const rule = {
   uuid: [
-    { required: true, message: 'title不能为空' },
+    { required: true, message: 'uuid不能为空' },
     { type: 'string', message: '需要是字符串' }],
   title: [
     { required: false, message: 'title不能为空' },
@@ -15,6 +15,10 @@ const rule = {
   platform: [
     { required: false, message: 'platform不能为空' },
     { type: 'enum', enum: [ 'H5-Android', 'H5-IOS', 'APP-Android', 'APP-IOS' ] },
+  ],
+  status: [
+    { required: false, message: 'status不能为空' },
+    { type: 'enum', enum: [ 'disable', 'enable' ] },
   ],
   description: [
     { required: false, message: 'description不能为空' },

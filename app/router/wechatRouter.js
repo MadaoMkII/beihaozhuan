@@ -15,10 +15,12 @@ module.exports = app => {
 
   router.post('/withdrew/createWithdrewConstraint', app.middleware.authenticatedMiddleware('用户'),
     controller.withdrewConstraintController.createWithdrewConstraint);
-  router.post('/withdrew/getWithdrewConstraintList', app.middleware.authenticatedMiddleware('用户'),
+  router.get('/withdrew/getWithdrewConstraintList', app.middleware.authenticatedMiddleware('用户'),
     controller.withdrewConstraintController.getWithdrewConstraintList);
   router.post('/withdrew/updateWithdrewConstraintList', app.middleware.authenticatedMiddleware('用户'),
     controller.withdrewConstraintController.updateWithdrewConstraintList);
   router.post('/withdrew/deleteWithdrewConstraintList', app.middleware.authenticatedMiddleware('用户'),
     controller.withdrewConstraintController.deleteWithdrewConstraintList);
+  router.post('/withdrew/getWithdrewList', app.middleware.authenticatedMiddleware('用户'),
+    controller.withdrewConstraintController.getWithdrewList);
 };

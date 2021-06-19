@@ -40,6 +40,7 @@ module.exports = app => {
     },
     stepsBox: [{ uuid: String, stepNumber: Number }],
     totalFinishCount: { type: Number, default: 0 },
+    waitingProcess: { type: Number, default: 0 },
   }, {
     timestamps: {
       createdAt: 'created_at', updatedAt: 'updated_at',
@@ -76,6 +77,9 @@ module.exports = app => {
       show.category = origin.category ? origin.category.category : '未分类';
       if (origin.created_at) {
         show.created_at = app.getLocalTime(origin.created_at);
+      }
+      if (!origin.waitingProcess) {
+        show.waitingProcess = 0;
       }
       if (origin.updated_at) {
         show.updated_at = app.getLocalTime(origin.updated_at);

@@ -68,7 +68,7 @@ class userPromotionService extends BaseService {
     statusMap.set('审核中', 0);
     statusMap.set('审核不通过', 0);
     statusMap.set('审核通过', 0);
-
+    statusMap.set('已完成', 0);
 
     for (const promotion of promotions) {
       const ups = userPromotionMap.get(promotion.uuid);
@@ -146,6 +146,15 @@ class userPromotionService extends BaseService {
 
   async submitUserPromotion(condition) {
     const user = this.ctx.user;
+
+    const isExist = await this.ctx.model.UserPromotion.exists({
+      promotionBranchUUid: condition.promotionBranchUUid,
+      status: '审核中',
+      tel_number: user.tel_number,
+    });
+    if (isExist) {
+      this.ctx.throw(400, '您已经提交过了，请等待审批');
+    }
     const promotionBranch = await this.ctx.model.UserPromotion.findOneAndUpdate({
       promotionBranchUUid: condition.promotionBranchUUid,
       status: '已下载',
@@ -155,13 +164,17 @@ class userPromotionService extends BaseService {
     if (this.isEmpty(promotionBranch)) {
       this.ctx.throw(400, '找不到这个uuid对应的记录, 或者状态不对');
     }
+    await this.ctx.model.Promotion.updateOne({ uuid: promotionBranch.promotionUUid },
+      { $inc: { waitingProcess: 1 } });
   }
 
   // admin-------------------------------------------
   async approvePromotion(condition) {
     const { user } = this.ctx; //
-    const result = await this.ctx.model.UserPromotion.findOneAndUpdate({ uuid: condition.uuid, status: '未审核' },
-      { $set: { status: condition.decision, operator: { nickName: user.nickName, tel_number: user.tel_number } } });
+    const result = await this.ctx.model.UserPromotion.findOneAndUpdate({
+      uuid: condition.uuid,
+      status: '审核中' },
+    { $set: { status: condition.decision, operator: { nickName: user.nickName, tel_number: user.tel_number } } });
     if (this.isEmpty(result)) {
       this.ctx.throw(400, '找不到这个uuid对应的记录, 或者订单状态已经被审核');
     }
@@ -174,7 +187,7 @@ class userPromotionService extends BaseService {
       };
       await this.ctx.service.userService.modifyUserRcoin(modifyObj);
       await this.ctx.model.Promotion.updateOne({ uuid: result.promotionUUid },
-        { $inc: { totalFinishCount: 1 } });
+        { $inc: { totalFinishCount: 1, waitingProcess: -1 } });
     }
   }
   async getCheckUserPromotionList(condition, option) {
@@ -197,10 +210,28 @@ class userPromotionService extends BaseService {
       { $group: {
         _id: '$promotionBranchUUid',
         stepNumber: { $first: '$stepNumber' },
-        totalUnfinished: { $sum: { $cond: [{ $eq: [ '$status', 4 ] }, 1, 0 ] } },
+        totalUnfinished: { $sum: { $cond: [{ $eq: [ '$status', 1 ] }, 1, 0 ] } },
       } },
     ]);
-    return list;
+    const branches = await this.ctx.model.PromotionBranch.find({ promotionUUid: condition.uuid });
+    const result = [];
+    for (const branch of branches) {
+      const totalUnfinishedObj = list.find(e => e._id === branch.uuid);
+      if (this.isEmpty(totalUnfinishedObj)) {
+        result.push({
+          uuid: branch.uuid,
+          stepNumber: branch.stepNumber,
+          totalUnfinished: 0,
+        });
+      } else {
+        result.push({
+          uuid: branch.uuid,
+          stepNumber: branch.stepNumber,
+          totalUnfinished: totalUnfinishedObj.totalUnfinished,
+        });
+      }
+    }
+    return result;
   }
 }
 module.exports = userPromotionService;

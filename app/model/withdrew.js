@@ -12,8 +12,12 @@ module.exports = app => {
     nickName: String,
     tel_number: String,
     source: String,
-    userUUid: String,
-    constraint_id: { type: mongoose.Schema.Types.ObjectId,
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'UserAccount',
+      autopopulate: true },
+    constraint_id: {
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'WithdrewConstraint',
       autopopulate: true },
     withdrewResult: { type: mongoose.Schema.Types.Mixed },
@@ -45,7 +49,6 @@ module.exports = app => {
       if (doc.created_at) {
         ret.created_at = app.getLocalTime(doc.created_at);
       }
-      doc.amount = ret.amount / 100;
       delete ret.updated_at;
     },
   });

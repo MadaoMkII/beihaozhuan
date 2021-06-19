@@ -12,6 +12,7 @@ module.exports = app => {
       },
       content: String,
       price: String,
+      mainlyShowPicUrl: String,
       creator: {
         type: mongoose.Schema.Types.ObjectId, ref: 'RealMission',
         autopopulate: { select: 'uuid title tel_number' },

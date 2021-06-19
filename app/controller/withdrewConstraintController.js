@@ -2,7 +2,30 @@
 const Controller = require('./baseController');
 class withdrewConstraintController extends Controller {
 
-
+  async getWithdrewList(ctx) {
+    try {
+      const [ condition, option ] = await this.cleanupRequestProperty('wechatRules.getWithdrewListRule',
+        'title', 'source', 'tel_number', 'page', 'unit');
+      if (!condition) {
+        return;
+      }
+      let [ result, query ] = await ctx.service.wechatService.getWithdrewList(condition, option);
+      result = result.map(e => {
+        return {
+          nickName: e.nickName,
+          tel_number: e.tel_number,
+          source: e.source,
+          amount: e.amount,
+          Bcoins: e.user_id.Bcoins,
+          created_at: this.app.getLocalTime(e.created_at),
+        };
+      });
+      const count = await this.getFindModelCount('Withdrew', query);
+      this.success([ result, count ]);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
   async deleteWithdrewConstraintList(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('idRule',

@@ -3,7 +3,17 @@ const BaseService = require('./baseService');
 const { DateTime } = require('luxon');
 const path = require('path');
 class WeChatService extends BaseService {
-
+  async getWithdrewList(condition, option) {
+    if (!this.isEmpty(condition.title)) {
+      condition.title = { $regex: `.*${condition.title}.*` };
+    }
+    if (!this.isEmpty(condition.tel_number)) {
+      condition.tel_number = { $regex: `.*${condition.tel_number}.*` };
+    }
+    condition.result_code = 'SUCCESS';
+    const result = await this.ctx.model.Withdrew.find(condition, {}, option);
+    return [ result, condition ];
+  }
 
   async createWithdrewConstraint(condition) {
     const obj = new this.ctx.model.WithdrewConstraint(condition);
@@ -87,8 +97,8 @@ class WeChatService extends BaseService {
       OPENID: user.OPENID,
       partner_trade_no,
       nickName: user.nickName,
-      userUUid: user.uuid,
       tel_number: user.tel_number,
+      user_id: user._id,
       source: user.source,
       withdrewResult,
       return_msg: !this.isEmpty(withdrewResult.return_msg) ? withdrewResult.return_msg : '支付成功',
@@ -136,8 +146,8 @@ class WeChatService extends BaseService {
       .join('&');
   }
 
-  async getSign(params, type = 'MD5') {
-    const str = await this.toQueryString(params) + '&key=' + this.ctx.app.config.wechatConfig.key;
+  async getSign(params, type = 'MD5', key = this.ctx.app.config.wechatConfig.key) {
+    const str = await this.toQueryString(params) + '&key=' + key;
     let signedStr = '';
     switch (type) {
       case 'MD5':

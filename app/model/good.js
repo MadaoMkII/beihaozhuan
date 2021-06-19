@@ -27,7 +27,6 @@ module.exports = app => {
       min: [ 0, 'Must bigger than 0 ' ],
       max: 1000,
     },
-    // 南乡不是白板点了85%
     mainlyShowPicUrl: {
       type: String,
       default: 'https://beihaozhuan.oss-cn-zhangjiakou.aliyuncs.com/UI/QQ%E6%88%AA%E5%9B%BE20190827233433.png',

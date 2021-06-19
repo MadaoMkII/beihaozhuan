@@ -14,7 +14,6 @@ class promotionController extends Controller {
       await ctx.service.userPromotionService.approvePromotion(condition);
       this.success();
     } catch (e) {
-      console.log(e);
       this.failure(e);
     }
   }
@@ -69,9 +68,9 @@ class promotionController extends Controller {
   }
   async updatePromotion(ctx) {
     try {
-      const [ condition ] = await this.cleanupRequestProperty('promotionRules.updatePromotionBranchRule',
+      const [ condition ] = await this.cleanupRequestProperty('promotionRules.updatePromotionRule',
         'title', 'link', 'categoryUUid', 'promotionType', 'uuid',
-        'platform', 'description', 'reward', 'priority', 'mainlyShowPicUrl');
+        'platform', 'description', 'reward', 'priority', 'mainlyShowPicUrl', 'status');
       if (!condition) {
         return;
       }

@@ -227,6 +227,7 @@ class UserService extends BaseService {
         nickName: { $first: '$nickName' },
       } },
     ]);
+    console.log(membersInfo)
     membersInfo = membersInfo.map(element => {
       return {
         tel_number: element._id,
@@ -305,7 +306,7 @@ class UserService extends BaseService {
     return [ data, count ];
   }
 
-  async getUserBalanceListRule(userUUid, option) {
+  async getUserBalanceList(userUUid, option) {
 
     const result = await this.ctx.model.UserAccount.aggregate([{
       $match: {
@@ -333,8 +334,18 @@ class UserService extends BaseService {
     {
       $project: {
         // updated_at: 0,
-        // created_at: 0,
+        // created_at: { $dateToString: { format: '%Y-%m-%d %H:%M:%S', date: '$created_at', timezone: '+08:00' } },
         'balanceList._id': 0,
+      },
+    },
+    {
+      $project: {
+        totalCount: 1,
+        // created_at: { $dateToString: { format: '%Y-%m-%d %H:%M:%S', date: '$created_at', timezone: '+08:00' } },
+        'balanceList.income': 1,
+        'balanceList.amount': 1,
+        'balanceList.category': 1,
+        'balanceList.createTime': { $dateToString: { format: '%Y-%m-%d %H:%M:%S', date: '$balanceList.createTime', timezone: '+08:00' } },
       },
     },
     {

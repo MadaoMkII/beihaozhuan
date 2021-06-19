@@ -22,7 +22,12 @@ module.exports = app => {
       required: true,
       type: String,
       enum: [ '签到任务', '新闻时长任务', '新闻数量任务', '小视频时长任务', '小视频数量任务' ] },
-
+    extraBonus: {
+      switch: Boolean,
+      finished: Boolean,
+      amount: Number,
+      rate: Number,
+    },
 
     reward: { type: Number, default: 0 },
 

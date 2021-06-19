@@ -32,14 +32,19 @@ class orderTrackerService extends BaseService {
   //   });
   // }
   async getOneMyOrder(condition) {
+    console.log(condition);
     const result = await this.ctx.model.OrderTrack.findOne({ _id: condition.id },
-      { title: 1, content: 1, price: 1 }).lean({ autoPopulate: true });
+      { title: 1, content: 1, price: 1, creator: 1 }).lean({ autoPopulate: true });
+    console.log(result);
     if (this.isEmpty(result)) {
       this.ctx.throw(400, '这条记录不存在');
     }
     if (!result.creator._id.equals(this.ctx.user._id)) {
       this.ctx.throw(400, '不是本人创建的');
     }
+
+    result.id = result._id;
+    delete result._id;
     delete result.creator;
     // result.contentReview = result.content.replace(/(<([^>]+)>)/ig, '').substring(0, 30);
     return result;
@@ -53,6 +58,9 @@ class orderTrackerService extends BaseService {
         title: e.title,
         price: e.price,
         id: e._id,
+        created_at: this.app.getLocalTime(e.created_at),
+        status: '已完成',
+        mainlyShowPicUrl: e.mainlyShowPicUrl,
       };
     });
     return result;
@@ -83,6 +91,7 @@ class orderTrackerService extends BaseService {
       price: good.price,
       creator: user._id,
       tel_number: user.tel_number,
+      mainlyShowPicUrl: good.mainlyShowPicUrl,
     };
     const consumerTracker = new this.ctx.model.OrderTrack(orderObj);
     consumerTracker.save();

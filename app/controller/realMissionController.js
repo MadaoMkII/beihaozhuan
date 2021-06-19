@@ -20,12 +20,31 @@ class realMissionController extends Controller {
   async doMission(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('missionRules.doMissionRule',
-        'type');
+        'type', 'noncestr', 'timestamp', 'sign');
       if (!condition) {
         return;
       }
-      await ctx.service.realMissionService.doRealMission(condition);
+      const testObj = {
+        noncestr: condition.noncestr,
+        timestamp: condition.timestamp,
+        type: condition.type,
+        tel_number: ctx.user.tel_number,
+      };
+      console.log(testObj);
+      const [ , signStr ] = await ctx.service.wechatService.getSign(testObj, 'MD5', 'beihaozhuan01');
+
+      console.log(signStr);
+      console.log(condition.sign);
+      if (signStr !== condition.sign) {
+        ctx.throw(400, '签名并不匹配');
+      }
+      const diffTime = ctx.diffTime(condition.timestamp, null, 'minutes');
+      // if (Math.abs(diffTime) >= 1) {
+      //   ctx.throw(400, '请求超过时限');
+      // }
+      const promise = ctx.service.realMissionService.doRealMission(condition);
       this.success();
+      Promise.all([ promise ]).then();
     } catch (e) {
       this.failure(e);
     }
@@ -38,8 +57,8 @@ class realMissionController extends Controller {
       if (!condition) {
         return;
       }
-      const result = await ctx.service.realMissionService.getRealMissionForUser(option);
-      const count = await this.getFindModelCount('UserMissionTask', { tel_number: ctx.user.tel_number });
+      const [ result, query ] = await ctx.service.realMissionService.getRealMissionForUser(option);
+      const count = await this.getFindModelCount('UserMissionTask', query);
       this.success([ result, count ]);
     } catch (e) {
       this.failure(e);
@@ -62,6 +81,34 @@ class realMissionController extends Controller {
       this.failure(e);
     }
   }
+  async getRealMissionDetail(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
+        'uuid');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.realMissionService.getRealMissionDetail(condition);
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
+
+  async updateRealMission(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('missionRules.updateRealMissionRule',
+        'title', 'type', 'reward', 'requireTimes', 'uuid',
+        'limit', 'picUrl', 'extraSwitch', 'extraBonusAmount', 'extraBonusRate', 'status');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.realMissionService.updateRealMission(condition);
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
   async finishRealMission(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('uuidRule',
@@ -70,6 +117,19 @@ class realMissionController extends Controller {
         return;
       }
       const result = await ctx.service.realMissionService.finishRealMission(condition);
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
+  async finishRealMission_extra(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('uuidRule',
+        'uuid');
+      if (!condition) {
+        return;
+      }
+      const result = await ctx.service.realMissionService.finishRealMission_extra(condition);
       this.success(result);
     } catch (e) {
       this.failure(e);

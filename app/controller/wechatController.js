@@ -60,23 +60,27 @@ class wechatController extends baseController {
   }
 
   async getSignature(ctx) {
-    const jsapi_ticket = await ctx.service.wechatService.setToken();
-    // const setting = await ctx.model.Setting.findOne();
-    // const randomStr = ctx.randomString(16);
-    const url = 'https://www.beihaozhuan.com/admin/system/systemlog';
-    const timestamp = Math.round(Date.now() / 1000);
+    try {
+      const jsapi_ticket = await ctx.service.wechatService.setToken();
+      // const setting = await ctx.model.Setting.findOne();
+      // const randomStr = ctx.randomString(16);
+      const url = 'https://www.beihaozhuan.com/admin/system/systemlog';
+      const timestamp = Math.round(Date.now() / 1000);
 
-    const randomStr = ctx.randomString(16);
+      const randomStr = ctx.randomString(16);
 
-    const signature = await ctx.service.wechatService.signString({ jsapi_ticket, timestamp, url, randomStr });
-    this.success({
-      jsapi_ticket,
-      appID: ctx.app.config.wechatConfig.appid,
-      timestamp,
-      randomStr,
-      signature: signature[1],
-      url,
-    });
+      const signature = await ctx.service.wechatService.signString({ jsapi_ticket, timestamp, url, randomStr });
+      this.success({
+        jsapi_ticket,
+        appID: ctx.app.config.wechatConfig.appid,
+        timestamp,
+        randomStr,
+        signature: signature[1],
+        url,
+      });
+    } catch (e) {
+      this.failure(e);
+    }
   }
   async getWithdrewStatus(ctx) {
     try {
