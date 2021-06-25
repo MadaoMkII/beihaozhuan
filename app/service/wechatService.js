@@ -16,12 +16,41 @@ class WeChatService extends BaseService {
   }
 
   async createWithdrewConstraint(condition) {
+    condition.amount = condition.amount * 100;
     const obj = new this.ctx.model.WithdrewConstraint(condition);
     obj.save();
   }
   async getWithdrewConstraintList() {
     return this.ctx.model.WithdrewConstraint.find({ status: 'enable' }, { created_at: false, status: false });
   }
+
+  async getWithdrewConstraintList_User() {
+    const constraints =
+      await this.ctx.model.WithdrewConstraint.
+        find({ status: 'enable' }, { created_at: false, status: false });
+    const result = [];
+    for (const con of constraints) {
+      let flag = true;
+      try {
+        await this.checkConstraint(con);
+      } catch (e) {
+        flag = false;
+      }
+      const res = {
+        title: con.title,
+        amount: con.amount,
+        period: con.period,
+        withdrewConstraintTimes: con.withdrewConstraintTimes,
+        onlyOneTime: con.onlyOneTime,
+        description: con.description,
+        id: con._id,
+        availableForWithdrew: flag,
+      };
+      result.push(res);
+    }
+    return result;
+  }
+
   async updateWithdrewConstraintList(condition) {
     await this.ctx.model.WithdrewConstraint.updateOne({ _id: condition.id }, { $set: condition });
   }

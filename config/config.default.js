@@ -6,7 +6,8 @@ const path = require('path');
  * @param {Egg.EggAppInfo} appInfo app info
  */
 module.exports = appInfo => {
-  const config = {};
+  let exports;
+  const config = exports = {};
   config.mongoose = {
     clients: {
       beihaozhuan: {
@@ -156,16 +157,16 @@ module.exports = appInfo => {
       '.ejs': 'ejs',
     },
   };
-  exports.multipart = {
+  config.multipart = {
     autoFields: true,
     mode: 'file',
     defaultCharset: 'utf8',
-    fieldNameSize: 1000,
-    fieldSize: '2048mb',
+    // fieldNameSize: 1000,
+    fieldSize: '30mb',
     fields: 100,
-    fileSize: '2048mb',
-    files: 1000,
-    // fileExtensions: [ 'jpeg', 'jpg', 'png' ],
+    fileSize: '30mb',
+    // files: 1000,
+    fileExtensions: [ '.txt', '.xlsx', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.bmp', '.webp' ],
   };
 
   exports.email = {

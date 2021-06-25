@@ -73,6 +73,13 @@ class withdrewConstraintController extends Controller {
       this.failure(e);
     }
   }
-
+  async getWithdrewConstraintList_User(ctx) {
+    try {
+      const result = await ctx.service.wechatService.getWithdrewConstraintList_User();
+      this.success(result);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
 }
 module.exports = withdrewConstraintController;

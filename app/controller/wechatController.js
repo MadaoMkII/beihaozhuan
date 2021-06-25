@@ -8,11 +8,15 @@ class wechatController extends baseController {
 
   //---------------------------------------
   async getWechatNickName(ctx) {
-    const name = await ctx.service.wechatService.getRealNickName();
-    if (!ctx.app.isEmpty(name)) {
-      return this.success(name.nickname);
+    try {
+      const name = await ctx.service.wechatService.getRealNickName();
+      if (!ctx.app.isEmpty(name)) {
+        return this.success(name.nickname);
+      }
+      this.success();
+    } catch (e) {
+      this.failure(e);
     }
-    this.success();
   }
 
 
@@ -118,8 +122,6 @@ class wechatController extends baseController {
     try {
       const returnUrl = ctx.request.url; // /wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
       // returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
-
-
       const urlQuery = url.parse(returnUrl, true).query;
       const { code, state, redirect } = urlQuery;
       console.log('callback');
@@ -134,8 +136,6 @@ class wechatController extends baseController {
       } catch (e) {
         stateMessage = state;
       }
-
-
       if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
         ctx.throw('空值警告');
       }
@@ -145,7 +145,6 @@ class wechatController extends baseController {
         code,
         grant_type: 'authorization_code',
       };
-
       const [ result_2 ] = await this.requestMethod(requestObj_2,
         'GET', 'https://api.weixin.qq.com/sns/oauth2/access_token');
       if (!ctx.helper.isEmpty(result_2.errcode)) {

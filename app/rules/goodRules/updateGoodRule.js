@@ -1,6 +1,9 @@
 'use strict';
-const uuidRule = require('../uuidRule');
 const rule = {
+  uuid: [
+    { required: true, message: 'uuid不能为空' },
+    { type: 'string', message: '类型不正确：应该是string' },
+  ],
   title: [
     { required: false, message: 'title不能为空' },
     { type: 'string', message: '类型不正确：应该是string' },
@@ -30,5 +33,4 @@ const rule = {
     { type: 'enum', enum: [ 'link', 'pic&word' ], message: '类型不正确：link\', \'pic&word\'选一' },
   ],
 };
-Object.assign(rule, uuidRule);
 module.exports = rule;

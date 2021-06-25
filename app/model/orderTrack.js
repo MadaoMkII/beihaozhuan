@@ -8,13 +8,13 @@ module.exports = app => {
       title: String,
       good_id: {
         type: mongoose.Schema.Types.ObjectId, ref: 'Good',
-        // autopopulate: { select: 'nickName avatar USERID jobNumber' },
+        autopopulate: { select: 'status giftExchangeContent description exchangeWay' },
       },
       content: String,
       price: String,
       mainlyShowPicUrl: String,
       creator: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'RealMission',
+        type: mongoose.Schema.Types.ObjectId, ref: 'UserAccount',
         autopopulate: { select: 'uuid title tel_number' },
       },
       tel_number: String,

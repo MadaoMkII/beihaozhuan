@@ -32,10 +32,10 @@ class orderTrackerService extends BaseService {
   //   });
   // }
   async getOneMyOrder(condition) {
-    console.log(condition);
     const result = await this.ctx.model.OrderTrack.findOne({ _id: condition.id },
-      { title: 1, content: 1, price: 1, creator: 1 }).lean({ autoPopulate: true });
-    console.log(result);
+      { title: 1, content: 1, price: 1,
+        creator: 1, mainlyShowPicUrl: 1, created_at: 1, good_id: 1,
+      });
     if (this.isEmpty(result)) {
       this.ctx.throw(400, '这条记录不存在');
     }
@@ -46,12 +46,18 @@ class orderTrackerService extends BaseService {
     result.id = result._id;
     delete result._id;
     delete result.creator;
+    result._doc.exchangeWay = result.good_id.exchangeWay;
+    result._doc.description = result.good_id.description;
+    result._doc.giftExchangeContent = result.good_id.giftExchangeContent;
+    result._doc.status = '已完成';
+    delete result._doc.good_id;
+    delete result._doc.creator;
     // result.contentReview = result.content.replace(/(<([^>]+)>)/ig, '').substring(0, 30);
     return result;
   }
   async getMyOrders(condition, option) {
     let result = await this.ctx.model.OrderTrack.find({ creator: this.ctx.user._id },
-      { title: 1, content: 1, price: 1 }, option);
+      { title: 1, content: 1, price: 1, created_at: 1, mainlyShowPicUrl: 1 }, option);
     result = result.map(e => {
       return {
         contentReview: e.content.replace(/(<([^>]+)>)/ig, '').substring(0, 30),

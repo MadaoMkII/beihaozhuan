@@ -37,7 +37,8 @@ class picController extends Controller {
     try {
       let { path } = ctx.request.query;
       const files = ctx.request.files;
-      console.log(path);
+      console.log(files);
+      console.log(ctx.app.config.email);
       // const stream = await ctx.getFileStream();
       const imageUrl = [];
       path = path ? path : 'images';

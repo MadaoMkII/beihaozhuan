@@ -46,14 +46,27 @@ class goodController extends baseController {
       const result = await ctx.service.goodService.getManyGood(condition, option);
       return this.success([ result, count ]);
     } catch (e) {
-      this.app.logger.error(e, ctx);
       this.failure();
     }
   }
 
   async getShowGoods(ctx) {
-    // ctx.request.body.status = 'enable';
-    await this.getManyGoods(ctx);
+    try {
+      const [ condition, option ] = await this.cleanupRequestProperty('goodRules.findGoodRule',
+        'unit', 'page', 'status', 'title', 'categoryUUid');
+      if (!condition) {
+        return;
+      }
+      if (!ctx.helper.isEmpty(condition.title)) {
+        condition.title = { $regex: `.*${condition.title}.*` };
+      }
+      condition.status = 'enable';
+      const count = await this.getFindModelCount('Good', condition);
+      const result = await ctx.service.goodService.getManyGood(condition, option);
+      return this.success([ result, count ]);
+    } catch (e) {
+      this.failure();
+    }
   }
   async getGoodListForUser(ctx) {
     try {
@@ -148,8 +161,7 @@ class goodController extends baseController {
   async updateGood(ctx) {
     try {
       const [ condition ] = await this.cleanupRequestProperty('goodRules.updateGoodRule',
-        'uuid', 'title', 'categoryUUid', 'slideShowPicUrlArray', 'price',
-        'description', 'inventory', 'mainlyShowPicUrl', 'status', 'exchangeWay', 'paymentMethod', 'giftExchangeContent');
+        'uuid', 'title', 'categoryUUid', 'price', 'description', 'inventory', 'status', 'exchangeWay', 'paymentMethod', 'giftExchangeContent');
       if (!condition) {
         return false;
       }
@@ -166,16 +178,15 @@ class goodController extends baseController {
         }
       }
       condition.paymentMethod = 'Bcoin';
-      condition.price = Number(condition.price) <= 0 ? 1 : Number(condition.price);
-      condition.inventory = Number(condition.inventory) <= 0 ? 1 : Number(condition.inventory);
+      if (condition.price) { condition.price = Number(condition.price) <= 0 ? 1 : Number(condition.price); }
+      if (condition.inventory) { condition.inventory = Number(condition.inventory) <= 0 ? 1 : Number(condition.inventory); }
       const result = await ctx.service.goodService.updateGood(condition);
       if (ctx.helper.isEmpty(result)) {
         return this.failure('找不到商品', 4031, 400);
       }
       return this.success();
     } catch (e) {
-      this.app.logger.error(e, ctx);
-      this.failure();
+      this.failure(e);
     }
   }
 
@@ -190,17 +201,15 @@ class goodController extends baseController {
       const result = await ctx.service.goodService.createGood(newGood);
       return this.success(result);
     } catch (e) {
-      this.app.logger.error(e, ctx);
       this.failure();
     }
   }
 
-  async getRecommendGood(ctx) {
+  async getRecommendGood() {
     try {
       const setting = await this.service.goodService.getRecommendGood();
       this.success(setting);
     } catch (e) {
-      this.app.logger.error(e, ctx);
       this.failure();
     }
   }

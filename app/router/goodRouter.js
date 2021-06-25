@@ -6,7 +6,7 @@ module.exports = app => {
   // router.get('/excel/getExcel', app.middleware.authenticatedMiddleware('客服'), controller.orderTrackerController.getExcel);
 
   router.post('/good/createGood', app.middleware.authenticatedMiddleware('运营'), controller.goodController.createGood);
-  router.post('/good/updateGood', app.middleware.authenticatedMiddleware('运营'), controller.goodController.updateGood);
+  router.post('/good/updateGood', controller.goodController.updateGood);
   // router.post('/order/makeOrder', app.middleware.authenticatedMiddleware('用户'), controller.orderTrackerController.createOrder);
   // router.post('/order/findOrder', app.middleware.authenticatedMiddleware('用户'), controller.orderTrackerController.findOrder);
   // router.post('/order/getMyOrders', app.middleware.authenticatedMiddleware('用户'), controller.orderTrackerController.getMyOrders);

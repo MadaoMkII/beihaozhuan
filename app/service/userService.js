@@ -227,7 +227,6 @@ class UserService extends BaseService {
         nickName: { $first: '$nickName' },
       } },
     ]);
-    console.log(membersInfo)
     membersInfo = membersInfo.map(element => {
       return {
         tel_number: element._id,

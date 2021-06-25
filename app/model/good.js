@@ -72,7 +72,7 @@ module.exports = app => {
       delete ret.updated_at;
       ret.category = doc.category ? doc.category.category : '未分类';
       if (doc.created_at) {
-        ret.created_at = new Date(doc.created_at).getTime();
+        ret.created_at = app.getLocalTime(doc.created_at);
       }
     },
   });
@@ -87,7 +87,7 @@ module.exports = app => {
       ret.priority = doc.category ? doc.category.priority : -1;
       ret.category = doc.category ? doc.category.category : '未分类';
       if (doc.created_at) {
-        ret.created_at = new Date(doc.created_at).getTime();
+        ret.created_at = app.getLocalTime(doc.created_at);
       }
     },
   });

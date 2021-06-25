@@ -23,4 +23,7 @@ module.exports = app => {
     controller.withdrewConstraintController.deleteWithdrewConstraintList);
   router.post('/withdrew/getWithdrewList', app.middleware.authenticatedMiddleware('用户'),
     controller.withdrewConstraintController.getWithdrewList);
+
+  router.post('/withdrew/getWithdrewConstraintList_User', app.middleware.authenticatedMiddleware('用户'),
+    controller.withdrewConstraintController.getWithdrewConstraintList_User);
 };
