@@ -26,4 +26,7 @@ module.exports = app => {
 
   router.post('/withdrew/getWithdrewConstraintList_User', app.middleware.authenticatedMiddleware('用户'),
     controller.withdrewConstraintController.getWithdrewConstraintList_User);
+
+  router.post('/wechat/uniAppLogin', controller.wechatController.uniAppLogin);
+
 };

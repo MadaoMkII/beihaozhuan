@@ -99,7 +99,6 @@ class realMissionService extends BaseService {
       await this.syncingMissionTasks(user);
       list = await this.ctx.model.UserMissionTask.find(query, project, option);
     }
-
     const allMission = await this.ctx.model.RealMission.find({ status: 'enable' }, {
       created_at: false,
       updated_at: false,
@@ -114,6 +113,8 @@ class realMissionService extends BaseService {
       const tempObj = mission;
       const objInList = list.find(e => e.mission_id.equals(mission._id));
       if (!this.isEmpty(objInList)) {
+        tempObj._doc.completed = objInList.status === '完成';
+        tempObj._doc.status = objInList.status;
         tempObj._doc.recentTimes = objInList.recentTimes > tempObj.requireTimes ? tempObj.requireTimes : objInList.recentTimes;
       } else {
         const uuid = 'UM' + require('cuid')();
@@ -143,20 +144,34 @@ class realMissionService extends BaseService {
       }
       result.push(tempObj);
     }
-    return [ result, query ];
+    return [ result, allMission.length ];
   }
 
   async finishRealMission(condition) {
 
-    const missionTask = await this.ctx.model.UserMissionTask.findOne({ uuid: condition.uuid });
+    const RM = await this.ctx.model.RealMission.findOne({ uuid: condition.uuid });
+    if (this.isEmpty(RM)) {
+      this.ctx.throw(400, '找不到这条RM记录');
+    }
+    const missionTask = await this.ctx.model.UserMissionTask.findOne({
+      mission_id: RM._id,
+      tel_number: this.ctx.user.tel_number }, {}, { sort: { created_at: -1 } });
+
     if (this.isEmpty(missionTask)) {
-      this.ctx.throw(400, '找不到这条记录');
+      this.ctx.throw(400, '找不到这条用户记录');
+    }
+    console.log(missionTask);
+    if (missionTask.status === '进行中') {
+      this.ctx.throw(400, '这个任务还没有达到领取程度');
+    }
+    if (missionTask.status === '完成') {
+      this.ctx.throw(400, '这个任务已经完成了');
     }
     if (missionTask.recentTimes < missionTask.requireTimes) {
       this.ctx.throw(400, '任务不满足完成条件');
     }
-    if (missionTask.status === '完成') {
-      this.ctx.throw(400, '这个任务已经完成了');
+    if (missionTask.status === '过期') {
+      this.ctx.throw(400, '你无法完成一个已经过期的臭任务');
     }
     const modifyObj = {
       tel_number: this.ctx.user.tel_number,
@@ -165,7 +180,9 @@ class realMissionService extends BaseService {
       amount: missionTask.reward,
     };
     await this.ctx.service.userService.modifyUserRcoin(modifyObj);
-    await this.ctx.model.UserMissionTask.updateOne({ uuid: condition.uuid }, { $set: { status: '完成' } });
+    await this.ctx.model.UserMissionTask.updateOne({
+      mission_id: RM._id,
+      tel_number: this.ctx.user.tel_number }, { $set: { status: '完成' } });
   }
 
   async finishRealMission_extra(condition) {

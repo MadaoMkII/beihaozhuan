@@ -28,7 +28,7 @@ module.exports = app => {
     controller.goodController.updateCategory);
   router.post('/category/deleteCategory', app.middleware.authenticatedMiddleware('运营'),
     controller.goodController.deleteCategory);
-  router.post('/category/getCategoryList', app.middleware.authenticatedMiddleware('运营'),
+  router.post('/category/getCategoryList', app.middleware.authenticatedMiddleware('用户'),
     controller.goodController.getCategory);
 
 

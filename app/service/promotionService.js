@@ -21,13 +21,12 @@ class promotionService extends BaseService {
     }, option).populate('category');
   }
   async setPromotionBranch(condition) {
-    condition.uuid = 'PROB' + require('cuid')();
-    const oldPromotionBranches = await this.ctx.model.PromotionBranch.find({ promotionUUid: condition.promotionUUid },
+
+    const oldPromotion = await this.ctx.model.Promotion.findOne({ uuid: condition.promotionUUid },
       {}, { sort: { stepNumber: -1 } });
-    let stepNumberShouldBe = 1;
-    if (!this.isEmpty(oldPromotionBranches) && oldPromotionBranches.length > 0) {
-      stepNumberShouldBe = oldPromotionBranches.length + 1;
-    }
+    if (this.isEmpty(oldPromotion)) { this.ctx.throw(400, '找不到这个活动'); }
+    condition.uuid = 'PROB' + require('cuid')();
+    const stepNumberShouldBe = oldPromotion.stepsBox.length + 1;
     condition.stepNumber = stepNumberShouldBe;
     await this.ctx.model.Promotion.updateOne({ uuid: condition.promotionUUid },
       { $push: { stepsBox: { uuid: condition.uuid, stepNumber: stepNumberShouldBe } } });

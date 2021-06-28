@@ -39,9 +39,9 @@ class realMissionController extends Controller {
         ctx.throw(400, '签名并不匹配');
       }
       const diffTime = ctx.diffTime(condition.timestamp, null, 'minutes');
-      // if (Math.abs(diffTime) >= 1) {
-      //   ctx.throw(400, '请求超过时限');
-      // }
+      if (Math.abs(diffTime) >= 1) {
+        ctx.throw(400, '请求超过时限');
+      }
       const promise = ctx.service.realMissionService.doRealMission(condition);
       this.success();
       Promise.all([ promise ]).then();
@@ -57,8 +57,8 @@ class realMissionController extends Controller {
       if (!condition) {
         return;
       }
-      const [ result, query ] = await ctx.service.realMissionService.getRealMissionForUser(option);
-      const count = await this.getFindModelCount('UserMissionTask', query);
+      const [ result, count ] = await ctx.service.realMissionService.getRealMissionForUser(option);
+      // const count = await this.getFindModelCount('UserMissionTask', query);
       this.success([ result, count ]);
     } catch (e) {
       this.failure(e);

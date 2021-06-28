@@ -9,11 +9,12 @@ class userPromotionService extends BaseService {
     }
     const branches = await this.ctx.model.PromotionBranch.find({ promotionUUid: condition.uuid },
       {}, { sort: { stepNumber: 1 } });
-    const userPromotions = await this.ctx.model.UserPromotion.find({ promotionUUid: condition.uuid },
-      {
-        operator: 0,
-        created_at: 0,
-      });
+    const userPromotions = await this.ctx.model.UserPromotion.find({ tel_number: this.ctx.user.tel_number,
+      promotionUUid: condition.uuid },
+    {
+      operator: 0,
+      created_at: 0,
+    });
     const branchArray = [];
     for (const branch of branches) {
       const ups = userPromotions.find(e => e.promotionBranchUUid === branch.uuid);
@@ -51,6 +52,8 @@ class userPromotionService extends BaseService {
       { sort: { update_at: -1 } }).
       populate('promotionBranchObj');
     // 遍历但是要小心失败
+    console.log(this.ctx.user.nickName);
+    console.log(platform);
     const userPromotionMap = new Map();
     for (const ps of userPromotions) {
       const oldUP = userPromotionMap.get(ps.promotionUUid);
@@ -162,7 +165,7 @@ class userPromotionService extends BaseService {
     },
     { $set: { screenshotUrls: condition.screenshotUrls, status: '审核中' } });
     if (this.isEmpty(promotionBranch)) {
-      this.ctx.throw(400, '找不到这个uuid对应的记录, 或者状态不对');
+      this.ctx.throw(400, '找不到这个uuid对应的记录, 或者状态不对, 还有一点，必须先下载过才能调用这个接口.');
     }
     await this.ctx.model.Promotion.updateOne({ uuid: promotionBranch.promotionUUid },
       { $inc: { waitingProcess: 1 } });

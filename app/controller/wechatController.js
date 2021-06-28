@@ -1,6 +1,6 @@
 'use strict';
 const baseController = require('../controller/baseController');
-const url = require('url');
+const { URL } = require('url');
 
 
 class wechatController extends baseController {
@@ -116,25 +116,103 @@ class wechatController extends baseController {
       this.failure(e);
     }
   }
+  async uniAppLogin(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('wechatRules.uniAppLoginRule',
+        'access_token', 'openid', 'sourceFrom', 'inviteCode', 'redirect');
+      if (!condition) {
+        return;
+      }
+      condition.stateMessage = 'CHECK';
+      await this.checkUserIDAndLogin(ctx, condition, condition.access_token);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
+  async checkUserIDAndLogin(ctx, stateObj, access_token) {
+    stateObj.OPENID = stateObj.openid;
+    console.log(stateObj);
+    if (!stateObj.OPENID) {
+      ctx.throw('登录名为空' + stateObj.openid);
+    }
+    const user = await this.ctx.service.userService.getUser({ OPENID: stateObj.OPENID });
+    if (!ctx.helper.isEmpty(user)) {
+      if (user.userStatus.activity.toString() !== 'enable') {
+        ctx.throw(400, '该账户被封停');
+      }
+      ctx.login(user);
+      let location_jump;
+      if (stateObj.stateMessage !== 'CHECK') {
+        location_jump = stateObj.stateMessage;
+      } else {
+        location_jump = 'index';
+      }
+      if (stateObj.redirect) {
+        ctx.status = 301;
+        ctx.redirect(`/${location_jump}?redirect=${stateObj.redirect}`);
+      } else {
+        this.success();
+      }
+      await this.ctx.service.userService.updateUser(user.uuid, {
+        'userStatus.hasVerifyWechat': 'enable',
+      });
+    } else {
+      const requestObj_3 = {
+        access_token,
+        openid: stateObj.OPENID,
+        lang: 'zh_CN',
+      };
+      const [ result_3 ] = await this.requestMethod(requestObj_3,
+        'GET', 'https://api.weixin.qq.com/sns/userinfo');
+      console.log(result_3);
+      if (result_3.errcode) {
+        return;
+      }
+      // 去注册
+      const statusString = ctx.helper.encrypt(stateObj.OPENID);
+      const head = ctx.helper.encrypt(result_3.headimgurl);
+      const nickName = ctx.helper.encrypt(result_3.nickname);
 
-
+      let state,
+        source;
+      if (stateObj.stateMessage !== 'CHECK') {
+        state = stateObj.stateMessage;
+        source = stateObj.sourceFrom;
+      } else {
+        source = 'origin';
+        state = '';
+      }
+      if (stateObj.redirect) {
+        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${stateObj.inviteCode}&source=${source}&state=${state}&redirect=${stateObj.redirect}`;
+        ctx.status = 301;
+        ctx.redirect(url);
+      } else {
+        this.success();
+      }
+    }
+  }
   async callback(ctx) {
     try {
-      const returnUrl = ctx.request.url; // /wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
+      const returnUrl = ctx.request.href; // /wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE
       // returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
-      const urlQuery = url.parse(returnUrl, true).query;
-      const { code, state, redirect } = urlQuery;
+      // const urlQuery = url.parse(returnUrl, true).query;
+      const urlQuery = new URL(returnUrl).searchParams;
+      console.log(urlQuery);
+      const code = urlQuery.get('code');
+      const redirect = urlQuery.get('redirect');
+      const state = urlQuery.get('state');
+
+
       console.log('callback');
-      let stateMessage = '',
-        sourceFrom = '',
-        inviteCode = '';
+      let stateObj = {};
+      stateObj.redirect = redirect;
       try {
-        const stateObj = JSON.parse(state);
-        stateMessage = stateObj.stateMessage;
-        inviteCode = stateObj.inviteCode;
-        sourceFrom = stateObj.source;
+        stateObj = JSON.parse(state.toString());
+        // stateMessage = stateObj.stateMessage;
+        // inviteCode = stateObj.inviteCode;
+        // sourceFrom = stateObj.source;
       } catch (e) {
-        stateMessage = state;
+        stateObj.stateMessage = state;
       }
       if (ctx.helper.isEmpty(code) || ctx.helper.isEmpty(state)) {
         ctx.throw('空值警告');
@@ -150,57 +228,9 @@ class wechatController extends baseController {
       if (!ctx.helper.isEmpty(result_2.errcode)) {
         ctx.throw(405, result_2.errmsg);
       }
-      const OPENID = result_2.openid;
-      const user = await this.ctx.service.userService.getUser({ OPENID });
-      if (!ctx.helper.isEmpty(user)) {
-        if (user.userStatus.activity.toString() !== 'enable') {
-          ctx.throw(400, '该账户被封停');
-        }
-        ctx.login(user);
-        let location_jump = '';
-        if (stateMessage !== 'CHECK') {
-          location_jump = stateMessage;
-        } else {
-          location_jump = 'index';
-        }
-        ctx.status = 301;
-        ctx.redirect(`/${location_jump}?redirect=${redirect}`);
-        await this.ctx.service.userService.updateUser(user.uuid, {
-          'userStatus.hasVerifyWechat': 'enable',
-        });
-      } else {
-        const requestObj_3 = {
-          access_token: result_2.access_token,
-          openid: OPENID,
-          lang: 'zh_CN',
-        };
-        const [ result_3 ] = await this.requestMethod(requestObj_3,
-          'GET', 'https://api.weixin.qq.com/sns/userinfo');
-        console.log(result_3);
-        if (result_3.errcode) {
-          return;
-        }
-        // 去注册
-        const statusString = ctx.helper.encrypt(OPENID);
-        const head = ctx.helper.encrypt(result_3.headimgurl);
-        const nickName = ctx.helper.encrypt(result_3.nickname);
-
-        let state,
-          source;
-        if (stateMessage !== 'CHECK') {
-
-          state = stateMessage;
-          source = sourceFrom;
-        } else {
-          source = 'origin';
-          state = '';
-        }
-        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${inviteCode}&source=${source}&state=${state}&redirect=${redirect}`;
-        ctx.status = 301;
-        ctx.redirect(url);
-      }
+      stateObj.OPENID = result_2.openid;
+      await this.checkUserIDAndLogin(ctx, stateObj, result_2.access_token);
     } catch (e) {
-      this.app.logger.error(e, ctx);
       this.failure(e);
     }
   }
