@@ -16,21 +16,27 @@ class orderTrackerService extends BaseService {
   //   const allData = this.ctx.model.OrderTracker.find({}, { _id: 0 });
   // }
   //
-  // async findOrder(conditions, option) {
-  //   const searcher = {};
-  //   Object.keys(conditions).forEach(key => {
-  //     if (key === 'title') {
-  //       searcher.title = { $regex: `.*${conditions.title}.*` };
-  //     } else {
-  //       searcher[key] = conditions[key];
-  //     }
-  //   });
-  //   //
-  //   return this.ctx.model.OrderTracker.find(searcher, {}, option).populate({
-  //     path: 'goodID',
-  //     model: this.ctx.model.Good, select: '-_id insuranceLink',
-  //   });
-  // }
+  async findOrder(conditions, option) {
+    if (conditions.title) {
+      conditions.title = { $regex: `.*${conditions.title}.*` };
+    }
+    if (conditions.orderUUid) {
+      conditions._id = this.app.mongoose.Types.ObjectId(conditions.orderUUid);
+      delete conditions.orderUUid;
+    }
+    const orderTracks = await this.ctx.model.OrderTrack.find(conditions,
+      { title: 1, _id: 1, price: 1, content: 1, created_at: 1 }, option);
+    return orderTracks.map(e => {
+      return {
+        title: e.title,
+        uuid: e._id,
+        price: e.price,
+        content: e.content,
+        created_at: this.app.getLocalTime(e.created_at),
+        status: '已购买',
+      };
+    });
+  }
   async getOneMyOrder(condition) {
     const result = await this.ctx.model.OrderTrack.findOne({ _id: condition.id },
       { title: 1, content: 1, price: 1,

@@ -24,6 +24,9 @@ module.exports = app => {
       if (doc.created_at) {
         ret.created_at = app.getLocalTime(doc.created_at);
       }
+      if (doc.amount) {
+        ret.amount = doc.amount / 100;
+      }
       delete ret.updated_at;
     },
   });

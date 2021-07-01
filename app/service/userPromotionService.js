@@ -52,8 +52,7 @@ class userPromotionService extends BaseService {
       { sort: { update_at: -1 } }).
       populate('promotionBranchObj');
     // 遍历但是要小心失败
-    console.log(this.ctx.user.nickName);
-    console.log(platform);
+    console.log(userPromotions);
     const userPromotionMap = new Map();
     for (const ps of userPromotions) {
       const oldUP = userPromotionMap.get(ps.promotionUUid);
@@ -69,7 +68,7 @@ class userPromotionService extends BaseService {
     const statusMap = new Map();
     statusMap.set('已下载', 0);
     statusMap.set('审核中', 0);
-    statusMap.set('审核不通过', 0);
+    statusMap.set('审核未通过', 0);
     statusMap.set('审核通过', 0);
     statusMap.set('已完成', 0);
 
@@ -149,26 +148,53 @@ class userPromotionService extends BaseService {
 
   async submitUserPromotion(condition) {
     const user = this.ctx.user;
-
-    const isExist = await this.ctx.model.UserPromotion.exists({
+    const oldUserPromotion = await this.ctx.model.UserPromotion.findOne({
       promotionBranchUUid: condition.promotionBranchUUid,
-      status: '审核中',
       tel_number: user.tel_number,
     });
-    if (isExist) {
-      this.ctx.throw(400, '您已经提交过了，请等待审批');
+    if (!this.isEmpty(oldUserPromotion)) {
+      if (oldUserPromotion.status === '审核中') {
+        this.ctx.throw(400, '您已经提交过了，请等待审批');
+      }
+      if (oldUserPromotion.status === '审核通过') {
+        this.ctx.throw(400, '您已经提交过了，这个审核已经通过了');
+      }
+      if (oldUserPromotion.status === '审核未通过') {
+        await this.ctx.model.UserPromotion.updateOne({
+          promotionBranchUUid: condition.promotionBranchUUid,
+          tel_number: user.tel_number,
+        }, { $set: {
+          status: '审核中',
+          screenshotUrls: condition.screenshotUrls,
+        } });
+        return;
+      }
     }
-    const promotionBranch = await this.ctx.model.UserPromotion.findOneAndUpdate({
+    const promotionBranch = await this.ctx.model.PromotionBranch.findOne({ uuid: condition.promotionBranchUUid });
+    if (!this.isEmpty(promotionBranch.downloadLink)) {
+      if (this.isEmpty(oldUserPromotion)) {
+        this.ctx.throw(400, '找不到这个uuid对应的记录');
+      }
+    }
+    const promotion = await this.ctx.model.Promotion.findOne({ uuid: promotionBranch.promotionUUid },
+      { promotionType: 1 });
+    const userPromotion = {
+      uuid: condition.uuid,
       promotionBranchUUid: condition.promotionBranchUUid,
-      status: '已下载',
+      status: '审核中',
+      type: promotion.promotionType,
+      title: promotionBranch.branchTitle,
       tel_number: user.tel_number,
-    },
-    { $set: { screenshotUrls: condition.screenshotUrls, status: '审核中' } });
-    if (this.isEmpty(promotionBranch)) {
-      this.ctx.throw(400, '找不到这个uuid对应的记录, 或者状态不对, 还有一点，必须先下载过才能调用这个接口.');
-    }
+      nickName: user.nickName,
+      reward: promotionBranch.promotionReward,
+      promotionUUid: promotionBranch.promotionUUid,
+      source: user.source,
+      stepNumber: promotionBranch.stepNumber,
+    };
     await this.ctx.model.Promotion.updateOne({ uuid: promotionBranch.promotionUUid },
       { $inc: { waitingProcess: 1 } });
+    const promotionBranchObj = new this.ctx.model.UserPromotion(userPromotion);
+    promotionBranchObj.save();
   }
 
   // admin-------------------------------------------
@@ -176,12 +202,12 @@ class userPromotionService extends BaseService {
     const { user } = this.ctx; //
     const result = await this.ctx.model.UserPromotion.findOneAndUpdate({
       uuid: condition.uuid,
-      status: '审核中' },
+      status: { $in: [ '审核中', '审核未通过' ] } },
     { $set: { status: condition.decision, operator: { nickName: user.nickName, tel_number: user.tel_number } } });
     if (this.isEmpty(result)) {
       this.ctx.throw(400, '找不到这个uuid对应的记录, 或者订单状态已经被审核');
     }
-    if (condition.decision) {
+    if (condition.decision === '审核通过') {
       const modifyObj = {
         tel_number: result.tel_number,
         content: `活动奖励-${result.title}`,

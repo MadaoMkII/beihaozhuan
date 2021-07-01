@@ -39,13 +39,19 @@ class promotionService extends BaseService {
     await this.ctx.model.PromotionBranch.updateOne({ uuid: condition.uuid }, { $set: condition });
   }
   async updatePromotion(condition) {
-    await this.ctx.model.Promotion.updateOne({ uuid: condition.uuid }, { $set: condition });
+    const oldPromotion = await this.ctx.model.Promotion.
+      findOneAndUpdate({ uuid: condition.uuid }, { $set: condition });
+    if (condition.categoryUUid) {
+      await this.ctx.model.Category.updateOne({ uuid: oldPromotion.categoryUUid }, { $inc: { amount: -1 } });
+      await this.ctx.model.Category.updateOne({ uuid: condition.categoryUUid }, { $inc: { amount: 1 } });
+    }
   }
 
   async getPromotionDetail(condition) {
     return this.ctx.model.Promotion.findOne({ uuid: condition.promotionUUid }).populate('category stepsBoxDetail');
   }
   async createPromotion(condition) {
+    await this.ctx.model.Category.updateOne({ uuid: condition.categoryUUid }, { $inc: { amount: 1 } });
     const promotion = new this.ctx.model.Promotion(condition);
     promotion.save();
   }
@@ -69,6 +75,7 @@ class promotionService extends BaseService {
     if (this.isEmpty(promotion)) {
       this.ctx.throw(400, '找不到这个记录');
     }
+    await this.ctx.model.Category.updateOne({ uuid: promotion.categoryUUid }, { $inc: { amount: -1 } });
     const flag = await this.ctx.model.UserPromotion.exists({ promotionUUid: uuid });
     if (flag) {
       this.ctx.throw(400, '已经有用户进行了这个活动，无法删除');

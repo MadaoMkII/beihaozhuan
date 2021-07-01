@@ -30,9 +30,7 @@ class realMissionController extends Controller {
         type: condition.type,
         tel_number: ctx.user.tel_number,
       };
-      console.log(testObj);
       const [ , signStr ] = await ctx.service.wechatService.getSign(testObj, 'MD5', 'beihaozhuan01');
-
       console.log(signStr);
       console.log(condition.sign);
       if (signStr !== condition.sign) {

@@ -41,11 +41,11 @@ class realMissionService extends BaseService {
   async syncingMissionTasks(user) {
     const missions = await this.ctx.model.RealMission.find({ status: 'enable' });
     const userTaskArray = [];
-    await this.ctx.model.UserMissionTask.updateMany({
-      tel_number: user.tel_number,
-      status: '进行中',
-    },
-    { $set: { status: '过期' } });
+    const query = this.getTimeQueryByPeriod('本日');
+    query.tel_number = user.tel_number;
+    query.status = { $in: [ '进行中', '等待领取' ] };
+    await this.ctx.model.UserMissionTask.updateMany(query,
+      { $set: { status: '过期' } });
     for (const mission of missions) {
       const uuid = 'UM' + require('cuid')();
       const userTask = {
@@ -110,7 +110,9 @@ class realMissionService extends BaseService {
     // }
     const result = [];
     for (const mission of allMission) {
+
       const tempObj = mission;
+      if (mission.status === '过期') { continue; }
       const objInList = list.find(e => e.mission_id.equals(mission._id));
       if (!this.isEmpty(objInList)) {
         tempObj._doc.completed = objInList.status === '完成';
@@ -148,15 +150,15 @@ class realMissionService extends BaseService {
   }
 
   async finishRealMission(condition) {
-
     const RM = await this.ctx.model.RealMission.findOne({ uuid: condition.uuid });
     if (this.isEmpty(RM)) {
       this.ctx.throw(400, '找不到这条RM记录');
     }
-    const missionTask = await this.ctx.model.UserMissionTask.findOne({
-      mission_id: RM._id,
-      tel_number: this.ctx.user.tel_number }, {}, { sort: { created_at: -1 } });
-
+    const query = this.getTimeQueryByPeriod('本日');
+    query.mission_id = RM._id;
+    query.tel_number = this.ctx.user.tel_number;
+    const missionTask = await this.ctx.model.UserMissionTask.findOne(query, {},
+      { sort: { created_at: -1 } });
     if (this.isEmpty(missionTask)) {
       this.ctx.throw(400, '找不到这条用户记录');
     }
@@ -180,9 +182,8 @@ class realMissionService extends BaseService {
       amount: missionTask.reward,
     };
     await this.ctx.service.userService.modifyUserRcoin(modifyObj);
-    await this.ctx.model.UserMissionTask.updateOne({
-      mission_id: RM._id,
-      tel_number: this.ctx.user.tel_number }, { $set: { status: '完成' } });
+    await this.ctx.model.UserMissionTask.updateOne(query,
+      { $set: { status: '完成' } }, { sort: { created_at: -1 } });
   }
 
   async finishRealMission_extra(condition) {

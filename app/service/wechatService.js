@@ -73,10 +73,10 @@ class WeChatService extends BaseService {
     await this.checkConstraint(constraint);
     const recentUserAccount = await this.ctx.model.UserAccount.findOne({ tel_number: user.tel_number });
     const amount = Number(constraint.amount);
-    if (Number(recentUserAccount.Bcoins) < amount) {
+    if (Number(recentUserAccount.Bcoins) < amount * 100) {
       this.ctx.throw(200, '用户余额不足');
     }
-    const newBCoin = Number(recentUserAccount.Bcoins) - amount;
+    const newBCoin = Number(recentUserAccount.Bcoins) - amount * 100;
     if (newBCoin < 0) {
       this.ctx.throw(200, '用户所剩的余额不足');
     }
