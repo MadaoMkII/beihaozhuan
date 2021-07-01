@@ -53,6 +53,7 @@ class promotionController extends Controller {
   // OSS分组存储，然后删除的时候统一删除
   async addPromotionBranch(ctx) {
     try {
+      await this.checkTimeInterval(0.2);
       const [ condition ] = await this.cleanupRequestProperty('promotionRules.setPromotionBranchRule',
         'promotionUUid', 'branchTitle', 'allowUpload', 'rewardSwitch',
         'promotionReward', 'description', 'downloadLink', 'showPics');

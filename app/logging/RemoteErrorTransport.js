@@ -66,8 +66,8 @@ class RemoteErrorTransport extends Transport {
     }
     if (args[2]) {
       result.specialInformation = args[2];
+      args.push(meta);
     }
-    args.push(meta);
     const loggerEntity = new ctx.model.Logger(result);
     loggerEntity.save();
   }

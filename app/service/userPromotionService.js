@@ -28,15 +28,15 @@ class userPromotionService extends BaseService {
         delete ups._doc.promotionBranchUUid;
         delete ups._doc.tel_number;
         delete ups._doc.nickName;
-        tempObj.userPromotion = {
-          status: ups.status,
-          screenshotUrls: ups.screenshotUrls,
-        };
+        // tempObj.userPromotion = {
+        //   status: ups.status,
+        //   screenshotUrls: ups.screenshotUrls,
+        // };
       } else {
-        tempObj.userPromotion = {
-          status: '未开启',
-          screenshotUrls: [],
-        };
+        // tempObj.userPromotion = {
+        //   status: '未开启',
+        //   screenshotUrls: [],
+        // };
       }
       tempObj.promotionReward = branch.promotionReward;
       tempObj.description = branch.description;
@@ -51,8 +51,6 @@ class userPromotionService extends BaseService {
     const userPromotions = await this.ctx.model.UserPromotion.find({ tel_number: user.tel_number }, {},
       { sort: { update_at: -1 } }).
       populate('promotionBranchObj');
-    // 遍历但是要小心失败
-    console.log(userPromotions);
     const userPromotionMap = new Map();
     for (const ps of userPromotions) {
       const oldUP = userPromotionMap.get(ps.promotionUUid);
@@ -152,6 +150,7 @@ class userPromotionService extends BaseService {
       promotionBranchUUid: condition.promotionBranchUUid,
       tel_number: user.tel_number,
     });
+    const promotionBranch = await this.ctx.model.PromotionBranch.findOne({ uuid: condition.promotionBranchUUid });
     if (!this.isEmpty(oldUserPromotion)) {
       if (oldUserPromotion.status === '审核中') {
         this.ctx.throw(400, '您已经提交过了，请等待审批');
@@ -167,34 +166,34 @@ class userPromotionService extends BaseService {
           status: '审核中',
           screenshotUrls: condition.screenshotUrls,
         } });
-        return;
       }
-    }
-    const promotionBranch = await this.ctx.model.PromotionBranch.findOne({ uuid: condition.promotionBranchUUid });
-    if (!this.isEmpty(promotionBranch.downloadLink)) {
-      if (this.isEmpty(oldUserPromotion)) {
-        this.ctx.throw(400, '找不到这个uuid对应的记录');
+    } else {
+      if (!this.isEmpty(promotionBranch.downloadLink)) {
+        if (this.isEmpty(oldUserPromotion)) {
+          this.ctx.throw(400, '找不到这个uuid对应的记录,你必须先下载');
+        }
       }
+      const promotion = await this.ctx.model.Promotion.findOne({ uuid: promotionBranch.promotionUUid },
+        { promotionType: 1 });
+      const userPromotion = {
+        uuid: condition.uuid,
+        promotionBranchUUid: condition.promotionBranchUUid,
+        status: '审核中',
+        type: promotion.promotionType,
+        title: promotionBranch.branchTitle,
+        tel_number: user.tel_number,
+        nickName: user.nickName,
+        reward: promotionBranch.promotionReward,
+        promotionUUid: promotionBranch.promotionUUid,
+        source: user.source,
+        stepNumber: promotionBranch.stepNumber,
+        screenshotUrls: condition.screenshotUrls,
+      };
+      const promotionBranchObj = new this.ctx.model.UserPromotion(userPromotion);
+      promotionBranchObj.save();
     }
-    const promotion = await this.ctx.model.Promotion.findOne({ uuid: promotionBranch.promotionUUid },
-      { promotionType: 1 });
-    const userPromotion = {
-      uuid: condition.uuid,
-      promotionBranchUUid: condition.promotionBranchUUid,
-      status: '审核中',
-      type: promotion.promotionType,
-      title: promotionBranch.branchTitle,
-      tel_number: user.tel_number,
-      nickName: user.nickName,
-      reward: promotionBranch.promotionReward,
-      promotionUUid: promotionBranch.promotionUUid,
-      source: user.source,
-      stepNumber: promotionBranch.stepNumber,
-    };
     await this.ctx.model.Promotion.updateOne({ uuid: promotionBranch.promotionUUid },
       { $inc: { waitingProcess: 1 } });
-    const promotionBranchObj = new this.ctx.model.UserPromotion(userPromotion);
-    promotionBranchObj.save();
   }
 
   // admin-------------------------------------------
@@ -217,6 +216,9 @@ class userPromotionService extends BaseService {
       await this.ctx.service.userService.modifyUserRcoin(modifyObj);
       await this.ctx.model.Promotion.updateOne({ uuid: result.promotionUUid },
         { $inc: { totalFinishCount: 1, waitingProcess: -1 } });
+    } else {
+      await this.ctx.model.Promotion.updateOne({ uuid: result.promotionUUid },
+        { $inc: { waitingProcess: -1 } });
     }
   }
   async getCheckUserPromotionList(condition, option) {

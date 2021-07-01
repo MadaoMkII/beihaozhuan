@@ -6,7 +6,7 @@ class promotionService extends BaseService {
     if (!this.isEmpty(condition.title)) {
       condition.title = { $regex: `.*${condition.title}.*` };
     }
-    option.sort = { priority: 1 };
+    option.sort = { priority: -1 };
     return this.ctx.model.Promotion.find(condition, {
       title: true,
       categoryUUid: true,
@@ -21,15 +21,17 @@ class promotionService extends BaseService {
     }, option).populate('category');
   }
   async setPromotionBranch(condition) {
-
-    const oldPromotion = await this.ctx.model.Promotion.findOne({ uuid: condition.promotionUUid },
-      {}, { sort: { stepNumber: -1 } });
+    const oldPromotion = await this.ctx.model.Promotion.findOneAndUpdate({ uuid: condition.promotionUUid },
+      {}, { sort: { stepNumber: -1 }, new: true });
     if (this.isEmpty(oldPromotion)) { this.ctx.throw(400, '找不到这个活动'); }
     condition.uuid = 'PROB' + require('cuid')();
     const stepNumberShouldBe = oldPromotion.stepsBox.length + 1;
     condition.stepNumber = stepNumberShouldBe;
     await this.ctx.model.Promotion.updateOne({ uuid: condition.promotionUUid },
-      { $push: { stepsBox: { uuid: condition.uuid, stepNumber: stepNumberShouldBe } } });
+      { $push: { stepsBox: {
+        $each: [{ uuid: condition.uuid, stepNumber: stepNumberShouldBe }],
+        $sort: { stepNumber: -1 },
+      } } });
     const promotionBranch = new this.ctx.model.PromotionBranch(condition);
     promotionBranch.save();
   }
