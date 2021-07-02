@@ -20,20 +20,34 @@ class promotionService extends BaseService {
       waitingProcess: true,
     }, option).populate('category');
   }
-  async setPromotionBranch(condition) {
-    const oldPromotion = await this.ctx.model.Promotion.findOneAndUpdate({ uuid: condition.promotionUUid },
-      {}, { sort: { stepNumber: -1 }, new: true });
+  async setPromotionBranches(condition) {
+    await this.ctx.sleep(1000);
+    const oldPromotion = await this.ctx.model.Promotion.findOne({ uuid: condition.promotionUUid });
     if (this.isEmpty(oldPromotion)) { this.ctx.throw(400, '找不到这个活动'); }
-    condition.uuid = 'PROB' + require('cuid')();
-    const stepNumberShouldBe = oldPromotion.stepsBox.length + 1;
-    condition.stepNumber = stepNumberShouldBe;
-    await this.ctx.model.Promotion.updateOne({ uuid: condition.promotionUUid },
-      { $push: { stepsBox: {
-        $each: [{ uuid: condition.uuid, stepNumber: stepNumberShouldBe }],
-        $sort: { stepNumber: -1 },
-      } } });
-    const promotionBranch = new this.ctx.model.PromotionBranch(condition);
-    promotionBranch.save();
+    if (this.isEmpty(condition.branches) || !Array.isArray(condition.branches)) {
+      this.ctx.throw(400, 'branches错误');
+    }
+    let index = oldPromotion.stepsBox.length;
+    for (const branch of condition.branches) {
+      const flag = await this.ctx.validate('promotionRules.setPromotionBranchRule', branch);
+      if (!flag) {
+        this.ctx.throw(400, { message: { field: 'branches', message: this.ctx.body.error[0].message, index } });
+      }
+      branch.uuid = 'PROB' + require('cuid')();
+      const stepNumberShouldBe = ++index;
+      branch.stepNumber = stepNumberShouldBe;
+      branch.promotionUUid = condition.promotionUUid;
+      await this.ctx.model.Promotion.updateOne({ uuid: branch.promotionUUid },
+        {
+          $push: { stepsBox: {
+            $each: [{ uuid: branch.uuid, stepNumber: stepNumberShouldBe }],
+            $sort: { stepNumber: -1 },
+          } } });
+      const promotionBranch = new this.ctx.model.PromotionBranch(branch);
+      promotionBranch.save();
+    }
+
+
   }
 
   async updatePromotionBranch(condition) {

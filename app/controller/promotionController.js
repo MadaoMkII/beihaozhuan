@@ -51,18 +51,18 @@ class promotionController extends Controller {
   }
 
   // OSS分组存储，然后删除的时候统一删除
-  async addPromotionBranch(ctx) {
+  async addPromotionBranches(ctx) {
     try {
-      await this.checkTimeInterval(0.2);
-      const [ condition ] = await this.cleanupRequestProperty('promotionRules.setPromotionBranchRule',
-        'promotionUUid', 'branchTitle', 'allowUpload', 'rewardSwitch',
-        'promotionReward', 'description', 'downloadLink', 'showPics');
+      // await this.checkTimeInterval(0.2);
+      const [ condition ] = await this.cleanupRequestProperty('promotionRules.setPromotionBranchesRule',
+        'branches', 'promotionUUid');
       if (!condition) {
         return;
       }
       // await this.uploadAndSetPics(condition, 'showPics');
-      await ctx.service.promotionService.setPromotionBranch(condition);
+      const prm_1 = ctx.service.promotionService.setPromotionBranches(condition);
       this.success();
+      Promise.all([ prm_1 ]).then();
     } catch (e) {
       this.failure(e);
     }

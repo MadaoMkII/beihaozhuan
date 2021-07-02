@@ -24,6 +24,7 @@ module.exports = app => {
     promotionReward: {
       type: Number,
       min: [ 0, 'Must bigger than 0 ' ],
+      default: 0,
     },
     description: String,
     showPics: {

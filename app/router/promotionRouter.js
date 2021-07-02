@@ -4,7 +4,7 @@ module.exports = app => {
   const checker = app.middleware.authenticatedMiddleware;
   const { promotionController } = controller;
   router.post('/promotion/createPromotion', checker('用户'), promotionController.createPromotion);
-  router.post('/promotion/addPromotionBranch', checker('用户'), promotionController.addPromotionBranch);
+  router.post('/promotion/addPromotionBranches', checker('用户'), promotionController.addPromotionBranches);
   router.post('/promotion/updatePromotionBranch', checker('用户'), promotionController.updatePromotionBranch);
   router.post('/userReward/deletePromotionBranch', checker('用户'), promotionController.deletePromotionBranch);
   router.post('/promotion/getPromotionList', checker('用户'), promotionController.getPromotionList);

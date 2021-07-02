@@ -440,7 +440,7 @@ class analyzeService extends Service {
 
 
   async countGoodForChart(beginDate = new Date('2019-08-30')) {
-    let aggregateResult = await this.ctx.model.OrderTracker.aggregate([
+    let aggregateResult = await this.ctx.model.OrderTrack.aggregate([
       { $match: { created_at: { $gte: beginDate } } },
       // {
       //     $lookup:
@@ -493,15 +493,12 @@ class analyzeService extends Service {
 
 
   async dataIncrementRecord(content, amount, type, category) {
-
     const date = this.ctx.getAbsoluteDate(true);
-    const res = await this.ctx.model.DataAnalyze.findOneAndUpdate({
+    await this.ctx.model.DataAnalyze.updateOne({
       absoluteDate: date,
       content,
       type, category,
     }, { $inc: { amount } }, { upsert: true, new: true });
-
-
   }
 
 }

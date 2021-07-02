@@ -1,11 +1,5 @@
 'use strict';
 const rule = {
-  uuid: [
-    { required: false, message: 'uuid不能为空' },
-    { type: 'string', message: '需要是字符串' }],
-  promotionUUid: [
-    { required: true, message: 'promotionUUid不能为空' },
-    { type: 'string', message: '需要是字符串' }],
   branchTitle: [
     { required: false, message: 'branchTitle不能为空' },
     { type: 'string', message: '需要是字符串' }],

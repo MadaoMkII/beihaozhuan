@@ -9,15 +9,20 @@ class userPromotionService extends BaseService {
     }
     const branches = await this.ctx.model.PromotionBranch.find({ promotionUUid: condition.uuid },
       {}, { sort: { stepNumber: 1 } });
-    const userPromotions = await this.ctx.model.UserPromotion.find({ tel_number: this.ctx.user.tel_number,
-      promotionUUid: condition.uuid },
-    {
-      operator: 0,
-      created_at: 0,
-    });
+    // const userPromotions = await this.ctx.model.UserPromotion.find({ tel_number: this.ctx.user.tel_number },
+    //   {
+    //     operator: 0,
+    //     created_at: 0,
+    //   });
+    // console.log(userPromotions);
     const branchArray = [];
     for (const branch of branches) {
-      const ups = userPromotions.find(e => e.promotionBranchUUid === branch.uuid);
+      console.log(branch.uuid);
+      const ups = await this.ctx.model.UserPromotion.findOne({
+        tel_number: this.ctx.user.tel_number,
+        promotionBranchUUid: branch.uuid,
+      });// userPromotions.find(e => e.promotionBranchUUid === branch.uuid);
+      console.log(ups);
       const tempObj = {};
       tempObj.uuid = branch.uuid;
       tempObj.stepNumber = branch.stepNumber;
@@ -28,15 +33,15 @@ class userPromotionService extends BaseService {
         delete ups._doc.promotionBranchUUid;
         delete ups._doc.tel_number;
         delete ups._doc.nickName;
-        // tempObj.userPromotion = {
-        //   status: ups.status,
-        //   screenshotUrls: ups.screenshotUrls,
-        // };
+        tempObj.userPromotion = {
+          status: ups.status,
+          screenshotUrls: ups.screenshotUrls,
+        };
       } else {
-        // tempObj.userPromotion = {
-        //   status: '未开启',
-        //   screenshotUrls: [],
-        // };
+        tempObj.userPromotion = {
+          status: '未开启',
+          screenshotUrls: [],
+        };
       }
       tempObj.promotionReward = branch.promotionReward;
       tempObj.description = branch.description;
@@ -172,6 +177,14 @@ class userPromotionService extends BaseService {
         if (this.isEmpty(oldUserPromotion)) {
           this.ctx.throw(400, '找不到这个uuid对应的记录,你必须先下载');
         }
+        await this.ctx.model.UserPromotion.updateOne({
+          promotionBranchUUid: condition.promotionBranchUUid,
+          tel_number: user.tel_number,
+        }, { $set: {
+          status: '审核中',
+          screenshotUrls: condition.screenshotUrls,
+        } });
+
       }
       const promotion = await this.ctx.model.Promotion.findOne({ uuid: promotionBranch.promotionUUid },
         { promotionType: 1 });
