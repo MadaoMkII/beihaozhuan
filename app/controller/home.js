@@ -1,8 +1,7 @@
 'use strict';
 const Controller = require('./baseController');
-const moment = require('moment');
 class HomeController extends Controller {
-  async testX(ctx) {
+  async testX() {
     try {
 
       // const settings = await ctx.model.GameEvent.find({}, { category: 1, expectEarning: 1 });
@@ -14,7 +13,25 @@ class HomeController extends Controller {
       //   });
       //
       // }
-      await this.ctx.model.UserAccount.updateMany({}, { $set: { source: '平台', platform: 'H5网页' } });
+      // const Withdrews = await this.ctx.model.Withdrew.find({}, { userUUid: 1 }, { autopopulate: false });
+      //
+      // for (const wth of Withdrews) {
+      //
+      //   if (wth._doc.userUUid) {
+      //     console.log(wth._doc.userUUid);
+      //     const user = await this.ctx.model.UserAccount.findOne({ uuid: wth._doc.userUUid }, { tel_number: 1 });
+      //     console.log(user);
+      //     if (user) {
+      //       await this.ctx.model.Withdrew.updateOne({ _id: wth._doc._id }, { $set: { tel_number: user.tel_number } });
+      //     } else {
+      //       await this.ctx.model.Withdrew.deleteOne({ _id: wth._doc._id });
+      //     }
+      //
+      //   }
+      //
+      // }
+      await this.ctx.model.UserAccount.updateMany({}, { $set: { source: 'H5-通用' } });
+      await this.ctx.model.Withdrew.updateMany({}, { $set: { source: 'H5-通用' } });
       // await ctx.model.GameProcess.updateMany({ status: '进行中',
       //   $expr: { $gte: [ '$currentIncoming', '$requiredIncoming' ] } }, {
       //   $set: { status: '已完成' },
@@ -45,7 +62,7 @@ class HomeController extends Controller {
     }
 
   }
-  async test(ctx) {
+  async test() {
     const x = this.app.decrypt('a69ded101126994c7eab1e20d7883159');
     const y = this.app.encrypt(900000);
     console.log(y);

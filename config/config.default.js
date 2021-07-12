@@ -15,7 +15,7 @@ module.exports = appInfo => {
         options: {
           poolSize: 6,
           keepAlive: true,
-          dbName: 'beihaozhuan_test',
+          dbName: 'beihaozhuan',
           useCreateIndex: true,
           useFindAndModify: false,
           useUnifiedTopology: true,
@@ -57,8 +57,8 @@ module.exports = appInfo => {
     // myAppName: 'egg',
   };
   config.wechatConfig = {
-    appid: 'wx87462aaa978561bf', // `wx6da0f69da7e8894c`,
-    secret: '9205cff5cae37c4d7539822650ad9dc5', // `b6b0fb92a432acb9963bc4cf54e507fc`,
+    appid: 'wxa93f5ce18d07bae9', // `wx6da0f69da7e8894c`,
+    secret: 'c9d90d7faadbc28555e1092d1e5ec2d5', // `b6b0fb92a432acb9963bc4cf54e507fc`,
     key: 'sC4X531K4MHWDSujZCqJ91qRgFof2r12',
     mchid: '1546748521',
 

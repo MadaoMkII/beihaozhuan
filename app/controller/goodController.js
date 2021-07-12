@@ -227,8 +227,6 @@ class goodController extends baseController {
       await ctx.service.goodService.createCategory(condition);
       this.success();
     } catch (e) {
-      console.log(e);
-      // this.app.logger.error(e, ctx);
       this.failure();
     }
   }

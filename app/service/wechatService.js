@@ -10,13 +10,13 @@ class WeChatService extends BaseService {
     if (!this.isEmpty(condition.tel_number)) {
       condition.tel_number = { $regex: `.*${condition.tel_number}.*` };
     }
+    option.sort = { created_at: -1 };
     condition.result_code = 'SUCCESS';
     const result = await this.ctx.model.Withdrew.find(condition, {}, option);
     return [ result, condition ];
   }
 
   async createWithdrewConstraint(condition) {
-    condition.amount = condition.amount * 100;
     const obj = new this.ctx.model.WithdrewConstraint(condition);
     obj.save();
   }
@@ -63,9 +63,9 @@ class WeChatService extends BaseService {
     if (this.isEmpty(user.OPENID)) {
       return this.success('该用户没有注册微信', 'OK', 400);
     }
-    if (this.isEmpty(!user.realName)) {
-      this.ctx.throw(200, '用户没有实名制，请先输入实名');
-    }
+    // if (this.isEmpty(!user.realName)) {
+    //   this.ctx.throw(200, '用户没有实名制，请先输入实名');
+    // }
     const constraint = await this.ctx.model.WithdrewConstraint.findOne({ _id: this.app.mongoose.Types.ObjectId(constraintId) });
     if (this.isEmpty(constraint)) {
       this.ctx.throw(400, '找不到这条取款条件记录');
@@ -73,10 +73,10 @@ class WeChatService extends BaseService {
     await this.checkConstraint(constraint);
     const recentUserAccount = await this.ctx.model.UserAccount.findOne({ tel_number: user.tel_number });
     const amount = Number(constraint.amount);
-    if (Number(recentUserAccount.Bcoins) < amount * 100) {
+    if (Number(recentUserAccount.Bcoins) < amount * 10000) {
       this.ctx.throw(200, '用户余额不足');
     }
-    const newBCoin = Number(recentUserAccount.Bcoins) - amount * 100;
+    const newBCoin = Number(recentUserAccount.Bcoins) - amount * 10000;
     if (newBCoin < 0) {
       this.ctx.throw(200, '用户所剩的余额不足');
     }
@@ -84,21 +84,21 @@ class WeChatService extends BaseService {
     if (amount >= 60000) {
       this.ctx.throw(50000, '提款数目过大');
     }
+
     const inputObj = {
       mch_appid: this.ctx.app.config.wechatConfig.appid,
       mchid: this.ctx.app.config.wechatConfig.mchid,
       nonce_str: this.ctx.randomString(32),
       partner_trade_no,
       openid: user.OPENID,
-      check_name: 'FORCE_CHECK',
+      check_name: 'NO_CHECK',
       re_user_name: user.realName,
-      amount: amount / 100, // Number(constraint.amount),
+      amount: amount * 100, // Number(constraint.amount),
       desc: constraint.title,
       spbill_create_ip: ip,
     };
     const [ , signedStr ] = await this.getSign(inputObj);
     inputObj.sign = signedStr;
-
     const xml2js = require('xml2js');
     const builder = new xml2js.Builder({ headless: true, rootName: 'xml' });
     const xml = builder.buildObject(inputObj);
@@ -112,7 +112,7 @@ class WeChatService extends BaseService {
       console.log('OK');
       await this.ctx.service.userService.modifyUserRcoin({
         tel_number: user.tel_number,
-        amount: -amount,
+        amount: -amount * 10000,
         content: '提现',
         type: '提现',
       });
@@ -122,7 +122,7 @@ class WeChatService extends BaseService {
       guestIP: ip,
       desc: constraint.title,
       constraint_id: constraint._id,
-      amount: amount / 100,
+      amount: amount * 10000,
       OPENID: user.OPENID,
       partner_trade_no,
       nickName: user.nickName,
@@ -151,7 +151,6 @@ class WeChatService extends BaseService {
     query.return_msg = '支付成功';
     query.constraint_id = constraint._id;
     const count = await this.ctx.model.Withdrew.countDocuments(query);
-    console.log(count);
     if (count >= limited_times) {
       this.ctx.throw(400, '提现次数已满');
     }
@@ -212,7 +211,6 @@ class WeChatService extends BaseService {
 
     const [ result_3 ] = await this.app.requestMethod(requestObj_3,
       'GET', 'https://api.weixin.qq.com/cgi-bin/user/info');
-    console.log(result_3);
     if (result_3.errcode) {
       return;
     }
@@ -318,6 +316,7 @@ class WeChatService extends BaseService {
 
   async getWithdrew(conditions, option, project) {
     option.sort = { created_at: -1 };
+    console.log(conditions);
     return this.ctx.model.Withdrew.find(conditions, project, option);
   }
 
@@ -347,10 +346,9 @@ class WeChatService extends BaseService {
         updateTime: new Date(),
         tokenStr: result_1.access_token,
       };
-      const x = await this.ctx.model.SystemSetting.findOneAndUpdate({ 'accessToken.updateTime': accessToken.updateTime }, { $set: {
+      await this.ctx.model.SystemSetting.updateOne({ 'accessToken.updateTime': accessToken.updateTime }, { $set: {
         accessToken: { updateTime: new Date(), tokenStr: result_1.access_token },
-      } }, { new: true });
-      console.log(x);
+      } });
       return settObj.tokenStr;
     }
     return appSystemSetting.accessToken.tokenStr;

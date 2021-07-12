@@ -24,6 +24,13 @@ class orderTrackerService extends BaseService {
       conditions._id = this.app.mongoose.Types.ObjectId(conditions.orderUUid);
       delete conditions.orderUUid;
     }
+
+    if (conditions.userUUid) {
+      const user = await this.ctx.model.UserAccount.findOne({ uuid: conditions.userUUid },
+        { _id: 1 });
+      conditions.creator = user._id;
+      delete conditions.userUUid;
+    }
     const orderTracks = await this.ctx.model.OrderTrack.find(conditions,
       { title: 1, _id: 1, price: 1, content: 1, created_at: 1 }, option);
     return orderTracks.map(e => {

@@ -28,7 +28,6 @@ class promotionController extends Controller {
       const count = await this.getFindModelCount('Promotion', condition);
       this.success([ data, count ]);
     } catch (e) {
-      console.log(e);
       this.failure(e);
     }
   }
@@ -45,7 +44,6 @@ class promotionController extends Controller {
       await ctx.service.promotionService.createPromotion(condition);
       this.success(condition.uuid);
     } catch (e) {
-      console.log(e);
       this.failure(e);
     }
   }
@@ -186,7 +184,6 @@ class promotionController extends Controller {
       const result = await ctx.service.userPromotionService.getMainPageData(ctx.user, condition.platform);
       this.success(result);
     } catch (e) {
-      console.log(e);
       this.failure(e);
     }
   }

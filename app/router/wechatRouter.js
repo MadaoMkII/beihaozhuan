@@ -28,5 +28,5 @@ module.exports = app => {
     controller.withdrewConstraintController.getWithdrewConstraintList_User);
 
   router.post('/wechat/uniAppLogin', controller.wechatController.uniAppLogin);
-
+  router.post('/wechat/bindWechat_app', controller.wechatController.bindWechat_app);
 };

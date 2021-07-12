@@ -83,6 +83,7 @@ module.exports = app => {
     // asyncEventFlag: {type: Boolean, default: false},
     last_login_time: Date,
     last_sync_time: Date,
+    unionid: String,
   }, {
     timestamps: {
       createdAt: 'created_at', updatedAt: 'updated_at',

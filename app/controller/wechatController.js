@@ -52,14 +52,24 @@ class wechatController extends baseController {
       if (!condition) {
         return;
       }
-      condition.userUUid = ctx.user.uuid;
+      condition.user_id = ctx.user._id;
+      condition.result_code = 'SUCCESS';
       const count = await this.getFindModelCount('Withdrew', condition);
       const result = await ctx.service.wechatService.getWithdrew(condition, option,
-        { desc: 1, amount: 1, return_msg: 1 });
+        {
+          result_code: 0,
+          return_msg: 0,
+          withdrewResult: 0,
+          partner_trade_no: 0,
+          OPENID: 0,
+          constraint_id: 0,
+          user_id: 0,
+          guestIP: 0,
+          category: 0,
+        });
       return this.success([ result, count ]);
     } catch (e) {
-      this.app.logger.error(e, ctx);
-      this.failure();
+      this.failure(e);
     }
   }
 
@@ -92,7 +102,6 @@ class wechatController extends baseController {
       const settingArray = await ctx.service.wechatService.getWithdrewStatus();
       this.success(settingArray);
     } catch (e) {
-      console.log(e);
       this.failure(e);
     }
   }
@@ -105,10 +114,9 @@ class wechatController extends baseController {
         return;
       }
       const ip = ctx.app.getIP(ctx.request);
-      console.log(condition);
       const result = await ctx.service.wechatService.realWithdrewConstraint(condition.constraintId, ip);
       if (!result || result.result_code === 'FAIL') {
-        this.failure('微信服务器连接不稳定,请稍后再试');
+        this.failure(result);// '微信服务器连接不稳定,请稍后再试'
         // this.app.logger.error(new Error(JSON.stringify(result)), ctx);
       }
       this.success();
@@ -116,31 +124,140 @@ class wechatController extends baseController {
       this.failure(e);
     }
   }
-  async uniAppLogin(ctx) {
+  async uniAppLogin() {
     try {
       const [ condition ] = await this.cleanupRequestProperty('wechatRules.uniAppLoginRule',
-        'access_token', 'openid', 'sourceFrom', 'inviteCode', 'redirect');
+        'access_token', 'sourceFrom', 'inviteCode', 'redirect', 'unionid');
       if (!condition) {
         return;
       }
       condition.stateMessage = 'CHECK';
-      await this.checkUserIDAndLogin(ctx, condition, condition.access_token);
+      const result = await this.checkUserIDAndLogin_uniApp(condition);
+      this.success(result);
     } catch (e) {
       this.failure(e);
     }
   }
+
+  async checkUserIDAndLogin_uniApp(stateObj) {
+    if (!stateObj.unionid) {
+      this.ctx.throw('登录名为空' + stateObj.unionid);
+    }
+    const user = await this.ctx.service.userService.getUser({ unionid: stateObj.unionid });
+    if (!this.isEmpty(user)) {
+      if (user.userStatus.activity.toString() !== 'enable') {
+        this.ctx.throw(400, '该账户被封停');
+      }
+      await this.ctx.login(user);
+      return {
+        success: true,
+        userInfo: user,
+        message: 'OK',
+      };
+    }
+
+    this.ctx.session.status_website = this.ctx.helper.encrypt(stateObj.unionid);
+    this.ctx.session.nickName = stateObj.nickName;
+    this.ctx.session.head = stateObj.head;
+    return {
+      success: false,
+      message: '找不到这个人',
+      userInfo: {},
+    };
+  }
+  async bindWechat_app(ctx) {
+    try {
+      const [ condition ] = await this.cleanupRequestProperty('authRules.bindWechatApp',
+        'smsVerifyCode', 'inviteCode', 'source', 'tel_number', 'unionid');
+      if (!condition) {
+        return;
+      }
+      const tel_number = condition.tel_number;
+      console.log('calling bindWechat_app');
+
+      if (this.isEmpty(ctx.session.tel_number) ||
+        String(ctx.session.tel_number).toLowerCase() !==
+        String(condition.tel_number).toLowerCase()) {
+        return this.failure('注册号码未验证或者不存在', 400);
+      }
+      if (ctx.helper.isEmpty(ctx.session.fdbsmsVerifyCode) || !(String(ctx.session.fdbsmsVerifyCode).toLowerCase() ===
+                String(condition.smsVerifyCode).toLowerCase())) {
+        return this.failure('微信短信验证失败', 400);
+      }
+      const result = await ctx.service.systemSettingService.getSetting();
+      const user = await ctx.service.userService.getUser({ tel_number });
+      let initialBcoin;
+      if (!this.isEmpty(result.registerMission) && !this.isEmpty(result.registerMission.activity) &&
+        !this.isEmpty(result.registerMission.reward)) {
+        initialBcoin = String(result.registerMission.activity) === 'disable' ? 0 : result.registerMission.reward;
+      } else {
+        initialBcoin = 0;
+      }
+      const newUser = {};
+      if (this.isEmpty(user)) {
+        const unionid = ctx.helper.decrypt(ctx.session.status_website);
+        console.log(unionid);
+        const randomPassword = ctx.helper.passwordEncrypt(ctx.randomString(16));
+        newUser.unionid = unionid;//
+        newUser.avatar = ctx.session.head;
+        newUser.nickName = ctx.session.nickName;
+        newUser.password = randomPassword;
+        newUser.uuid = require('cuid')();
+        newUser.role = '用户';
+        newUser.tel_number = tel_number;
+        newUser.userStatus = {};
+        newUser.userStatus.hasVerifyWechat = 'enable';
+        newUser.userStatus.activity = 'enable';
+        newUser.Bcoins = initialBcoin;
+        newUser.source = this.isEmpty(condition.source) ? '平台' : condition.source;
+        const newUser_login = await ctx.service.userService.addUser(newUser, condition.inviteCode);
+        if (initialBcoin !== 0) {
+          await this.ctx.service.userService.modifyUserRcoin({
+            tel_number,
+            amount: Number(initialBcoin),
+            content: '注册奖励',
+            type: '注册',
+          });
+        }
+        await ctx.login(newUser_login);
+        delete newUser.password;
+      } else {
+        if (!this.isEmpty(user.unionid)) {
+          this.ctx.throw(400, '已经设置过了');
+        }
+        const unionid = ctx.helper.decrypt(ctx.session.status_website);
+        console.log(unionid);
+        // newUser.unionid = ctx.helper.decrypt(ctx.session.status_website);
+        newUser.unionid = unionid;
+        newUser.userStatus = {};
+        newUser.userStatus.activity = 'enable';
+        newUser.userStatus.hasVerifyWechat = 'enable';
+        const newUser_login = await ctx.service.userService.updateUser(user.uuid, newUser);
+        await ctx.login(newUser_login);
+      }
+      ctx.session.tel_number = null;
+      ctx.session.fdbsmsVerifyCode = null;
+      ctx.session.status_website = null;
+      ctx.session.head = null;
+      ctx.session.nickName = null;
+      this.success();
+    } catch (e) {
+      this.failure(e);
+    }
+  }
+
   async checkUserIDAndLogin(ctx, stateObj, access_token) {
-    stateObj.OPENID = stateObj.openid;
-    console.log(stateObj);
+    if (!this.isEmpty(stateObj.openid)) { stateObj.OPENID = stateObj.openid; }
     if (!stateObj.OPENID) {
       ctx.throw('登录名为空' + stateObj.openid);
     }
+    console.log(stateObj);
     const user = await this.ctx.service.userService.getUser({ OPENID: stateObj.OPENID });
     if (!ctx.helper.isEmpty(user)) {
       if (user.userStatus.activity.toString() !== 'enable') {
         ctx.throw(400, '该账户被封停');
       }
-      ctx.login(user);
+      await ctx.login(user);
       let location_jump;
       if (stateObj.stateMessage !== 'CHECK') {
         location_jump = stateObj.stateMessage;
@@ -151,7 +268,8 @@ class wechatController extends baseController {
         ctx.status = 301;
         ctx.redirect(`/${location_jump}?redirect=${stateObj.redirect}`);
       } else {
-        this.success();
+        ctx.status = 301;
+        ctx.redirect(`/${location_jump}`);
       }
       await this.ctx.service.userService.updateUser(user.uuid, {
         'userStatus.hasVerifyWechat': 'enable',
@@ -164,7 +282,6 @@ class wechatController extends baseController {
       };
       const [ result_3 ] = await this.requestMethod(requestObj_3,
         'GET', 'https://api.weixin.qq.com/sns/userinfo');
-      console.log(result_3);
       if (result_3.errcode) {
         return;
       }
@@ -182,13 +299,18 @@ class wechatController extends baseController {
         source = 'origin';
         state = '';
       }
-      if (stateObj.redirect) {
-        const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${stateObj.inviteCode}&source=${source}&state=${state}&redirect=${stateObj.redirect}`;
-        ctx.status = 301;
-        ctx.redirect(url);
-      } else {
-        this.success();
-      }
+      const url = `/index#/pages/login/login?type=bindPhone&statusString=${statusString}&head=${head}&nickName=${nickName}&inviteCode=${stateObj.inviteCode}&source=${source}&state=${state}&redirect=${stateObj.redirect}`;
+      // const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${stateObj.inviteCode}&source=${source}&state=${state}&redirect=${stateObj.redirect}`;
+      //
+      ctx.status = 301;
+      ctx.redirect(url);
+      // if (stateObj.redirect) {
+      //   const url = `/index/?statusString=${statusString}&jumpTo=loginInfoBindPhone&head=${head}&nickName=${nickName}&inviteCode=${stateObj.inviteCode}&source=${source}&state=${state}&redirect=${stateObj.redirect}`;
+      //   ctx.status = 301;
+      //   ctx.redirect(url);
+      // } else {
+      //   this.success();
+      // }
     }
   }
   async callback(ctx) {
@@ -197,12 +319,9 @@ class wechatController extends baseController {
       // returnUrl = `/wechat/callback?code=021fx8wK0ooco92PlqwK0YNiwK0fx8wF&state=STATE`;
       // const urlQuery = url.parse(returnUrl, true).query;
       const urlQuery = new URL(returnUrl).searchParams;
-      console.log(urlQuery);
       const code = urlQuery.get('code');
       const redirect = urlQuery.get('redirect');
       const state = urlQuery.get('state');
-
-
       console.log('callback');
       let stateObj = {};
       stateObj.redirect = redirect;

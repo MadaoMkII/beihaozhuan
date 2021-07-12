@@ -1,9 +1,9 @@
 'use strict';
 const ms = require('ms');
 const fs = require('fs');
-const Controller = require('./baseController');
+const baseController = require('./baseController');
 
-class authController extends Controller {
+class authController extends baseController {
 
   async login(ctx) {
 
@@ -104,11 +104,10 @@ class authController extends Controller {
                 String(requestEntity.smsVerifyCode).toLowerCase())) {
         return this.failure('注册短信验证失败', 4011, 400);
       }
-      if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
-                String(requestEntity.tel_number).toLowerCase())) {
+      if (this.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
+        String(requestEntity.tel_number).toLowerCase())) {
         return this.failure('注册号码未验证或者不存在', 4012, 400);
       }
-
       ctx.session.tel_number = null;
       ctx.session.smsVerifyCode = null;
       const oldUser = await ctx.service.userService.getUser({ tel_number: requestEntity.tel_number });
@@ -169,10 +168,10 @@ class authController extends Controller {
       if (!requestEntity) {
         return;
       }
-      // if (ctx.helper.isEmpty(ctx.session.fdbsmsVerifyCode) || !(String(ctx.session.fdbsmsVerifyCode).toLowerCase() ===
-      //           String(requestEntity.smsVerifyCode).toLowerCase())) {
-      //   return this.failure('微信短信验证失败', 4015, 400);
-      // }
+      if (ctx.helper.isEmpty(ctx.session.fdbsmsVerifyCode) || !(String(ctx.session.fdbsmsVerifyCode).toLowerCase() ===
+                String(requestEntity.smsVerifyCode).toLowerCase())) {
+        return this.failure('微信短信验证失败', 4015, 400);
+      }
       if (ctx.helper.isEmpty(ctx.session.tel_number) || !(String(ctx.session.tel_number).toLowerCase() ===
                 String(requestEntity.tel_number).toLowerCase())) {
         return this.failure('注册号码未验证或者不存在', 4012, 400);
@@ -192,7 +191,7 @@ class authController extends Controller {
         initialBcoin = 0;
       }
 
-
+      console.log(requestEntity);
       const newUser = {};
       if (ctx.helper.isEmpty(user)) {
         const randomPassword = ctx.helper.passwordEncrypt(ctx.randomString(16));

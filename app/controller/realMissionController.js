@@ -31,8 +31,6 @@ class realMissionController extends Controller {
         tel_number: ctx.user.tel_number,
       };
       const [ , signStr ] = await ctx.service.wechatService.getSign(testObj, 'MD5', 'beihaozhuan01');
-      console.log(signStr);
-      console.log(condition.sign);
       if (signStr !== condition.sign) {
         ctx.throw(400, '签名并不匹配');
       }

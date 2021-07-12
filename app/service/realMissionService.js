@@ -84,7 +84,10 @@ class realMissionService extends BaseService {
   async getRealMissionForUser(option) {
     const { user } = this.ctx;
     const query = this.getTimeQueryByPeriod('本日');
+
+    // query.created_at = { $lte: query.created_at.$gte };
     query.tel_number = user.tel_number;
+    query.status = { $ne: '过期' };
     const project = {
       updated_at: false,
       created_at: false,
@@ -162,7 +165,6 @@ class realMissionService extends BaseService {
     if (this.isEmpty(missionTask)) {
       this.ctx.throw(400, '找不到这条用户记录');
     }
-    console.log(missionTask);
     if (missionTask.status === '进行中') {
       this.ctx.throw(400, '这个任务还没有达到领取程度');
     }

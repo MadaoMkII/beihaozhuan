@@ -143,24 +143,24 @@ class UserService extends BaseService {
         inviteCode,
       });
       if (!userResult) {
-        this.ctx.throw('zhaobudao');
+        this.ctx.throw('找不到这个推荐码');
       }
       return userResult._id;
     }
   }
 
-  async addUser(user, inviteCode) {
+  async addUser(user, inviteCode = '') {
 
-    const userNew = this.ctx.model.UserAccount(user);
-    if (!this.ctx.helper.isEmpty(inviteCode)) {
+    const userNew = new this.ctx.model.UserAccount(user);
+    if (!this.isEmpty(inviteCode)) {
       userNew.referrer = await this.getReferrerID(inviteCode);
 
       if (!this.ctx.helper.isEmpty(userNew.referrer)) {
         await this.ctx.model.UserAccount.findOneAndUpdate({
           _id: userNew.referrer,
         }, { $push: { referrals: userNew._id } });
-        this.ctx.app.eventEmitter.emit('normalMissionCount', userNew.referrer, '每日邀新人');
-        this.ctx.app.eventEmitter.emit('normalMissionCount', userNew.referrer, '每周邀新人');
+        // this.ctx.app.eventEmitter.emit('normalMissionCount', userNew.referrer, '每日邀新人');
+        // this.ctx.app.eventEmitter.emit('normalMissionCount', userNew.referrer, '每周邀新人');
       }
     }
     await userNew.save();
@@ -194,7 +194,7 @@ class UserService extends BaseService {
     ]);
 
     let totalAmount = 0;
-    if (!this.app.isEmpty(userAmount) && userAmount.length > 0) {
+    if (!this.isEmpty(userAmount) && userAmount.length > 0) {
       totalAmount = userAmount[0].totalAmount;
     }
     const count = result.referrals.length;
@@ -250,7 +250,7 @@ class UserService extends BaseService {
   }
   async referrerReward(userID, reward) {
     const referrer = await this.ctx.model.UserAccount.findOne({ _id: userID });
-    if (this.app.isEmpty(referrer)) {
+    if (this.isEmpty(referrer)) {
       this.ctx.throw(400, '找不到该用户');
     }
     await this.ctx.service.analyzeLogService.recordPersonalBcoinChange(referrer, reward, '获得', '返利');
@@ -264,12 +264,12 @@ class UserService extends BaseService {
 
   async modifyUserRcoin(condition) {
     const user = await this.ctx.model.UserAccount.findOne({ tel_number: condition.tel_number });
-    if (this.app.isEmpty(user)) {
+    if (this.isEmpty(user)) {
       this.ctx.throw(400, '找不到该用户');
     }
     const newMoney = Number(user.Bcoins) + Number(condition.amount);
-    const content = !this.app.isEmpty(condition.content) ? condition.content : '活动奖励-人工设置';
-    const category = !this.app.isEmpty(condition.category) ? condition.category : '活动';
+    const content = !this.isEmpty(condition.content) ? condition.content : '活动奖励-人工设置';
+    const category = !this.isEmpty(condition.category) ? condition.category : '活动';
     let income;
     if (condition.amount > 0) {
       income = '获得';
@@ -285,15 +285,15 @@ class UserService extends BaseService {
       await this.ctx.service.analyzeService.recordAdvIncrease(condition._id, user._id, 1, 'close');
     }
     const setting = await this.ctx.model.SystemSetting.findOne();
-    const amount = Number(condition.amount);
+    const amount = Number(condition.amount).toFixed(0);
     const rate = setting.rewardPercent / 100;
-    if (!this.app.isEmpty(user.referrer) && Number(condition.amount) > 0) {
+    if (!this.isEmpty(user.referrer) && Number(condition.amount) > 0) {
       const reward = rate * Number(condition.amount);
-      await this.ctx.service.analyzeLogService.recordPersonalBcoinChange(user, amount, '贡献', '给利');
+      await this.ctx.service.analyzeLogService.recordPersonalBcoinChange(user, Number(amount), '贡献', '给利');
       await this.referrerReward(user.referrer, reward);
     }
 
-    await this.ctx.service.analyzeLogService.recordPersonalBcoinChange(user, amount, income);
+    await this.ctx.service.analyzeLogService.recordPersonalBcoinChange(user, Number(amount), income);
   }
   async getManyUser(conditions, option, project = {}) {
     if (!this.ctx.helper.isEmpty(conditions.nickName)) {

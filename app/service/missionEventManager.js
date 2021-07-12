@@ -31,7 +31,7 @@ class MissionEventManager extends Service {
 
   }
 
-  async getAndInitMissionEvent(user, type) {
+  async getAndInitMissionEvent(user) {
     if (this.ctx.helper.isEmpty(this.eventEmitter.eventNames()) || this.eventEmitter.eventNames().length === 0) {
       const dailyMissions = await this.ctx.service.missionProcessingTrackerService.getUserDailyMissionProcessing(user._id);
       await this.setMissions(dailyMissions, 'DailyMissionProcessingTracker');
@@ -41,8 +41,6 @@ class MissionEventManager extends Service {
 
       const weeklyMission = await this.ctx.service.missionProcessingTrackerService.getUserWeeklyMissionProcessing(user._id);
       await this.setMissions(weeklyMission, 'WeeklyMissionProcessingTracker');
-    } else {
-      console.log('do nothing');
     }
     return this.eventEmitter;
   }

@@ -17,12 +17,10 @@ class userPromotionService extends BaseService {
     // console.log(userPromotions);
     const branchArray = [];
     for (const branch of branches) {
-      console.log(branch.uuid);
       const ups = await this.ctx.model.UserPromotion.findOne({
         tel_number: this.ctx.user.tel_number,
         promotionBranchUUid: branch.uuid,
       });// userPromotions.find(e => e.promotionBranchUUid === branch.uuid);
-      console.log(ups);
       const tempObj = {};
       tempObj.uuid = branch.uuid;
       tempObj.stepNumber = branch.stepNumber;
@@ -163,7 +161,7 @@ class userPromotionService extends BaseService {
       if (oldUserPromotion.status === '审核通过') {
         this.ctx.throw(400, '您已经提交过了，这个审核已经通过了');
       }
-      if (oldUserPromotion.status === '审核未通过') {
+      if (oldUserPromotion.status === '审核未通过' || oldUserPromotion.status === '已下载') {
         await this.ctx.model.UserPromotion.updateOne({
           promotionBranchUUid: condition.promotionBranchUUid,
           tel_number: user.tel_number,

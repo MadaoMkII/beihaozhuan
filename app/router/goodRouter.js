@@ -38,7 +38,8 @@ module.exports = app => {
 
   router.post('/order/getMyOrders', app.middleware.authenticatedMiddleware('用户'),
     controller.orderTrackerController.getMyOrders);
-
+  router.post('/order/findOrderByUser', app.middleware.authenticatedMiddleware('用户'),
+    controller.orderTrackerController.findOrderByUser);
   router.post('/order/getOneMyOrder', app.middleware.authenticatedMiddleware('用户'),
     controller.orderTrackerController.getOneMyOrder);
   router.post('/good/getGoodListForUser', app.middleware.authenticatedMiddleware('用户'),

@@ -47,19 +47,20 @@ class orderTrackerController extends baseController {
   //     this.failure();
   //   }
   // }
-  // async findOrderByUser(ctx) {
-  //   try {
-  //     const [ condition, option ] = await this.cleanupRequestProperty('orderTrackerRules.findOrderOfUser', 'unit', 'page', 'userUUid');
-  //     if (condition !== false) {
-  //       const count = await this.getFindModelCount('OrderTracker', condition);
-  //       const result = await this.ctx.service.orderTrackerService.findOrder(condition, option);
-  //       this.success([ result, count ]);
-  //     }
-  //   } catch (e) {
-  //     this.app.logger.error(e, ctx);
-  //     this.failure();
-  //   }
-  // }
+  async findOrderByUser(ctx) {
+    try {
+      const [ condition, option ] = await this.cleanupRequestProperty('orderTrackerRules.findOrderOfUser',
+        'unit', 'page', 'userUUid');
+      if (!condition) {
+        return;
+      }
+      const count = await this.getFindModelCount('OrderTrack', condition);
+      const result = await ctx.service.orderTrackerService.findOrder(condition, option);
+      this.success([ result, count ]);
+    } catch (e) {
+      this.failure(e);
+    }
+  }
   // async getMyOrders(ctx) {
   //
   //   try {

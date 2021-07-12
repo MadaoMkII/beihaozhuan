@@ -509,7 +509,6 @@ class gameEventService extends BaseService {
   }
 
   async initialGameEventByStep(condition) {
-    console.log('我被调用了，步数是' + condition.category);
     let gameEventEntity;
     const isExists = await this.ctx.model.GameProcess.exists({
       tel_number: this.ctx.user.tel_number,
@@ -519,6 +518,9 @@ class gameEventService extends BaseService {
       return false; //
     }
     const gameEvent = await this.ctx.model.GameEvent.findOne({ category: condition.category });
+    if (!gameEvent) {
+      return { }; //
+    }
     if (condition.category === 'STEP1') {
       if (this.isEmpty(gameEvent.gameSetting[0].platform)) {
         this.ctx.throw(400, 'STEP1还没有进行游戏设置');

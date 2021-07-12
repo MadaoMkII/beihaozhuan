@@ -1,10 +1,10 @@
 'use strict';
 const rule = {
-  access_token: [
+  unionid: [
     { required: true, message: '不能为空' },
     { type: 'string', message: '类型不正确' },
   ],
-  openid: [
+  access_token: [
     { required: true, message: '不能为空' },
     { type: 'string', message: '类型不正确' },
   ],
