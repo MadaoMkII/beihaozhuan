@@ -14,7 +14,7 @@ module.exports = appInfo => {
   config.mongoose = {
     clients: {
       userConnection: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+        url: '*****',
         options: {
           poolSize: 6,
           keepAlive: true,
@@ -24,7 +24,7 @@ module.exports = appInfo => {
         },
       },
       orderGoodConnection: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+        url: '*****3',
         options: {
           poolSize: 6,
           keepAlive: true,
@@ -34,7 +34,7 @@ module.exports = appInfo => {
         },
       },
       loggerConnection: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+        url: '*****2870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
         options: {
           poolSize: 6,
           keepAlive: true,
@@ -44,7 +44,7 @@ module.exports = appInfo => {
         },
       },
       missionTracker: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+        url: '*****9642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
         options: {
           poolSize: 6,
           keepAlive: true,
@@ -54,7 +54,7 @@ module.exports = appInfo => {
         },
       },
       commonConnection: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+        url: '*****,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
         options: {
           poolSize: 6,
           keepAlive: true,
@@ -64,7 +64,7 @@ module.exports = appInfo => {
         },
       },
       analyze: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+        url: '*****bf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
         options: {
           poolSize: 6,
           keepAlive: true,
@@ -74,7 +74,7 @@ module.exports = appInfo => {
         },
       },
       promotionConnection: {
-        url: 'mongodb://root:!beihaozhuan1467@dds-8vbf8f7ecc1929641611-pub.mongodb.zhangbei.rds.aliyuncs.com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
+        url: '*****com:3717,dds-8vbf8f7ecc1929642870-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/admin?replicaSet=mgset-500096173',
         options: {
           poolSize: 6,
           keepAlive: true,
