@@ -1,4 +1,5 @@
-# example
+# 说明
+项目已经凉了！
 由于没有使用Redis 所以要依赖session记录
 由于没有使用Redis 所以要依赖session记录
 
